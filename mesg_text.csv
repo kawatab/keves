@@ -1,0 +1,4 @@
+ReqRealNum	 Expected real numbers, but got others
+1stObjNotProcOrSyn	   Expected procedure or Syntax as 1st obj, but got others
+ReqLessGotMore	   Expected less arguments, but got more
+ReqMoreGotLess	   Expected more arguments, but got less
