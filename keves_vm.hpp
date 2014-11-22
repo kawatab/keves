@@ -37,10 +37,6 @@ class VectorKev;
 
 class KevesVM {
 public:
-  static constexpr int NUM_GR = 8;
-  static vm_func cmd_table_[END_OF_LIST];
-  static const KevesInstructTable* keves_instruct_table_;
-
   KevesVM() = delete;
   KevesVM(const KevesVM&) = delete;
   KevesVM(const KevesVM&&) = delete;
@@ -52,8 +48,6 @@ public:
   
   int Execute(const QString& arg);
   int Execute_helper(const QString& arg);
-  int ExecuteTest();
-  int ExecuteTest_helper();
   
   // for GC
   void CheckStack(size_t*, vm_func, const_KevesIterator);
@@ -121,15 +115,6 @@ public:
   static void DisplayCode(KevesVM*, const_KevesIterator);
   static void RevertDynamicWind(KevesVM*, const_KevesIterator);
 
-
-  static void test001(KevesVM*, const_KevesIterator);
-  static void test002(KevesVM*, const_KevesIterator);
-  static void test003(KevesVM*, const_KevesIterator);
-  static void test004(KevesVM*, const_KevesIterator);
-  static void test005(KevesVM*, const_KevesIterator);
-  static void test006(KevesVM*, const_KevesIterator);
-  static void test007(KevesVM*, const_KevesIterator);
-  static void test008(KevesVM*, const_KevesIterator);
 
   static void cmd_NOP(KevesVM*, const_KevesIterator);
   static void cmd_HALT(KevesVM*, const_KevesIterator);
@@ -250,17 +235,11 @@ public:
   static void cmd_EXPORT_SYMBOL(KevesVM*, const_KevesIterator);
   static void cmd_TEST_ENVIRONMENT(KevesVM*, const_KevesIterator);
 
+
 private:
-  QString ToString(KevesValue);
-  void ToString_code(QString*, KevesValue, int);
-  void ToString_element(QString*, KevesValue);
-  void ToString_list(QString*, KevesValue, int);
-  void ToString_vector(QString*, KevesValue, int);
-
-  static void DisplayLibraryName(const KevesLibrary&);
-
-
   KevesBase* base_;
+  vm_func* cmd_table_;
+  KevesGC* gc_;
 
   EnvironmentKev curt_global_vars_;
   EnvironmentKev prev_global_vars_;
@@ -271,7 +250,6 @@ private:
   KevesValue gr1_;
   KevesValue gr2_;
   KevesValue gr3_;
-  KevesGC* keves_gc_;
 
   // for Cheney on the M.T.A.
   jmp_buf jmp_exit_;

@@ -45,9 +45,12 @@ public:
 
   KevesVM* MakeVM();
   
-public:
   const StringKev* GetMesgText(const QString& key) const;
   void InitCMDTable();
+  
+  vm_func* cmd_table() {
+    return cmd_table_;
+  }
   
   KevesGC* gc() {
     return &gc_;
@@ -57,19 +60,25 @@ public:
     return &lib_keves_base_;
   }
   
-  /*
-  const KevesInstructTable* keves_instruct_table() {
-    return &keves_instruct_table_;
+  const KevesInstructTable* instruct_table() {
+    return &instruct_table_;
   }
-  */
 
+  QString ToString(KevesValue);
+  void ToString_code(QString*, KevesValue, int);
+  void ToString_element(QString*, KevesValue);
+  void ToString_list(QString*, KevesValue, int);
+  void ToString_vector(QString*, KevesValue, int);
+
+  static void DisplayLibraryName(const KevesLibrary&);
 
 private:
   void InitMesgList(const QString& file_name);
 
   // GC and tables
   KevesGC gc_;
-  KevesInstructTable keves_instruct_table_;
+  KevesInstructTable instruct_table_;
+  vm_func cmd_table_[END_OF_LIST];
   QHash<QString, const StringKev*> mesg_text_;
 
 public:

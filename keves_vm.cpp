@@ -49,283 +49,10 @@
 #include <QFile> // this purpose is test.
 #include <QDataStream> // this purpose is test.
 
-vm_func KevesVM::cmd_table_[END_OF_LIST];
-const KevesInstructTable* KevesVM::keves_instruct_table_;
-
 KevesVM::KevesVM(KevesBase* base)
   : base_(base),
-    keves_gc_(base->gc()) {}
-
-int KevesVM::ExecuteTest() {
-  pthread_attr_t attr;
-  pthread_getattr_np(pthread_self(), &attr);
-  
-  size_t stack_size(0);
-  pthread_attr_getstack(&attr, &stack_lower_limit_, &stack_size);
-  stack_higher_limit_ = static_cast<char*>(stack_lower_limit_) + stack_size;
-  stack_safety_limit_ = static_cast<char*>(stack_lower_limit_) + 1024 * 1024;
-  stack_higher_limit_ = reinterpret_cast<char*>(&attr);
-
-  return ExecuteTest_helper();
-}
-
-int KevesVM::ExecuteTest_helper() {
-  const_KevesIterator pc; //(lib_keves_base_->proc_keves_eval_code_.proc());
-  acc_ = gr1_ = gr2_ = gr3_ = EMB_UNDEF;
-  /*
-  keves_gc_->set(&jmp_exit_,
-		&registers_, &acc_, gr_,
-		// &curt_global_vars_, &prev_global_vars_,
-		 &keves_vals_, stack_higher_limit_, stack_lower_limit_,
-		pc);
-*/
-
-  switch(setjmp(jmp_exit_)) {
-  case -2:
-    std::cerr << "KevesVM: fatal error\n";
-    return 1;
-
-  case -1:
-    std::cout << "gc time: " << keves_gc_->GetElapsedTime() << std::endl;
-    return 0;
-
-  default:
-    test001(this, keves_gc_->pc());
-    return -1; // normally, not arrive here
-  }
-}
-
-void KevesVM::test001(KevesVM* vm, const_KevesIterator pc) {
-  {
-    QFile file("test.txt");
-
-    if (!file.open(QIODevice::WriteOnly)) {
-      std::cout << "io error in test001" << std::endl;
-      longjmp(vm->jmp_exit_, -2);
-    }
-
-    QDataStream out(&file);
-    KevesLibrary this_lib;
-    this_lib.id << "keves" << "base" << "simple";
-    this_lib.ver_num << 6 << 1;
-
-    KevesLibrary import_lib1;
-    import_lib1.id << "rnrs" << "base";
-    import_lib1.ver_num << 6 << 1;
-
-    KevesLibrary import_lib2;
-    import_lib2.id << "rnrs" << "io" << "simple";
-    import_lib2.ver_num << 6 << 1;
-
-    KevesLibrary import_lib3;
-    import_lib3.id << "rnrs" << "unicode";
-    import_lib3.ver_num << 6 << 2;
-
-    QList<KevesLibrary> libs;
-    libs << this_lib << import_lib1 << import_lib2 << import_lib3;
-    out << libs;
-
-    file.close();
-  }
-
-  return test002(vm, pc);
-}
-
-void KevesVM::test002(KevesVM* vm, const_KevesIterator pc) {
-  {
-    QFile file("test.txt");
-    if (!file.open(QIODevice::ReadOnly)) {
-      std::cout << "io error in test002" << std::endl;
-      longjmp(vm->jmp_exit_, -2);
-    }
-
-    QDataStream in(&file);
-    QList<KevesLibrary> libs;
-
-    in >> libs;
-    DisplayLibraryName(libs.at(0));
-
-    for (int i(1); i < libs.size(); ++i)
-      DisplayLibraryName(libs.at(i));
-  
-    std::cout << std::endl;
-  }
-
-  return test003(vm, pc);
-}
-
-void KevesVM::test003(KevesVM* vm, const_KevesIterator pc) {
-  StringKev* str(StringKev::Make(vm->keves_gc_, "abdefgh"));
-  SymbolKev* sym(SymbolKev::Make(vm->keves_gc_, "sYmbOl"));
-
-  PairKev* pair2(PairKev::Make(vm->keves_gc_, KevesChar('a'), str)); 
-
-  VectorKev* vector1(VectorKev::Make(vm->keves_gc_, 3));
-  {
-    KevesIterator iter(vector1->begin());
-    *iter++ = EMB_FALSE;
-    *iter++ = pair2;
-    *iter++ = EMB_NULL;
-  }
-
-  vm->acc_ = vector1;
-  vm->gr1_ = str;
-  vm->gr2_ = sym;
-  vm->gr3_ = pair2;
-
-  return test004(vm, pc);
-}
-
-void KevesVM::test004(KevesVM* vm, const_KevesIterator pc) {
-  const VectorKev* vector1(vm->acc_);
-  const StringKev* str(vm->gr1_);
-  const SymbolKev* sym(vm->gr2_);
-  const PairKev* pair2(vm->gr3_);
-  PairKev* pair1(PairKev::Make(vm->keves_gc_, EMB_TRUE, vector1)); 
-  PairKev* pair3(PairKev::Make(vm->keves_gc_, pair1, KevesFixnum(100)));
-  PairKev* pair4(PairKev::Make(vm->keves_gc_, pair2, pair3));
-  PairKev* pair5(PairKev::Make(vm->keves_gc_, sym, pair4));
-  ReferenceKev* ref(ReferenceKev::make(vm->keves_gc_, pair5));
-  pair1->set_car(pair5);
-  
-  std::cout << qPrintable(vm->ToString(pair1)) << std::endl;
-
-  Bignum* bignum(Bignum::makeFromString(vm->keves_gc_,
-					"12334242342342431233424234234243"));
-
-  StringKev* str_num(StringKev::Make(vm->keves_gc_,
-				     "123423423414127897/8907807843218742"));
-
-  RationalNumberKev*
-    rational(RationalNumberKev::makeFromString(vm->keves_gc_, *str_num));
-
-  FlonumKev* flonum(FlonumKev::make(vm->keves_gc_, 1.2345678));
-  
-  ExactComplexNumberKev*
-    exact_complex(ExactComplexNumberKev::make(vm->keves_gc_));
-
-  exact_complex->set_real(*rational);
-  exact_complex->set_imag(*rational);
-
-  InexactComplexNumberKev*
-    inexact_complex(InexactComplexNumberKev::makeFromFlonums(vm->keves_gc_,
-							     FlonumKev(1.234),
-							     FlonumKev(-3.234)));
-  CodeKev* code(CodeKev::make(vm->keves_gc_, 11));
-  {
-    KevesIterator iter(code->begin());
-    *iter++ = pair1;
-    *iter++ = vector1;
-    *iter++ = str;
-    *iter++ = sym;
-    *iter++ = ref;
-    *iter++ = bignum;
-    *iter++ = rational;
-    *iter++ = flonum;
-    *iter++ = exact_complex;
-    *iter++ = inexact_complex;
-    *iter++ = KevesInstruct(CMD_HALT);
-  }
-    
-  FreeVarFrameKev* clsr(FreeVarFrameKev::make(vm->keves_gc_, 3, nullptr));
-  LambdaKev* lambda(LambdaKev::make(vm->keves_gc_, clsr, code, 2));
-
-  KevesLibrary this_lib;
-  this_lib.id << "main";
-
-  KevesLibrary required_lib;
-  required_lib.id << "rnrs" << "io" << "simple";
-  required_lib.ver_num << 6;
-  QPair<QString, uioword> bind("display", EMB_NULL);
-  required_lib.bind_list << bind;
-
-  QList<KevesLibrary> libs;
-  libs << this_lib << required_lib;
-
-  {
-    KevesFileIO file("test1.kevc");
-
-    file.write(libs, lambda);
-  }
-
-  return test005(vm, pc);
-}
-
-void KevesVM::test005(KevesVM* vm, const_KevesIterator pc) {
-  {
-    KevesFileIO file("test1.kevc");
-
-    KevesValue value(file.read(vm->keves_gc_));
-    std::cout << qPrintable(vm->ToString(value)) << std::endl;
-
-    if (value.type() == LAMBDA) {
-      const LambdaKev* lambda(value);
-      std::cout << qPrintable(vm->ToString(lambda->code())) << std::endl;
-    }
-
-  }
-  
-  return test006(vm, pc);
-}
-
-void KevesVM::test006(KevesVM* vm, const_KevesIterator pc) {
-  ArgumentFrameKev* argp(ArgumentFrameKev::make(vm->keves_gc_, 5)); 
-  LocalVarFrameKev* envp(LocalVarFrameKev::make(vm->keves_gc_, 5)); 
-  FreeVarFrameKev* clsr1(FreeVarFrameKev::make(vm->keves_gc_, 5, nullptr)); 
-  FreeVarFrameKev* clsr2(FreeVarFrameKev::make(vm->keves_gc_, 5, clsr1)); 
-
-  StackFrameKev* fp(StackFrameKev::make(vm->keves_gc_));
-  fp->set_fp(nullptr);
-  fp->set_pc(pc);
-  fp->set_arg(argp, 3);
-  fp->setEnvFrame(envp, 3);
-  fp->setClosure(clsr2);
-  fp->set_sfp(nullptr);
-
-  std::cout << qPrintable(vm->ToString(fp)) << std::endl;
-    
-  KevesLibrary this_lib;
-  this_lib.id << "main";
-
-  KevesLibrary required_lib;
-  required_lib.id << "rnrs" << "io" << "simple";
-  required_lib.ver_num << 6;
-  QPair<QString, uioword> bind("display", EMB_NULL);
-  required_lib.bind_list << bind;
-
-  QList<KevesLibrary> libs;
-  libs << this_lib << required_lib;
-
-  {
-    KevesFileIO file("test2.kevc");
-
-    file.write(libs, fp);
-  }
-
-  return test007(vm, pc);
-}
-
-void KevesVM::test007(KevesVM* vm, const_KevesIterator pc) {
-  {
-    KevesFileIO file("test2.kevc");
-
-    KevesValue value(file.read(vm->keves_gc_));
-    std::cout << qPrintable(vm->ToString(value)) << std::endl;
-  }
-  
-  return test008(vm, pc);
-}
-
-void KevesVM::test008(KevesVM* vm, const_KevesIterator pc) {
-  {
-    const StringKev* who(StringKev::Make(vm->keves_gc_, "who_am_i"));
-    CPSKev cps(nullptr, who);
-    
-    std::cout << qPrintable(vm->ToString(&cps)) << std::endl;
-  }
-  
-  longjmp(vm->jmp_exit_, -1);
-}
+    cmd_table_(base->cmd_table()),
+    gc_(base->gc()) {}
 
 void KevesVM::CheckStack(size_t* size, vm_func func, const_KevesIterator pc) {
   if (static_cast<void*>(size)
@@ -468,7 +195,7 @@ int KevesVM::GetListLength(KevesValue temp) {
 
 // for strings
 StringKev* KevesVM::MakeString(int size) {
-  StringKev* string(StringKev::Make(this->keves_gc_, size));
+  StringKev* string(StringKev::Make(this->gc_, size));
   return string;
 }
 
@@ -480,7 +207,7 @@ const StringKev* KevesVM::MakeString(int size, QChar chr) {
 
 // for vectors
 VectorKev* KevesVM::MakeVector(int size) {
-  VectorKev* vector(VectorKev::Make(this->keves_gc_, size));
+  VectorKev* vector(VectorKev::Make(this->gc_, size));
   return vector;
 }
 
@@ -523,7 +250,7 @@ void KevesVM::PushGr1ToArgumentSafe(KevesVM* vm, const_KevesIterator pc) {
 
   vm->CheckStack(&argn, &PushGr1ToArgumentSafe, pc);
 
-  if (argn >= argp_size) registers->extendArgFrame(vm->keves_gc_);
+  if (argn >= argp_size) registers->extendArgFrame(vm->gc_);
   registers->pushArgument(vm->gr1_);
   return cmd_NOP(vm, pc);
 }
@@ -535,7 +262,7 @@ void KevesVM::PushAccToArgumentSafe(KevesVM* vm, const_KevesIterator pc) {
 
   vm->CheckStack(&argn, &PushAccToArgumentSafe, pc);
 
-  if (argn >= argp_size) registers->extendArgFrame(vm->keves_gc_);
+  if (argn >= argp_size) registers->extendArgFrame(vm->gc_);
   registers->pushArgument(vm->acc_);
   return cmd_NOP(vm, pc);
 }
@@ -549,7 +276,7 @@ void KevesVM::PushGr1ToArgument(KevesVM* vm, const_KevesIterator pc) {
   vm->CheckStack(&argn, &PushGr1ToArgument, pc);
 #endif
 
-  if (argn >= argp_size) registers->extendArgFrame(vm->keves_gc_);
+  if (argn >= argp_size) registers->extendArgFrame(vm->gc_);
   registers->pushArgument(vm->gr1_);
   return cmd_NOP(vm, pc);
 }
@@ -563,7 +290,7 @@ void KevesVM::PushAccToArgument(KevesVM* vm, const_KevesIterator pc) {
   vm->CheckStack(&argn, &PushAccToArgument, pc);
 #endif
 
-  if (argn >= argp_size) registers->extendArgFrame(vm->keves_gc_);
+  if (argn >= argp_size) registers->extendArgFrame(vm->gc_);
   registers->pushArgument(vm->acc_);
   return cmd_NOP(vm, pc);
 }
@@ -639,276 +366,9 @@ void KevesVM::returnExactComplexNumberKev(KevesVM* vm, const_KevesIterator pc) {
   return ReturnValueSafe(vm, pc);
 }
 
-QString KevesVM::ToString(KevesValue value) {
-  QString str;
-
-  if (value.IsPtr()) ToString_list(&str, value, 0);
-  else ToString_element(&str, value);
-
-  return str;
-}
-
-void KevesVM::ToString_list(QString* str, KevesValue value, int nest) {
-  if (value.IsPair()) {
-    if (nest > 8) {
-      str->append("(...)");
-      return;
-    }
-    
-    str->append("(");
-    KevesValue temp(value);
-
-    for (;;) {
-      const PairKev* pair(temp);
-      KevesValue car(pair->car());
-      ToString_list(str, car, nest + 1);
-      temp = pair->cdr();
-
-      if (!temp.IsPair()) {
-	if (temp != EMB_NULL) {
-	  str->append(" . ");
-
-	  if (temp.IsVector()) ToString_vector(str, temp, nest + 1);
-	  else if (temp.IsCode()) ToString_code(str, temp, nest + 1);
-	  else ToString_element(str, temp);
-	}
-
-	str->append(")");
-	return;
-      }
-
-      str->append(" ");
-    }
-  } else if (value.IsVector()) {
-    ToString_vector(str, value, nest);
-  } else if (value.IsCode()) {
-    ToString_code(str, value, nest);
-  } else {
-    ToString_element(str, value);
-  }
-}
-
-void KevesVM::ToString_vector(QString* str, KevesValue value, int nest) {
-  const VectorKev* vector(value);
-
-  if (vector->size() == 0) {
-    str->append("#()");
-    return;
-  }
-
-  if (nest > 8) {
-    str->append("#(...)");
-    return;
-  }
-    
-  const_KevesIterator iter(vector->begin());
-  const_KevesIterator end(vector->end());
-
-  str->append("#(");
-
-  ToString_list(str, *iter++, nest + 1);
-
-  while (iter != end) {
-    str->append(" ");
-    ToString_list(str, *iter++, nest + 1);
-  }
-
-  str->append(")");
-}
-
-void KevesVM::ToString_code(QString* str, KevesValue value, int nest) {
-  const CodeKev* code(value);
-
-  if (code->size() == 0) {
-    str->append("#code()");
-    return;
-  }
-
-  if (nest > 8) {
-    str->append("#code(...)");
-    return;
-  }
-    
-  const_KevesIterator iter(code->begin());
-  const_KevesIterator end(code->end());
-
-  str->append("#code(");
-
-  ToString_list(str, *iter++, nest + 1);
-
-  while (iter != end) {
-    str->append("\n      ");
-    ToString_list(str, *iter++, nest + 1);
-  }
-
-  str->append(")");
-}
-
-void KevesVM::ToString_element(QString* str, KevesValue value) {
-  if (value.IsBool()) {
-    str->append(value == EMB_TRUE ? "#t" : "#f");
-  } else if (value == EMB_NULL) {
-    str->append("'()");
-  } else if (value.IsInstruct()) {
-    KevesInstruct inst(value);
-    str->append(keves_instruct_table_->GetLabel(inst));
-  } else if (value.IsFixnum()) {
-    KevesFixnum num(value);
-    str->append(QString::number(num));
-  } else if (value.IsChar()) {
-    KevesChar chr(value);
-    str->append("#\\").append(chr);
-  } else if (value.IsPtr()) {
-    switch (value.type()) {
-    case BIGNUM: {
-      const Bignum* bignum(value);
-      str->append(bignum->toQString());
-      break;
-    }
-      
-    case RATIONAL_NUM: {
-      const RationalNumberKev* rational(value);
-      str->append(rational->toQString(false));
-      break;
-    }
-      
-    case FLONUM: {
-      const FlonumKev* flonum(value);
-      str->append(flonum->toQString(false, 32));
-      break;
-    }
-      
-    case EXCT_CPLX_NUM: {
-      const ExactComplexNumberKev* complex(value);
-      str->append(complex->toQString());
-      break;
-    }
-      
-    case INEX_CPLX_NUM: {
-      const InexactComplexNumberKev* complex(value);
-      str->append(complex->toQString(32));
-      break;
-    }
-      
-    case STRING: {
-      const StringKev* string(value);
-      str->append('"').append(string->ToQString()).append('"');
-      break;
-    }
-      
-    case SYMBOL: {
-      const SymbolKev* symbol(value);
-      str->append(symbol->ToQString());
-      break;
-    }
-      
-    case WIND:
-      str->append("<wind>");
-      break;
-      
-    case REFERENCE:
-      str->append("<reference>");
-      break;
-      
-    case ARG_FRAME: {
-      const ArgumentFrameKev* argp(value);
-      str->append("<argp: ").append(QString::number(argp->size())).append('>');
-      break;
-    }
-      
-    case LOCAL_FRAME: {
-      const LocalVarFrameKev* envp(value);
-      str->append("<envp: ").append(QString::number(envp->size())).append('>');
-      break;
-    }
-      
-    case FREE_FRAME: {
-      const FreeVarFrameKev* clsr(value);
-      int cnt_var(0);
-      int cnt_frame(0);
-
-      do {
-	++cnt_frame;
-	cnt_var += clsr->size();
-      } while ((clsr = clsr->next()));
-
-      str->append("<clsr: ")
-	.append(QString::number(cnt_var))
-	.append(", ")
-	.append(QString::number(cnt_frame))
-	.append('>');
-
-      break;
-    }
-      
-    case CPS: {
-      const CPSKev* cps(value);
-      if (cps->who().IsPtr() && cps->who().IsString()) {
-	const StringKev* who(cps->who());
-	str->append("<procedure: cps (")
-	  .append(who->ToQString())
-	  .append(")>");
-      } else {
-	str->append("<procedure: cps>");
-      }
-      break;
-    }
-      
-    case LAMBDA:
-      str->append("<procedure: lambda>");
-      break;
-      
-    case CONTINUATION:
-      str->append("<procedure: continuation>");
-      break;
-      
-    case STACK_FRAME: {
-      const StackFrameKev* stack(value);
-      int cnt_clsr(0);
-      int cnt_fp(0);
-
-      for (const FreeVarFrameKev* clsr(stack->clsr()); clsr; clsr = clsr->next())
-	++cnt_clsr;
-	
-      for (const StackFrameKev* fp(stack->fp()); fp; fp = fp->fp())
-	++cnt_fp;
-	
-      str->append("<fp: argn: ")
-	.append(QString::number(stack->argn()))
-	.append(", envn: ")
-	.append(QString::number(stack->envn()))
-	.append(", clsr-link: ")
-	.append(QString::number(cnt_clsr))
-	.append(", fp-link>")
-	.append(QString::number(cnt_fp))
-	.append(">");
-
-      break;
-    }
-      
-    case STACK_FRAME_B:
-      str->append("<fp_b>");
-      break;
-      
-    case STACK_FRAME_D:
-      str->append("<fp_d>");
-      break;
-      
-    case STACK_FRAME_E:
-      str->append("<fp_e>");
-      break;
-      
-    default:
-      str->append(QString::number(reinterpret_cast<quintptr>(value.ToPtr()), 16));
-    }
-  } else {
-    str->append( "Error!!!!");
-  }
-}
-
 void KevesVM::ExecuteGC(vm_func current_func, const_KevesIterator pc) {
   current_function_ = current_func;
-  return keves_gc_->Execute(pc);
+  return gc_->Execute(pc);
 }
 
 int KevesVM::Execute(const QString& arg) {
@@ -958,7 +418,7 @@ int KevesVM::Execute_helper(const QString& arg) {
     return 1;
 
   case -1:
-    std::cout << "gc time: " << keves_gc_->GetElapsedTime() << std::endl;
+    std::cout << "gc time: " << gc_->GetElapsedTime() << std::endl;
     return 0;
 
   default:
@@ -1141,7 +601,7 @@ void KevesVM::cmd_CALL_LAMBDA(KevesVM* vm, const_KevesIterator pc) {
   int argn(registers->argn());
 
   if (argn == num_arg + 1) {
-    registers->makeEnvFrame(vm->keves_gc_, num_arg);
+    registers->makeEnvFrame(vm->gc_, num_arg);
     registers->setArgumentsToLocalVars();
     return cmd_CALL_LAMBDA_helper(vm, pc);
   }
@@ -1156,7 +616,7 @@ void KevesVM::cmd_CALL_LAMBDA_helper(KevesVM* vm, const_KevesIterator pc) {
   registers->clearArgFrame();
 
   if (lambda->free_vars()) {
-    registers->setClosure(vm->keves_gc_->ToMutable(lambda->free_vars()));
+    registers->setClosure(vm->gc_->ToMutable(lambda->free_vars()));
   }
 
   return cmd_NOP(vm, pc + 1);
@@ -1170,7 +630,7 @@ void KevesVM::cmd_CALL_LAMBDA_VLA(KevesVM* vm, const_KevesIterator pc) {
   if (num_arg_in_list < 0)
     return RaiseAssertLambdaReqMore(vm, pc);
   
-  registers->makeEnvFrame(vm->keves_gc_, num_arg + 1);
+  registers->makeEnvFrame(vm->gc_, num_arg + 1);
   
   for (int idx(0); idx < num_arg; ++idx) {
     registers->assignLocalVar(idx, registers->argument(idx + 1));
@@ -1325,14 +785,14 @@ void KevesVM::cmd_ASSIGN_MULT(KevesVM* vm, const_KevesIterator pc) {
 void KevesVM::cmd_CLOSE_R(KevesVM* vm, const_KevesIterator pc) {
   StackFrameKev* registers(&vm->registers_);
   KevesFixnum num_local_var(*(pc + 1));
-  FreeVarFrameKev* closure(registers->clsr()->prepend(vm->keves_gc_, num_local_var));
+  FreeVarFrameKev* closure(registers->clsr()->prepend(vm->gc_, num_local_var));
   const_KevesIterator body(pc + 2);
   Q_ASSERT(KevesValue(*body).IsInstruct());
   
   Q_ASSERT(num_local_var == registers->envn());
   registers->copyEnvFrameTo(closure);
   
-  LambdaKev lambda(closure, vm->keves_gc_->ToMutable(vm->current_code_), body);
+  LambdaKev lambda(closure, vm->gc_->ToMutable(vm->current_code_), body);
   
   vm->keves_vals_ = nullptr;
   KevesFixnum offset(*pc);
@@ -1342,7 +802,7 @@ void KevesVM::cmd_CLOSE_R(KevesVM* vm, const_KevesIterator pc) {
 
 void KevesVM::cmd_NEW_BOX(KevesVM* vm, const_KevesIterator pc) {
   KevesFixnum frame_size(*pc);
-  vm->registers_.makeEnvFrame(vm->keves_gc_, frame_size);
+  vm->registers_.makeEnvFrame(vm->gc_, frame_size);
   return cmd_NOP(vm, pc + 1);
 }
 
@@ -1362,7 +822,7 @@ void KevesVM::cmd_BOX(KevesVM* vm, const_KevesIterator pc) {
 	actual_frame_size *= 2;
       } while (frame_size > actual_frame_size);
 
-      LocalVarFrameKev* env_frame(LocalVarFrameKev::make(vm->keves_gc_, actual_frame_size));
+      LocalVarFrameKev* env_frame(LocalVarFrameKev::make(vm->gc_, actual_frame_size));
 
       registers->extendEnvFrame(env_frame);
     }
@@ -1371,8 +831,8 @@ void KevesVM::cmd_BOX(KevesVM* vm, const_KevesIterator pc) {
       registers->pushLocal(new(ptr) ReferenceKev());
     };
 
-  // vm->keves_gc_.makeArray(StackFrameKev::InitializeEnvFrame(registers), size);
-    vm->keves_gc_->MakeArray(ctor, sizeof(ReferenceKev), size);
+  // vm->gc_.makeArray(StackFrameKev::InitializeEnvFrame(registers), size);
+    vm->gc_->MakeArray(ctor, sizeof(ReferenceKev), size);
   }
 
   return cmd_NOP(vm, pc + 1);
@@ -1422,14 +882,14 @@ void KevesVM::cmd_DEBUG_CODE(KevesVM* vm, const_KevesIterator pc) {
     QString temp1;
     QString temp2;
     // try {
-    temp1 = vm->ToString(vm->acc_);
+    temp1 = vm->base_->ToString(vm->acc_);
       /*
     } catch (int i) {
       std::cerr << "KevesVM::cmd_DEBUG_CODE(): Allocation is failed!\n";
     }
     try {
       */
-    if (registers->argn() > 0) temp2 = vm->ToString(registers->lastArgument());
+    if (registers->argn() > 0) temp2 = vm->base_->ToString(registers->lastArgument());
       /*
     } catch (int i) {
       std::cerr << "KevesVM::cmd_DEBUG_CODE(): Allocation is failed!\n";
@@ -1437,7 +897,7 @@ void KevesVM::cmd_DEBUG_CODE(KevesVM* vm, const_KevesIterator pc) {
       */
     if (pc->IsInstruct()) {
       std::cout << "debug: "
-		<< qPrintable(vm->keves_instruct_table_->GetLabel(KevesInstruct(*pc)))
+		<< qPrintable(vm->base_->instruct_table()->GetLabel(KevesInstruct(*pc)))
 		<< std::endl;
       std::cout << "acc: " << qPrintable(temp1) << std::endl;
       std::cout << "last argument: " << qPrintable(temp2) << std::endl;
@@ -1620,7 +1080,7 @@ void KevesVM::cmd_STRING_CLONE(KevesVM* vm, const_KevesIterator pc) {
 
   vm->CheckStack(&copy, &cmd_STRING_CLONE, pc);
 
-  if (str->size() > 0) copy.CopyFrom(str->Copy(vm->keves_gc_));
+  if (str->size() > 0) copy.CopyFrom(str->Copy(vm->gc_));
   vm->acc_ = &copy;
   return cmd_NOP(vm, pc);
 }
@@ -1633,7 +1093,7 @@ void KevesVM::cmd_STRING_APPEND(KevesVM* vm, const_KevesIterator pc) {
 
   vm->CheckStack(&string, &cmd_STRING_APPEND, pc);
 
-  string.CopyFrom(str1->Append(vm->keves_gc_, *str2));
+  string.CopyFrom(str1->Append(vm->gc_, *str2));
   vm->acc_ = &string;
   return cmd_NOP(vm, pc);
 }
@@ -1772,7 +1232,7 @@ void KevesVM::cmd_BEGIN(KevesVM* vm, const_KevesIterator pc) {
 void KevesVM::cmd_BEGIN_helper(KevesVM* vm, const_KevesIterator pc) {
   StackFrameKev* registers(&vm->registers_);
   KevesFixnum frame_size(vm->gr1_);
-  registers->makeEnvFrame(vm->keves_gc_, frame_size);
+  registers->makeEnvFrame(vm->gc_, frame_size);
   return cmd_NOP(vm, pc);
 }
 
@@ -1807,9 +1267,9 @@ void KevesVM::cmd_TERMINATE_EXPAND(KevesVM* vm, const_KevesIterator pc) {
     if (temp.IsDestination()) ++cnt;
   }
   
-  CodeKev* code(CodeKev::make(vm->keves_gc_, size - cnt));
-  // CodeKev* code(CodeKev::makeWithPermanent(vm->keves_gc_, size - cnt));
-  // CodeKev* code(CodeKev::makeWithTenured(vm->keves_gc_, size - cnt));
+  CodeKev* code(CodeKev::make(vm->gc_, size - cnt));
+  // CodeKev* code(CodeKev::makeWithPermanent(vm->gc_, size - cnt));
+  // CodeKev* code(CodeKev::makeWithTenured(vm->gc_, size - cnt));
   KevesIterator itr(code->end());
 
   while (size-- > 0) {
@@ -1818,7 +1278,7 @@ void KevesVM::cmd_TERMINATE_EXPAND(KevesVM* vm, const_KevesIterator pc) {
     if (temp.IsDestination()) {
       const DestinationKev* dest(temp);
       const JumpKev* jump_obj(dest->label());
-      vm->keves_gc_->ToMutable(jump_obj)->set(itr);
+      vm->gc_->ToMutable(jump_obj)->set(itr);
     } else {
       *--itr = temp;
     }
@@ -1956,7 +1416,7 @@ void KevesVM::cmd_UNWIND_CONTINUATION(KevesVM* vm, const_KevesIterator pc) {
   for (;;) {
     if (StackFrameKev::isBottom(fp)) {
       pc = registers->unwind();
-      vm->keves_gc_->ToMutable(conti_obj->btmp())->set_pc(pc);
+      vm->gc_->ToMutable(conti_obj->btmp())->set_pc(pc);
       *registers = conti_obj->registers();
       pc = vm->base_->code_REVERT_DYNAMIC_WIND_and_APPLY_;
       vm->acc_ = conti_obj;
@@ -2073,32 +1533,3 @@ void KevesVM::cmd_REMOVE_DYNAMIC_WIND(KevesVM* vm, const_KevesIterator pc) {
   registers->pushArgument(first_obj->after());
   return cmd_APPLY(vm, pc);
 }
-
-void KevesVM::DisplayLibraryName(const KevesLibrary& lib) {
-  std::cout << "(";
-
-  for (int i(0); i < lib.id.size(); ++i)
-    std::cout << qPrintable(lib.id.at(i)) << " ";
-    
-  switch (lib.ver_num.size()) {
-  case 0:
-    std::cout << "()";
-    break;
-
-  case 1:
-    std::cout << "(" << lib.ver_num.at(0) << ")";
-    break;
-
-  default:
-    std::cout << "(" << lib.ver_num.at(0);
-
-    for (int i(1); i < lib.ver_num.size(); ++i)
-      std::cout << " " << lib.ver_num.at(i);
-
-    std::cout << ")";
-  }
-
-  std::cout << ")" << std::endl;
-    
-}
-

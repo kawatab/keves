@@ -44,15 +44,14 @@ LibKevesBase::LibKevesBase()
 KevesLibrary* LibKevesBase::Init(KevesGC* gc) {
   std::cout << "LibKevesBase::Init()" << std::endl;
 
-  test_code_ = CodeKev::make(gc, 3);
+  test_code_ = CodeKev::make(gc, 4);
   KevesIterator iter(test_code_->begin());
   *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
   *iter++ = EMB_NULL;
+  *iter++ = KevesInstruct(CMD_DEBUG_CODE);
   *iter++ = KevesInstruct(CMD_HALT);
+  Q_ASSERT(iter <= test_code_->end());
 
-  Q_ASSERT(test_code_->type() == CODE);
-  Q_ASSERT(test_code_->begin()->IsInstruct());
-  
   // std::cout << "LibKevesBase: used: "
   // << (code_itr - builtin_code_->begin()) << std::endl;
   std::cout << "LibKevesBase: total: "

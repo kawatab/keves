@@ -23,7 +23,6 @@
 int main() {
   KevesBase base;
   KevesVM* vm(base.MakeVM());
-  vm->ExecuteTest();
   vm->Execute("test code");
   
   return 0;
