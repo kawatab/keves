@@ -89,33 +89,36 @@ public:
   ////////////////////////////////////////////////////////////
 
 public:
-  template<class IO, class STACK>
+  template<class BASE, class STACK>
   static void PushChildren(STACK* pending, KevesValue value) {
     const SymbolKev* symbol(value);
-    IO::PushValue(pending, symbol->core_);
+    BASE::PushValue(pending, symbol->core_);
   }
 
-  template<class IO, class LIST, class STREAM>
+  template<class BASE, class LIST, class STREAM>
   static void WriteObject(const LIST& list, STREAM& out, KevesValue value) {
     const SymbolKev* symbol(value);
 
     out << static_cast<uioword>(symbol->type())
-	<< IO::WrapAddress(list, symbol->core_)
+	<< BASE::IndexAddress(list, symbol->core_)
 	<< static_cast<ioword>(symbol->idx_)
 	<< static_cast<ioword>(symbol->len_);
   }
 
-  template<class IO, class STREAM, class GC>
+  template<class /*BASE*/, class STREAM, class GC>
   static Kev* ReadObject(STREAM& in, GC* gc) {
     uioword core;
     ioword idx, len;
     in >> core >> idx >> len;
-    return Make(gc, IO::template fromUioword<StringCoreKev>(core), idx, len);
+    return Make(gc,
+		KevesValue::template FromUioword<StringCoreKev>(core),
+		idx,
+		len);
   }
   
-  template<class IO, class LIST>
+  template<class BASE, class LIST>
   static void RevertObject(const LIST& object_list, MutableKevesValue kev) {
     SymbolKev* symbol(kev);
-    IO::RevertValue(object_list, &symbol->core_);
+    BASE::RevertValue(object_list, &symbol->core_);
   }
 };

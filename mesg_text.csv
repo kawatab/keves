@@ -1,4 +1,29 @@
-ReqRealNum	 Expected real numbers, but got others
-1stObjNotProcOrSyn	   Expected procedure or Syntax as 1st obj, but got others
-ReqLessGotMore	   Expected less arguments, but got more
-ReqMoreGotLess	   Expected more arguments, but got less
+Req0	Expected no arguments, but got somthing.
+Req1Got0	Expected an argument, but got nothing.
+Req1GotMore	Expected an argument, but got more.
+Req2Got0	Expected 2 arguments, but got nothing.
+Req2Got1	Expected 2 arguments, but got 1.
+Req2GotMore	Expected 2 arguments, but got more.
+Req2OrMoreGot0	Expected 2 or more arguments, but got nothing.
+Req2OrMoreGot1	Expected 2 or more arguments, but got 1.
+Req3Got0	Expected 3 arguments, but got nothing.
+Req3Got1	Expected 3 arguments, but got 1.
+Req3Got2	Expected 3 arguments, but got 2.
+Req3GotMore	Expected 3 arguments, but got more.
+ReqNotGet3Args	Expected 3 arguments, but not got 3.
+ReqMoreGotLess	Expected more arguments, but got less
+ReqLessGotMore	Expected less arguments, but got more
+ReqNum	Expected numbers, but got others.
+ReqRealNum	Expected real numbers, but got others.
+ReqIntNum	Expected an integer number, but got others.
+ReqIntNumAs1st	Expected an integer number as 1st argument, but got other.
+ReqIntNumAs2nd	Expected an integer number as 2nd argument, but got other.
+ReqIntNumAs3rd	Expected an integer number as 3rd argument, but got other.
+ReqChar	Expected a character, but got others.
+ReqCharAs1st	Expected a character as 1st argument, but got other.
+ReqCharAs2nd	Expected a character as 2nd argument, but got other.
+ReqStr	Expected a string, but got other.
+ReqStrAs1st	Expected a string as 1st argument, but got other.
+ReqSym	Expected a symbol, but got other.
+ReqPair	Expected a pair, but got other.
+1stObjNotProcOrSyn	Expected procedure or Syntax as 1st obj, but got other.

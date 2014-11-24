@@ -415,6 +415,11 @@ public:
     return temp;
   }
 
+  template<class KEV>
+  static KEV* FromUioword(uioword value) {
+    return reinterpret_cast<KEV*>(static_cast<quintptr>(value));
+  }
+
 protected:
   quintptr val_ = 0;
 };

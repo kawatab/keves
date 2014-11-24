@@ -1,21 +1,20 @@
-/* Keves/keves_frame.hpp - frames for Keves
- * Keves will be an R6RS Scheme implementation.
- *
- *  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
- *
- *  This program is free software: you can redistribute it and/or modify it
- *  under the terms of the GNU Lesser General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or any
- *  later version.
- *
- *  This program is distributed in the hope that it will be useful, but WITHOUT
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
- *  License for more details.
- *
- *  You should have received a copy of the GNU Lesser General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+// Keves/keves_frame.hpp - frames for Keves
+// Keves will be an R6RS Scheme implementation.
+//
+//  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
+//
+//  This program is free software: you can redistribute it and/or modify it
+//  under the terms of the GNU Lesser General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or any
+//  later version.
+//
+//  This program is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
+//  License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #pragma once
@@ -129,35 +128,35 @@ public:
   ////////////////////////////////////////////////////////////
 
 public:
-  template<class IO, class STACK>
+  template<class BASE, class STACK>
   static void PushChildren(STACK* pending, KevesValue value) {
     const ArgumentFrameKev* frame(value);
-    IO::PushArray(pending, frame);
+    BASE::PushArray(pending, frame);
   }
 
-  template<class IO, class LIST, class STREAM>
+  template<class BASE, class LIST, class STREAM>
   static void WriteObject(const LIST& list, STREAM& out, KevesValue value) {
     const ArgumentFrameKev* frame(value);
 
     out << static_cast<uioword>(frame->type())
 	<< static_cast<ioword>(frame->size());
 
-    IO::WriteArray(list, out, frame);
+    BASE::WriteArray(list, out, frame);
   }
   
-  template<class IO, class STREAM, class GC>
+  template<class BASE, class STREAM, class GC>
   static Kev* ReadObject(STREAM& in, GC* gc) {
     ioword size;
     in >> size;
     ArgumentFrameKev* frame(ArgumentFrameKev::make(gc, size));
-    IO::ReadArray(in, frame);
+    BASE::ReadArray(in, frame);
     return frame;
   }
   
-  template<class IO, class LIST>
+  template<class BASE, class LIST>
   static void RevertObject(const LIST& object_list, MutableKevesValue value) {
     ArgumentFrameKev* frame(value);
-    IO::RevertArray(object_list, frame);
+    BASE::RevertArray(object_list, frame);
   }
 };
 
@@ -277,42 +276,42 @@ public:
   ////////////////////////////////////////////////////////////
 
 public:
-  template<class IO, class STACK>
+  template<class BASE, class STACK>
   static void PushChildren(STACK* pending, KevesValue value) {
     const LocalVarFrameKev* frame(value);
-    IO::PushValue(pending, frame->next_);
-    IO::PushArray(pending, frame);
+    BASE::PushValue(pending, frame->next_);
+    BASE::PushArray(pending, frame);
   }
 
-  template<class IO, class LIST, class STREAM>
+  template<class BASE, class LIST, class STREAM>
   static void WriteObject(const LIST& list, STREAM& out, KevesValue value) {
     const LocalVarFrameKev* frame(value);
 
     out << static_cast<uioword>(frame->type())
 	<< static_cast<ioword>(frame->size())
-	<< IO::WrapAddress(list, frame->next_);
+	<< BASE::IndexAddress(list, frame->next_);
 
-    IO::WriteArray(list, out, frame);
+    BASE::WriteArray(list, out, frame);
   }
   
-  template<class IO, class STREAM, class GC>
+  template<class BASE, class STREAM, class GC>
   static Kev* ReadObject(STREAM& in, GC* gc) {
     ioword size;
     uioword next;
     in >> size >> next;
     LocalVarFrameKev* frame(LocalVarFrameKev::make(gc, size));
-    IO::ReadArray(in, frame);
+    BASE::ReadArray(in, frame);
     return frame;
   }
   
-  template<class IO, class LIST>
+  template<class BASE, class LIST>
   static void RevertObject(const LIST& object_list, MutableKevesValue value) {
     LocalVarFrameKev* frame(value);
 
     if (KevesValue(frame->next_).IsRef())
       frame->next_ = MutableKevesValue(object_list.at(KevesValue(frame->next_).toUIntPtr() >> 2));
 
-    IO::RevertArray(object_list, frame);
+    BASE::RevertArray(object_list, frame);
   }
 };
 
@@ -444,43 +443,44 @@ public:
   ////////////////////////////////////////////////////////////
 
 public:
-  template<class IO, class STACK>
+  template<class BASE, class STACK>
   static void PushChildren(STACK* pending, KevesValue value) {
     const FreeVarFrameKev* frame(value);
-    IO::PushValue(pending, frame->next());
-    IO::PushArray(pending, frame);
+    BASE::PushValue(pending, frame->next());
+    BASE::PushArray(pending, frame);
   }
 
-  template<class IO, class LIST, class STREAM>
+  template<class BASE, class LIST, class STREAM>
   static void WriteObject(const LIST& list, STREAM& out, KevesValue value) {
     const FreeVarFrameKev* frame(value);
 
     out << static_cast<uioword>(frame->type())
 	<< static_cast<ioword>(frame->size())
-	<< IO::WrapAddress(list, frame->next());
+	<< BASE::IndexAddress(list, frame->next());
 
-    IO::WriteArray(list, out, frame);
+    BASE::WriteArray(list, out, frame);
   }
   
-  template<class IO, class STREAM, class GC>
+  template<class BASE, class STREAM, class GC>
   static Kev* ReadObject(STREAM& in, GC* gc) {
     ioword size;
     uioword next;
     in >> size >> next;
 
-    FreeVarFrameKev* frame(make(gc,
-				size,
-				IO::template fromUioword<FreeVarFrameKev>(next)));
+    FreeVarFrameKev* frame
+      (make(gc,
+	    size,
+	    KevesValue::template FromUioword<FreeVarFrameKev>(next)));
 
-    IO::ReadArray(in, frame);
+    BASE::ReadArray(in, frame);
     return frame;
   }
   
-  template<class IO, class LIST>
+  template<class BASE, class LIST>
   static void RevertObject(const LIST& object_list, MutableKevesValue value) {
     FreeVarFrameKev* frame(value);
-    IO::RevertValue(object_list, &frame->next_);
-    IO::RevertArray(object_list, frame);
+    BASE::RevertValue(object_list, &frame->next_);
+    BASE::RevertArray(object_list, frame);
   }
 };
 
@@ -739,56 +739,56 @@ public:
   ////////////////////////////////////////////////////////////
 
 public:
-  template<class IO, class STACK>
+  template<class BASE, class STACK>
   static void PushChildren(STACK* pending, KevesValue value) {
     const StackFrameKev* frame(value);
-    IO::PushValue(pending, frame->argp_);
-    IO::PushValue(pending, frame->envp_);
-    IO::PushValue(pending, frame->clsr_);
-    IO::PushValue(pending, frame->fp_);
-    IO::PushValue(pending, frame->sfp_);
+    BASE::PushValue(pending, frame->argp_);
+    BASE::PushValue(pending, frame->envp_);
+    BASE::PushValue(pending, frame->clsr_);
+    BASE::PushValue(pending, frame->fp_);
+    BASE::PushValue(pending, frame->sfp_);
   }
 
-  template<class IO, class LIST, class STREAM>
+  template<class BASE, class LIST, class STREAM>
   static void WriteObject(const LIST& list, STREAM& out, KevesValue value) {
     const StackFrameKev* frame(value);
 
     out << static_cast<uioword>(frame->type())
-	<< IO::WrapAddress(list, frame->argp_)
+	<< BASE::IndexAddress(list, frame->argp_)
 	<< static_cast<uioword>(frame->argn_)
-	<< IO::WrapAddress(list, frame->envp_)
+	<< BASE::IndexAddress(list, frame->envp_)
 	<< static_cast<uioword>(frame->envn_)
-	<< IO::WrapAddress(list, frame->clsr_)
-	<< IO::WrapAddress(list, frame->fp_)
-	<< IO::WrapAddress(list, frame->sfp_);
+	<< BASE::IndexAddress(list, frame->clsr_)
+	<< BASE::IndexAddress(list, frame->fp_)
+	<< BASE::IndexAddress(list, frame->sfp_);
   }
   
-  template<class IO, class STREAM, class GC>
+  template<class /*BASE*/, class STREAM, class GC>
   static Kev* ReadObject(STREAM& in, GC* gc) {
     uioword argp, envp, clsr, fp, sfp;
     ioword argn, envn;
     in >> argp >> argn >> envp >> envn >> clsr >> fp >> sfp;
 
     StackFrameKev* frame(StackFrameKev::make(gc));
-    frame->argp_ = IO::template fromUioword<ArgumentFrameKev>(argp);
+    frame->argp_ = KevesValue::template FromUioword<ArgumentFrameKev>(argp);
     frame->argn_ = argn;
-    frame->envp_ = IO::template fromUioword<LocalVarFrameKev>(envp);
+    frame->envp_ = KevesValue::template FromUioword<LocalVarFrameKev>(envp);
     frame->envn_ = envn;
-    frame->clsr_ = IO::template fromUioword<FreeVarFrameKev>(clsr);
-    frame->fp_ = IO::template fromUioword<StackFrameKev>(fp);
-    frame->sfp_ = IO::template fromUioword<StackFrameKev>(sfp);
+    frame->clsr_ = KevesValue::template FromUioword<FreeVarFrameKev>(clsr);
+    frame->fp_ = KevesValue::template FromUioword<StackFrameKev>(fp);
+    frame->sfp_ = KevesValue::template FromUioword<StackFrameKev>(sfp);
 
     return frame;
   }
   
-  template<class IO, class LIST>
+  template<class BASE, class LIST>
   static void RevertObject(const LIST& object_list, MutableKevesValue value) {
     StackFrameKev* frame(value);
-    IO::RevertValue(object_list, &frame->argp_);
-    IO::RevertValue(object_list, &frame->envp_);
-    IO::RevertValue(object_list, &frame->clsr_);
-    IO::RevertValue(object_list, &frame->fp_);
-    IO::RevertValue(object_list, &frame->sfp_);
+    BASE::RevertValue(object_list, &frame->argp_);
+    BASE::RevertValue(object_list, &frame->envp_);
+    BASE::RevertValue(object_list, &frame->clsr_);
+    BASE::RevertValue(object_list, &frame->fp_);
+    BASE::RevertValue(object_list, &frame->sfp_);
   }
 };
 

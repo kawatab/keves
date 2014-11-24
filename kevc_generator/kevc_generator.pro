@@ -16,6 +16,7 @@ HEADERS += ../bignum.hpp \
            ../condition_kev.hpp \
            ../environment_kev.hpp \
            ../keves_base.hpp \
+           ../keves_base-inl.hpp \
            ../keves_char.hpp \
            ../keves_file_io.hpp \
            ../keves_frame.hpp \
@@ -24,6 +25,8 @@ HEADERS += ../bignum.hpp \
            ../keves_iterator.hpp \
            ../keves_library.hpp \
            ../keves_value.hpp \
+           ../keves_template.hpp \
+           ../keves_textual_port.hpp \
            ../keves_vm.hpp \
            ../lib_keves_base.hpp \
            ../number_kev.hpp \
@@ -53,6 +56,8 @@ SOURCES += main.cpp \
            ../keves_iterator.cpp \
            ../keves_library.cpp \
            ../keves_value.cpp \
+           ../keves_template.cpp \
+           ../keves_textual_port.cpp \
            ../keves_vm.cpp \
            ../lib_keves_base.cpp \
            ../number_kev.cpp \

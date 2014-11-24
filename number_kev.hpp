@@ -1,21 +1,20 @@
-/* Keves/number_kev.hpp - pairs for Keves
- * Keves will be an R6RS Scheme implementation.
- *
- *  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
- *
- *  This program is free software: you can redistribute it and/or modify it
- *  under the terms of the GNU Lesser General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or any
- *  later version.
- *
- *  This program is distributed in the hope that it will be useful, but WITHOUT
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
- *  License for more details.
- *
- *  You should have received a copy of the GNU Lesser General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+// Keves/number_kev.hpp - pairs for Keves
+// Keves will be an R6RS Scheme implementation.
+//
+//  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
+//
+//  This program is free software: you can redistribute it and/or modify it
+//  under the terms of the GNU Lesser General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or any
+//  later version.
+//
+//  This program is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
+//  License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #pragma once
@@ -203,24 +202,24 @@ public:
   ////////////////////////////////////////////////////////////
 
 public:
-  template<class IO, class STACK>
+  template<class BASE, class STACK>
   static void PushChildren(STACK* pending, KevesValue value) {
     const RationalNumberKev* rational(value);
-    IO::PushValue(pending, rational->numerator_);
-    IO::PushValue(pending, rational->denominator_);
+    BASE::PushValue(pending, rational->numerator_);
+    BASE::PushValue(pending, rational->denominator_);
   }
 
-  template<class IO, class LIST, class STREAM>
+  template<class BASE, class LIST, class STREAM>
   static void WriteObject(const LIST& list, STREAM& out, KevesValue value) {
     const RationalNumberKev* rational(value);
 
     out << static_cast<uioword>(rational->type())
 	<< static_cast<ioword>(rational->neg_)
-	<< IO::WrapAddress(list, rational->numerator_)
-	<< IO::WrapAddress(list, rational->denominator_);
+	<< BASE::IndexAddress(list, rational->numerator_)
+	<< BASE::IndexAddress(list, rational->denominator_);
   }
 
-  template<class IO, class STREAM, class GC>
+  template<class /*BASE*/, class STREAM, class GC>
   static Kev* ReadObject(STREAM& in, GC* gc) {
     ioword neg;
     uioword numerator, denominator;
@@ -228,17 +227,17 @@ public:
     RationalNumberKev* rational(make(gc));
     
     rational->set(static_cast<bool>(neg),
-		  IO::template fromUioword<Bignum>(numerator),
-		  IO::template fromUioword<Bignum>(denominator));
+		  KevesValue::template FromUioword<Bignum>(numerator),
+		  KevesValue::template FromUioword<Bignum>(denominator));
 
     return rational;
   }
   
-  template<class IO, class LIST>
+  template<class BASE, class LIST>
   static void RevertObject(const LIST& object_list, MutableKevesValue kev) {
     RationalNumberKev* rational(kev);
-    IO::RevertValue(object_list, &rational->numerator_);
-    IO::RevertValue(object_list, &rational->denominator_);
+    BASE::RevertValue(object_list, &rational->numerator_);
+    BASE::RevertValue(object_list, &rational->denominator_);
   }
 };
 
@@ -398,25 +397,25 @@ public:
   ////////////////////////////////////////////////////////////
 
 public:
-  template<class /*IO*/, class STACK>
+  template<class /*BASE*/, class STACK>
   static void PushChildren(STACK* /*pending*/, KevesValue /*value*/) {
     return;
   }
 
-  template<class /*IO*/, class LIST, class STREAM>
+  template<class /*BASE*/, class LIST, class STREAM>
   static void WriteObject(const LIST& /*list*/, STREAM& out, KevesValue value) {
     const FlonumKev* flonum(value);
     out << static_cast<uioword>(flonum->type()) << flonum->value_;
   }
 
-  template<class /*IO*/, class STREAM, class GC>
+  template<class /*BASE*/, class STREAM, class GC>
   static Kev* ReadObject(STREAM& in, GC* gc) {
     double value;
     in >> value;
     return make(gc, value);
   }
   
-  template<class /*IO*/, class LIST>
+  template<class /*BASE*/, class LIST>
   static void RevertObject(const LIST& /*object_list*/,
 			   MutableKevesValue /*kev*/) {
     return;
@@ -518,29 +517,29 @@ public:
   ////////////////////////////////////////////////////////////
 
 public:
-  template<class IO, class STACK>
+  template<class BASE, class STACK>
   static void PushChildren(STACK* pending, KevesValue value) {
     const ExactComplexNumberKev* complex(value);
-    IO::PushValue(pending, complex->real_numerator_);
-    IO::PushValue(pending, complex->real_denominator_);
-    IO::PushValue(pending, complex->imag_numerator_);
-    IO::PushValue(pending, complex->imag_denominator_);
+    BASE::PushValue(pending, complex->real_numerator_);
+    BASE::PushValue(pending, complex->real_denominator_);
+    BASE::PushValue(pending, complex->imag_numerator_);
+    BASE::PushValue(pending, complex->imag_denominator_);
   }
 
-  template<class IO, class LIST, class STREAM>
+  template<class BASE, class LIST, class STREAM>
   static void WriteObject(const LIST& list, STREAM& out, KevesValue value) {
     const ExactComplexNumberKev* complex(value);
 
     out << static_cast<uioword>(complex->type())
 	<< static_cast<ioword>(complex->real_neg_)
 	<< static_cast<ioword>(complex->imag_neg_)
-	<< IO::WrapAddress(list, complex->real_numerator_)
-	<< IO::WrapAddress(list, complex->real_denominator_)
-	<< IO::WrapAddress(list, complex->imag_numerator_)
-	<< IO::WrapAddress(list, complex->imag_denominator_);
+	<< BASE::IndexAddress(list, complex->real_numerator_)
+	<< BASE::IndexAddress(list, complex->real_denominator_)
+	<< BASE::IndexAddress(list, complex->imag_numerator_)
+	<< BASE::IndexAddress(list, complex->imag_denominator_);
   }
 
-  template<class IO, class STREAM, class GC>
+  template<class /*BASE*/, class STREAM, class GC>
   static Kev* ReadObject(STREAM& in, GC* gc) {
     ioword real_neg, imag_neg;
     uioword real_numerator, real_denominator, imag_numerator, imag_denominator;
@@ -554,27 +553,27 @@ public:
     complex->imag_neg_ = imag_neg;
 
     complex->real_numerator_
-      = IO::template fromUioword<Bignum>(real_numerator);
+      = KevesValue::template FromUioword<Bignum>(real_numerator);
 
     complex->real_denominator_
-      = IO::template fromUioword<Bignum>(real_denominator);
+      = KevesValue::template FromUioword<Bignum>(real_denominator);
 
     complex->imag_numerator_
-      = IO::template fromUioword<Bignum>(imag_numerator);
+      = KevesValue::template FromUioword<Bignum>(imag_numerator);
 
     complex->imag_denominator_
-      = IO::template fromUioword<Bignum>(imag_denominator);
+      = KevesValue::template FromUioword<Bignum>(imag_denominator);
     
     return complex;
   }
   
-  template<class IO, class LIST>
+  template<class BASE, class LIST>
   static void RevertObject(const LIST& object_list, MutableKevesValue value) {
     ExactComplexNumberKev* complex(value);
-    IO::RevertValue(object_list, &complex->real_numerator_);
-    IO::RevertValue(object_list, &complex->real_denominator_);
-    IO::RevertValue(object_list, &complex->imag_numerator_);
-    IO::RevertValue(object_list, &complex->imag_denominator_);
+    BASE::RevertValue(object_list, &complex->real_numerator_);
+    BASE::RevertValue(object_list, &complex->real_denominator_);
+    BASE::RevertValue(object_list, &complex->imag_numerator_);
+    BASE::RevertValue(object_list, &complex->imag_denominator_);
   }
 };
 
@@ -659,12 +658,12 @@ public:
   ////////////////////////////////////////////////////////////
 
 public:
-  template<class /*IO*/, class STACK>
+  template<class /*BASE*/, class STACK>
   static void PushChildren(STACK* /*pending*/, KevesValue /*value*/) {
     return;
   }
 
-  template<class /*IO*/, class LIST, class STREAM>
+  template<class /*BASE*/, class LIST, class STREAM>
   static void WriteObject(const LIST& /*list*/, STREAM& out, KevesValue value) {
     const InexactComplexNumberKev* complex(value);
     out << static_cast<uioword>(complex->type())
@@ -672,7 +671,7 @@ public:
 	<< complex->imag_;
   }
 
-  template<class /*IO*/, class STREAM, class GC>
+  template<class /*BASE*/, class STREAM, class GC>
   static Kev* ReadObject(STREAM& in, GC* gc) {
     double real, imag;
     in >> real >> imag;
@@ -681,7 +680,7 @@ public:
     return makeFromFlonums(gc, flonum_real, flonum_imag);
   }
   
-  template<class /*IO*/, class LIST>
+  template<class /*BASE*/, class LIST>
   static void RevertObject(const LIST& /*object_list*/,
 			   MutableKevesValue /*kev*/) {
     return;

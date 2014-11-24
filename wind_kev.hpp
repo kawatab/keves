@@ -1,21 +1,20 @@
-/* Keves/wind_kev.hpp - winds for Keves
- * Keves will be an R6RS Scheme implementation.
- *
- *  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
- *
- *  This program is free software: you can redistribute it and/or modify it
- *  under the terms of the GNU Lesser General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or any
- *  later version.
- *
- *  This program is distributed in the hope that it will be useful, but WITHOUT
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
- *  License for more details.
- *
- *  You should have received a copy of the GNU Lesser General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+// Keves/wind_kev.hpp - winds for Keves
+// Keves will be an R6RS Scheme implementation.
+//
+//  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
+//
+//  This program is free software: you can redistribute it and/or modify it
+//  under the terms of the GNU Lesser General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or any
+//  later version.
+//
+//  This program is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
+//  License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #pragma once
@@ -87,39 +86,39 @@ public:
   ////////////////////////////////////////////////////////////
 
 public:
-  template<class IO, class STACK>
+  template<class BASE, class STACK>
   static void PushChildren(STACK* pending, KevesValue value) {
     const WindKev* wind(value);
-    IO::PushValue(pending, wind->before_);
-    IO::PushValue(pending, wind->thunk_);
-    IO::PushValue(pending, wind->after_);
+    BASE::PushValue(pending, wind->before_);
+    BASE::PushValue(pending, wind->thunk_);
+    BASE::PushValue(pending, wind->after_);
   }
 
-  template<class IO, class LIST, class STREAM>
+  template<class BASE, class LIST, class STREAM>
   static void WriteObject(const LIST& list, STREAM& out, KevesValue value) {
     const WindKev* wind(value);
 
     out << static_cast<uioword>(wind->type())
-	<< IO::WrapAddress(list, wind->before_)
-	<< IO::WrapAddress(list, wind->thunk_)
-	<< IO::WrapAddress(list, wind->after_);
+	<< BASE::IndexAddress(list, wind->before_)
+	<< BASE::IndexAddress(list, wind->thunk_)
+	<< BASE::IndexAddress(list, wind->after_);
   }
 
-  template<class IO, class STREAM, class GC>
+  template<class /*BASE*/, class STREAM, class GC>
   static Kev* ReadObject(STREAM& in, GC* gc) {
     uioword before, thunk, after;
     in >> before >> thunk >> after;
     return make(gc,
-		IO::template fromUioword<Kev>(before),
-		IO::template fromUioword<Kev>(thunk),
-		IO::template fromUioword<Kev>(after));
+		KevesValue::template FromUioword<Kev>(before),
+		KevesValue::template FromUioword<Kev>(thunk),
+		KevesValue::template FromUioword<Kev>(after));
   }
   
-  template<class IO, class LIST>
+  template<class BASE, class LIST>
   static void RevertObject(const LIST& object_list, MutableKevesValue kev) {
     WindKev* wind(kev);
-    IO::RevertValue(object_list, &wind->before_);
-    IO::RevertValue(object_list, &wind->thunk_);
-    IO::RevertValue(object_list, &wind->after_);
+    BASE::RevertValue(object_list, &wind->before_);
+    BASE::RevertValue(object_list, &wind->thunk_);
+    BASE::RevertValue(object_list, &wind->after_);
   }
 };

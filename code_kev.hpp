@@ -100,34 +100,34 @@ public:
   ////////////////////////////////////////////////////////////
 
 public:
-  template<class IO, class STACK>
+  template<class BASE, class STACK>
   static void PushChildren(STACK* pending, KevesValue value) {
     const CodeKev* code(value);
-    IO::PushArray(pending, code);
+    BASE::PushArray(pending, code);
   }
 
-  template<class IO, class LIST, class STREAM>
+  template<class BASE, class LIST, class STREAM>
   static void WriteObject(const LIST& list, STREAM& out, KevesValue value) {
     const CodeKev* code(value);
 
     out << static_cast<uioword>(code->type())
 	<< static_cast<ioword>(code->size());
 
-    IO::WriteArray(list, out, code);
+    BASE::WriteArray(list, out, code);
   }
 
-  template<class IO, class STREAM, class GC>
+  template<class BASE, class STREAM, class GC>
   static Kev* ReadObject(STREAM& in, GC* gc) {
     ioword size;
     in >> size;
     CodeKev* code(CodeKev::make(gc, size));
-    IO::ReadArray(in, code);
+    BASE::ReadArray(in, code);
     return code;
   }
   
-  template<class IO, class LIST>
+  template<class BASE, class LIST>
   static void RevertObject(const LIST& object_list, MutableKevesValue value) {
     CodeKev* code(value);
-    IO::RevertArray(object_list, code);
+    BASE::RevertArray(object_list, code);
   }
 };

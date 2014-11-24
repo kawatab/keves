@@ -1,21 +1,20 @@
-/* Keves/vector_kev.hpp - vectors for Keves
- * Keves will be an R6RS Scheme implementation.
- *
- *  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
- *
- *  This program is free software: you can redistribute it and/or modify it
- *  under the terms of the GNU Lesser General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or any
- *  later version.
- *
- *  This program is distributed in the hope that it will be useful, but WITHOUT
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
- *  License for more details.
- *
- *  You should have received a copy of the GNU Lesser General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+// Keves/vector_kev.hpp - vectors for Keves
+// Keves will be an R6RS Scheme implementation.
+//
+//  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
+//
+//  This program is free software: you can redistribute it and/or modify it
+//  under the terms of the GNU Lesser General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or any
+//  later version.
+//
+//  This program is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
+//  License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #pragma once
@@ -98,35 +97,35 @@ public:
   ////////////////////////////////////////////////////////////
 
 public:
-  template<class IO, class STACK>
+  template<class BASE, class STACK>
   static void PushChildren(STACK* pending, KevesValue value) {
     const VectorKev* vector(value);
-    IO::PushArray(pending, vector);
+    BASE::PushArray(pending, vector);
   }
 
-  template<class IO, class LIST, class STREAM>
+  template<class BASE, class LIST, class STREAM>
   static void WriteObject(const LIST& list, STREAM& out, KevesValue value) {
     const VectorKev* vector(value);
 
     out << static_cast<uioword>(vector->type())
 	<< static_cast<ioword>(vector->size_);
 
-    IO::WriteArray(list, out, vector);
+    BASE::WriteArray(list, out, vector);
   }
 
-  template<class IO, class STREAM, class GC>
+  template<class BASE, class STREAM, class GC>
   static Kev* ReadObject(STREAM& in, GC* gc) {
     ioword size;
     in >> size;
     VectorKev* vector(VectorKev::Make(gc, size));
-    IO::ReadArray(in, vector);
+    BASE::ReadArray(in, vector);
     return vector;
   }
   
-  template<class IO, class LIST>
+  template<class BASE, class LIST>
   static void RevertObject(const LIST& object_list, MutableKevesValue value) {
     VectorKev* vector(value);
-    IO::RevertArray(object_list, vector);
+    BASE::RevertArray(object_list, vector);
   }
 };
 

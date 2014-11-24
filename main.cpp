@@ -18,6 +18,7 @@
 
 
 #include "keves_base.hpp"
+#include "keves_vm.hpp"
 
 
 int main() {

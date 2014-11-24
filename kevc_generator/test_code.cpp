@@ -38,7 +38,8 @@
 #include "vector_kev.hpp"
 
 
-void TestCode::Code01::Write(KevesBase* /*gc*/, const char* file_name) {
+// void TestCode::Code01::Write(KevesBase* /*base*/, const char* file_name) {
+  /*
   QFile file(file_name);
 
   if (!file.open(QIODevice::WriteOnly)) {
@@ -48,20 +49,20 @@ void TestCode::Code01::Write(KevesBase* /*gc*/, const char* file_name) {
 
   QDataStream out(&file);
   KevesLibrary this_lib;
-  this_lib.id << "keves" << "base" << "simple";
-  this_lib.ver_num << 6 << 1;
+  this_lib.id_ << "keves" << "base" << "simple";
+  this_lib.ver_num_ << 6 << 1;
 
   KevesLibrary import_lib1;
-  import_lib1.id << "rnrs" << "base";
-  import_lib1.ver_num << 6 << 1;
+  import_lib1.id_ << "rnrs" << "base";
+  import_lib1.ver_num_ << 6 << 1;
 
   KevesLibrary import_lib2;
-  import_lib2.id << "rnrs" << "io" << "simple";
-  import_lib2.ver_num << 6 << 1;
+  import_lib2.id_ << "rnrs" << "io" << "simple";
+  import_lib2.ver_num_ << 6 << 1;
 
   KevesLibrary import_lib3;
-  import_lib3.id << "rnrs" << "unicode";
-  import_lib3.ver_num << 6 << 2;
+  import_lib3.id_ << "rnrs" << "unicode";
+  import_lib3.ver_num_ << 6 << 2;
 
   QList<KevesLibrary> libs;
   libs << this_lib << import_lib1 << import_lib2 << import_lib3;
@@ -69,8 +70,10 @@ void TestCode::Code01::Write(KevesBase* /*gc*/, const char* file_name) {
 
   file.close();
 }
+  */
 
-void TestCode::Code01::Read(KevesBase* /*gc*/, const char* file_name) {
+// void TestCode::Code01::Read(KevesBase* /*gc*/, const char* file_name) {
+/*
   QFile file(file_name);
 
   if (!file.open(QIODevice::ReadOnly)) {
@@ -89,6 +92,7 @@ void TestCode::Code01::Read(KevesBase* /*gc*/, const char* file_name) {
   for (int i(1); i < libs.size(); ++i)
     KevesBase::DisplayLibraryName(libs.at(i));
 }
+*/
 
 void TestCode::Code02::Write(KevesBase* base, const char* file_name) {
   StringKev* str(StringKev::Make(base->gc(), "abdefgh"));
@@ -147,28 +151,26 @@ void TestCode::Code02::Write(KevesBase* base, const char* file_name) {
     *iter++ = exact_complex;
     *iter++ = inexact_complex;
     *iter++ = KevesInstruct(CMD_HALT);
+    Q_ASSERT(iter <= code->end());
   }
     
   FreeVarFrameKev* clsr(FreeVarFrameKev::make(base->gc(), 3, nullptr));
   LambdaKev* lambda(LambdaKev::make(base->gc(), clsr, code, 2));
 
   KevesLibrary this_lib;
-  this_lib.id << "main";
+  this_lib.id_ << "main";
 
   KevesLibrary required_lib;
-  required_lib.id << "rnrs" << "io" << "simple";
-  required_lib.ver_num << 6;
-  QPair<QString, uioword> bind("display", EMB_NULL);
-  required_lib.bind_list << bind;
+  required_lib.id_ << "rnrs" << "io" << "simple";
+  required_lib.ver_num_ << 6;
+  required_lib.AddBind("display", EMB_NULL);
+  required_lib.AddBind("newline", EMB_NULL);
 
   QList<KevesLibrary> libs;
   libs << this_lib << required_lib;
 
-  {
-    KevesFileIO file(file_name);
-
-    file.write(libs, lambda);
-  }
+  KevesFileIO file(file_name);
+  file.Write(base, libs, lambda);
 }
 
 void TestCode::Code02::Read(KevesBase* base, const char* file_name) {
@@ -176,7 +178,14 @@ void TestCode::Code02::Read(KevesBase* base, const char* file_name) {
 
   std::cout << file_name << ":" << std::endl;
   
-  KevesValue value(file.read(base->gc()));
+  QList<KevesLibrary> libs(file.Read(base));
+
+  libs.at(0).DisplayLibraryName();
+  
+  for (int i(1); i < libs.size(); ++i)
+    libs.at(i).DisplayLibraryName();
+
+  KevesValue value(libs.at(0).code_);
   std::cout << qPrintable(base->ToString(value)) << std::endl;
 
   if (value.type() == LAMBDA) {
@@ -202,19 +211,18 @@ void TestCode::Code03::Write(KevesBase* base, const char* file_name) {
   fp->set_sfp(nullptr);
 
   KevesLibrary this_lib;
-  this_lib.id << "main";
+  this_lib.id_ << "main";
 
   KevesLibrary required_lib;
-  required_lib.id << "rnrs" << "io" << "simple";
-  required_lib.ver_num << 6;
-  QPair<QString, uioword> bind("display", EMB_NULL);
-  required_lib.bind_list << bind;
+  required_lib.id_ << "rnrs" << "io" << "simple";
+  required_lib.ver_num_ << 6;
+  required_lib.AddBind("display", EMB_NULL);
 
   QList<KevesLibrary> libs;
   libs << this_lib << required_lib;
 
   KevesFileIO file(file_name);
-  file.write(libs, fp);
+  file.Write(base, libs, fp);
 }
 
 void TestCode::Code03::Read(KevesBase* base, const char* file_name) {
@@ -222,6 +230,11 @@ void TestCode::Code03::Read(KevesBase* base, const char* file_name) {
 
   std::cout << file_name << ":" << std::endl;
   
-  KevesValue value(file.read(base->gc()));
-  std::cout << qPrintable(base->ToString(value)) << std::endl;
+  QList<KevesLibrary> libs(file.Read(base));
+  libs.at(0).DisplayLibraryName();
+  
+  for (int i(1); i < libs.size(); ++i)
+    libs.at(i).DisplayLibraryName();
+
+  std::cout << qPrintable(base->ToString(libs.at(0).code_)) << std::endl;
 }

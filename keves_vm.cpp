@@ -1,21 +1,21 @@
-/* Keves/keves_vm.cpp - VM for Keves
- * Keves will be an R6RS Scheme implementation.
- *
- * Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
- *
- * This program is free software: you can redistribute it and/or modify it
- * under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or any
- * later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+// Keves/keves_vm.cpp - VM for Keves
+// Keves will be an R6RS Scheme implementation.
+//
+//  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
+// 
+//  This program is free software: you can redistribute it and/or modify it
+//  under the terms of the GNU Lesser General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or any
+//  later version.
+// 
+//  This program is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+//  GNU Lesser General Public License for more details.
+// 
+//  You should have received a copy of the GNU Lesser General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
 
 #include "keves_vm.hpp"
 
@@ -27,12 +27,12 @@
 #include "keves_base.hpp"
 #include "keves_char.hpp"
 #include "keves_file_io.hpp"
-#include "keves_file_io-inl.hpp"
 #include "keves_fixnum.hpp"
 #include "keves_frame.hpp"
 #include "keves_instruct.hpp"
 #include "keves_library.hpp"
 #include "keves_stack.hpp"
+#include "keves_textual_port.hpp"
 #include "lib_keves_base.hpp"
 #include "jump_kev.hpp"
 #include "number_kev.hpp"
@@ -49,10 +49,11 @@
 #include <QFile> // this purpose is test.
 #include <QDataStream> // this purpose is test.
 
-KevesVM::KevesVM(KevesBase* base)
+KevesVM::KevesVM(KevesBase* base, KevesTextualOutputPort* result_field)
   : base_(base),
     cmd_table_(base->cmd_table()),
-    gc_(base->gc()) {}
+    gc_(base->gc()),
+    result_field_(result_field) {}
 
 void KevesVM::CheckStack(size_t* size, vm_func func, const_KevesIterator pc) {
   if (static_cast<void*>(size)
@@ -389,7 +390,7 @@ int KevesVM::Execute_helper(const QString& arg) {
   registers_.set_fp(&registers_);
 
   registers_.changeToBottomFrame();
-  const_KevesIterator pc(base_->lib_keves_base()->test_code_->begin());
+  const_KevesIterator pc(base_->lib_keves_base()->code_.ToPtr<CodeKev>()->begin());
   Q_ASSERT(pc->IsInstruct());
 
   // prepare environment frame

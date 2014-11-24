@@ -1,24 +1,24 @@
-/* Keves/keves_base.cpp - base of Keves
- * Keves will be an R6RS Scheme implementation.
- *
- *  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
- *
- *  This program is free software: you can redistribute it and/or modify it
- *  under the terms of the GNU Lesser General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or any
- *  later version.
- *
- *  This program is distributed in the hope that it will be useful, but WITHOUT
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
- *  License for more details.
- *
- *  You should have received a copy of the GNU Lesser General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+// Keves/keves_base.cpp - base of Keves
+// Keves will be an R6RS Scheme implementation.
+//
+//  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
+//
+//  This program is free software: you can redistribute it and/or modify it
+//  under the terms of the GNU Lesser General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or any
+//  later version.
+//
+//  This program is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
+//  License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #include "keves_base.hpp"
+#include "keves_base-inl.hpp"
 
 #include <QDataStream>
 #include <QFile>
@@ -28,15 +28,42 @@
 #include "keves_vm.hpp"
 #include "number_kev.hpp"
 #include "pair_kev.hpp"
+#include "reference_kev.hpp"
 #include "string_kev.hpp"
 #include "symbol_kev.hpp"
 #include "vector_kev.hpp"
+#include "wind_kev.hpp"
 
 #define DEFINE_MESG_KEY(mesg) const char KevesBase::mesg_ ## mesg[] = #mesg
-DEFINE_MESG_KEY(ReqRealNum);
-DEFINE_MESG_KEY(1stObjNotProcOrSyn);
-DEFINE_MESG_KEY(ReqLessGotMore);
+DEFINE_MESG_KEY(Req0);
+DEFINE_MESG_KEY(Req1Got0);
+DEFINE_MESG_KEY(Req1GotMore);
+DEFINE_MESG_KEY(Req2Got0);
+DEFINE_MESG_KEY(Req2Got1);
+DEFINE_MESG_KEY(Req2GotMore);
+DEFINE_MESG_KEY(Req2OrMoreGot0);
+DEFINE_MESG_KEY(Req2OrMoreGot1);
+DEFINE_MESG_KEY(Req3Got0);
+DEFINE_MESG_KEY(Req3Got1);
+DEFINE_MESG_KEY(Req3Got2);
+DEFINE_MESG_KEY(Req3GotMore);
+DEFINE_MESG_KEY(ReqNotGet3Args);
 DEFINE_MESG_KEY(ReqMoreGotLess);
+DEFINE_MESG_KEY(ReqLessGotMore);
+DEFINE_MESG_KEY(ReqNum);
+DEFINE_MESG_KEY(ReqRealNum);
+DEFINE_MESG_KEY(ReqIntNum);
+DEFINE_MESG_KEY(ReqIntNumAs1st);
+DEFINE_MESG_KEY(ReqIntNumAs2nd);
+DEFINE_MESG_KEY(ReqIntNumAs3rd);
+DEFINE_MESG_KEY(ReqChar);
+DEFINE_MESG_KEY(ReqCharAs1st);
+DEFINE_MESG_KEY(ReqCharAs2nd);
+DEFINE_MESG_KEY(ReqStr);
+DEFINE_MESG_KEY(ReqStrAs1st);
+DEFINE_MESG_KEY(ReqSym);
+DEFINE_MESG_KEY(ReqPair);
+DEFINE_MESG_KEY(1stObjNotProcOrSyn);
 #undef DEFINE_MESG_KEY
 
 KevesBase::KevesBase()
@@ -56,8 +83,25 @@ KevesBase::KevesBase()
   InitCMDTable();
   InitMesgList("mesg_text.csv");
 
-  std::cout << qPrintable(GetMesgText(mesg_ReqRealNum)->ToQString()) << std::endl;
-			    
+  SetFunctionTable<CodeKev>();
+  SetFunctionTable<Bignum>();
+  SetFunctionTable<RationalNumberKev>();
+  SetFunctionTable<FlonumKev>();
+  SetFunctionTable<ExactComplexNumberKev>();
+  SetFunctionTable<InexactComplexNumberKev>();
+  SetFunctionTable<StringCoreKev>();
+  SetFunctionTable<StringKev>();
+  SetFunctionTable<SymbolKev>();
+  SetFunctionTable<VectorKev>();
+  SetFunctionTable<WindKev>();
+  SetFunctionTable<ReferenceKev>();
+  SetFunctionTable<LambdaKev>();
+  SetFunctionTable<ArgumentFrameKev>();
+  SetFunctionTable<LocalVarFrameKev>();
+  SetFunctionTable<FreeVarFrameKev>();
+  SetFunctionTable<StackFrameKev>();
+  SetFunctionTable<PairKev>();
+
   sym_eval_ = SymbolKev::Make(&gc_, "eval");
 
   constexpr int CODE_SIZE(8);
@@ -87,7 +131,7 @@ KevesBase::~KevesBase() {
 }
 
 KevesVM* KevesBase::MakeVM() {
-  KevesVM* vm(new KevesVM(this));
+  KevesVM* vm(new KevesVM(this, default_result_field()));
   gc_.Append(vm);
   return vm;
 }
@@ -276,6 +320,49 @@ void KevesBase::InitMesgList(const QString& file_name) {
 
 const StringKev* KevesBase::GetMesgText(const QString& key) const {
   return mesg_text_.value(key);
+}
+
+const QList<const Kev*> KevesBase::GetObjectList(const Kev* kev) {
+  QList<const Kev*> list;
+  QStack<const Kev*> pending;
+  pending.push(kev);
+
+  while (!pending.isEmpty()) {
+    const Kev* temp(pending.pop());
+
+    if (list.indexOf(temp) < 0) {
+      (*ft_PushChildren_[temp->type()])(&pending, temp);
+      list.append(temp);
+    }
+  }
+
+  return list;
+}
+      
+uioword KevesBase::IndexAddress(const QList<const Kev*>& table,
+				 KevesValue value) {
+  if (!value.IsPtr()) return value.toUIntPtr();
+  
+  int index(table.indexOf(value.ToPtr()));
+
+  return index < 0 ?
+    value.toUIntPtr() : (static_cast<quintptr>(index) << 2 | INDEX);
+}
+
+void KevesBase::PushValue(QStack<const Kev*>* pending, KevesValue value) {
+  if (value.IsPtr()) pending->push(value.ToPtr());
+}
+
+void KevesBase::RevertObjects(const QList<Kev*>& object_list) {
+  for (int i(0); i < object_list.size(); ++i) {
+    MutableKevesValue kev(object_list.at(i));
+    (*ft_RevertObject_[kev.type()])(object_list, kev);
+  }   
+}
+
+void KevesBase::RevertValue(const QList<Kev*>& object_list,
+				KevesValue* value) {
+  if (IsIndex(*value)) *value = object_list.at(value->toUIntPtr() >> 2);
 }
 
 QString KevesBase::ToString(KevesValue value) {
@@ -540,35 +627,9 @@ void KevesBase::ToString_element(QString* str, KevesValue value) {
     default:
       str->append(QString::number(reinterpret_cast<quintptr>(value.ToPtr()), 16));
     }
+  } else if (value == EMB_UNDEF) {
+    str->append("<undef>");
   } else {
     str->append("Unknown");
   }
-}
-
-void KevesBase::DisplayLibraryName(const KevesLibrary& lib) {
-  std::cout << "(";
-
-  for (int i(0); i < lib.id.size(); ++i)
-    std::cout << qPrintable(lib.id.at(i)) << " ";
-    
-  switch (lib.ver_num.size()) {
-  case 0:
-    std::cout << "()";
-    break;
-
-  case 1:
-    std::cout << "(" << lib.ver_num.at(0) << ")";
-    break;
-
-  default:
-    std::cout << "(" << lib.ver_num.at(0);
-
-    for (int i(1); i < lib.ver_num.size(); ++i)
-      std::cout << " " << lib.ver_num.at(i);
-
-    std::cout << ")";
-  }
-
-  std::cout << ")" << std::endl;
-    
 }

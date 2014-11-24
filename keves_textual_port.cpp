@@ -1,4 +1,4 @@
-// Keves/keves_stack.hpp - stacks for Keves
+// Keves/keves_textual_port.cpp - textual port for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -17,22 +17,11 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#pragma once
+#include "keves_textual_port.hpp"
 
-#include <QStack>
-#include "keves_value.hpp"
+#include <iostream>
+#include <QString>
 
-class KevesStack : public QStack<KevesValue> {
-public:
-  KevesStack() = default;
-  KevesStack(const KevesStack&) = delete;
-  KevesStack(KevesStack&&) = delete;
-  KevesStack& operator=(const KevesStack&) = delete;
-  KevesStack& operator=(KevesStack&&) = delete;
-  ~KevesStack() = default;
-
-  typedef QStack<KevesValue>::iterator iterator;
-  typedef QStack<KevesValue>::const_iterator const_iterator;
-
-  bool Find(KevesValue) const;
-};
+void KevesTextualOutputPort::Append(const QString& str) {
+  std::cout << qPrintable(str) << std::flush;
+}

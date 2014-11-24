@@ -24,10 +24,12 @@
 int main() {
   KevesBase base;
 
+  /*
   TestCode::Code01::Write(&base, "test01.kevc");
   TestCode::Code01::Read(&base, "test01.kevc");
 
   std::cout << std::endl;
+  */
   
   TestCode::Code02::Write(&base, "test02.kevc");
   TestCode::Code02::Read(&base, "test02.kevc");

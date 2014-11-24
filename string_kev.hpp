@@ -104,12 +104,12 @@ public:
   ////////////////////////////////////////////////////////////
 
 public:
-  template<class /*IO*/, class STACK>
+  template<class /*BASE*/, class STACK>
   static void PushChildren(STACK* /*pending*/, KevesValue /*value*/) {
     return;
   }
 
-  template<class /*IO*/, class LIST, class STREAM>
+  template<class /*BASE*/, class LIST, class STREAM>
   static void WriteObject(const LIST&, STREAM& out, KevesValue value) {
     const StringCoreKev* string(value);
     int size(string->size());
@@ -121,7 +121,7 @@ public:
     for (int i(0); i < size; ++i) out << array[i];
   }
 
-  template<class /*IO*/, class STREAM, class GC>
+  template<class /*BASE*/, class STREAM, class GC>
   static Kev* ReadObject(STREAM& in, GC* gc) {
     ioword size;
     in >> size;
@@ -131,7 +131,7 @@ public:
     return string;
   }
 
-  template<class /*IO*/, class LIST>
+  template<class /*BASE*/, class LIST>
   static void RevertObject(const LIST&, MutableKevesValue) {
     return;
   }
@@ -286,34 +286,37 @@ public:
   ////////////////////////////////////////////////////////////
 
 public:
-  template<class IO, class STACK>
+  template<class BASE, class STACK>
   static void PushChildren(STACK* pending, KevesValue value) {
     const StringKev* string(value);
-    IO::PushValue(pending, string->core_);
+    BASE::PushValue(pending, string->core_);
   }
 
-  template<class IO, class LIST, class STREAM>
+  template<class BASE, class LIST, class STREAM>
   static void WriteObject(const LIST& list, STREAM& out, KevesValue value) {
     const StringKev* string(value);
 
     out << static_cast<uioword>(string->type())
-	<< IO::WrapAddress(list, string->core_)
+	<< BASE::IndexAddress(list, string->core_)
 	<< static_cast<ioword>(string->idx_)
 	<< static_cast<ioword>(string->len_);
   }
 
-  template<class IO, class STREAM, class GC>
+  template<class /*BASE*/, class STREAM, class GC>
   static Kev* ReadObject(STREAM& in, GC* gc) {
     uioword core;
     ioword idx, len;
     in >> core >> idx >> len;
-    return Make(gc, IO::template fromUioword<StringCoreKev>(core), idx, len);
+    return Make(gc,
+		KevesValue::template FromUioword<StringCoreKev>(core),
+		idx,
+		len);
   }
   
-  template<class IO, class LIST>
+  template<class BASE, class LIST>
   static void RevertObject(const LIST& object_list, MutableKevesValue kev) {
     StringKev* string(kev);
-    IO::RevertValue(object_list, &string->core_);
+    BASE::RevertValue(object_list, &string->core_);
   }
 };
 

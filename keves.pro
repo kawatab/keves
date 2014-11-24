@@ -18,6 +18,7 @@ HEADERS += bignum.hpp \
            jump_kev.hpp \
 #           library_kev.hpp \
            lib_keves_base.hpp \
+           lib_keves_base-inl.hpp \
 #           lib_keves_parse.hpp \
 #           lib_rnrs_base.hpp \
 #           lib_rnrs_eval.hpp \
@@ -40,7 +41,8 @@ HEADERS += bignum.hpp \
            keves_iterator.hpp \
            keves_library.hpp \
            keves_stack.hpp \
-#           keves_textual_port.hpp \
+           keves_template.hpp \
+           keves_textual_port.hpp \
            keves_value.hpp \
            keves_vm.hpp \
 #           macro_kev.hpp \
@@ -72,6 +74,8 @@ SOURCES += bignum.cpp \
            keves_iterator.cpp \
            keves_library.cpp \
            keves_stack.cpp \
+           keves_template.cpp \
+           keves_textual_port.cpp \
            keves_vm.cpp \
            lib_keves_base.cpp \
            main.cpp \
