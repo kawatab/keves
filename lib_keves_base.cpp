@@ -27,15 +27,11 @@
 #include <QTextStream>
 
 #include "code_kev.hpp"
-// #include "condition_kev.hpp"
-// #include "jump_kev.hpp"
 #include "keves_base.hpp"
-// #include "keves_char.hpp"
+#include "keves_builtin_values.hpp"
 #include "keves_template.hpp"
 #include "keves_vm.hpp"
-// #include "number_kev.hpp"
 #include "procedure_kev.hpp"
-// #include "record_kev.hpp"
 #include "symbol_kev.hpp"
 
 LibKevesBase::LibKevesBase()
@@ -86,8 +82,8 @@ void LibKevesBase::procDisplay(KevesVM* vm, const_KevesIterator pc) {
     vm->acc_ = vm->gr2_;
 
     vm->gr1_ = registers->argn() > 2 ?
-      vm->base()->GetMesgText(KevesBase::mesg_Req1GotMore) :
-      vm->base()->GetMesgText(KevesBase::mesg_Req1Got0);
+      vm->base()->GetMesgText(KevesBuiltinValues::mesg_Req1GotMore) :
+      vm->base()->GetMesgText(KevesBuiltinValues::mesg_Req1Got0);
 
     vm->gr2_ = EMB_NULL;
     return KevesVM::RaiseAssertCondition(vm, pc);

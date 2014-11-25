@@ -25,6 +25,7 @@
 #include "code_kev.hpp"
 #include "condition_kev.hpp"
 #include "keves_base.hpp"
+#include "keves_builtin_values.hpp"
 #include "keves_char.hpp"
 #include "keves_file_io.hpp"
 #include "keves_fixnum.hpp"
@@ -175,7 +176,7 @@ void KevesVM::MakeRectangular(KevesVM* vm, const_KevesIterator pc) {
   }
 
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base_->GetMesgText(KevesBase::mesg_ReqRealNum);
+  vm->gr1_ = vm->base_->GetMesgText(KevesBuiltinValues::mesg_ReqRealNum);
   vm->gr2_ = EMB_NULL;
   return RaiseAssertCondition(vm, pc);
 }
@@ -589,7 +590,7 @@ void KevesVM::ApplyProcedure(KevesVM* vm, const_KevesIterator pc) {
 void KevesVM::RaiseAssertFirstObjNotProc(KevesVM* vm, const_KevesIterator pc) {
   vm->acc_ = vm->base_->sym_eval_;
   vm->gr2_ = vm->gr1_;
-  vm->gr1_ = vm->base_->GetMesgText(KevesBase::mesg_1stObjNotProcOrSyn);
+  vm->gr1_ = vm->base_->GetMesgText(KevesBuiltinValues::mesg_1stObjNotProcOrSyn);
   return RaiseAssertCondition(vm, pc);
 }
 
@@ -665,14 +666,14 @@ void KevesVM::cmd_CALL_LAMBDA_VLA_helper(KevesVM* vm, const_KevesIterator pc) {
 
 void KevesVM::RaiseAssertLambdaReqLess(KevesVM* vm, const_KevesIterator pc) {
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base_->GetMesgText(KevesBase::mesg_ReqLessGotMore);
+  vm->gr1_ = vm->base_->GetMesgText(KevesBuiltinValues::mesg_ReqLessGotMore);
   vm->gr2_ = EMB_NULL;
   return RaiseAssertCondition(vm, pc);
 }
 
 void KevesVM::RaiseAssertLambdaReqMore(KevesVM* vm, const_KevesIterator pc) {
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base_->GetMesgText(KevesBase::mesg_ReqMoreGotLess);
+  vm->gr1_ = vm->base_->GetMesgText(KevesBuiltinValues::mesg_ReqMoreGotLess);
   vm->gr2_ = EMB_NULL;
   return RaiseAssertCondition(vm, pc);
 }
@@ -844,7 +845,7 @@ void KevesVM::cmd_RAISE(KevesVM* vm, const_KevesIterator pc) {
   *registers = *registers->sfp();
 
   if (StackFrameKev::isBottom(registers)) {
-    pc = vm->base_->code_HALT_;
+    pc = vm->base_->builtin()->code_HALT();
     std::cout << "cmd_RAISE: raise!!!!!!!!!!!!!" << std::endl; 
     vm->gr1_ = vm->acc_;
     return PushGr1ToArgumentSafe(vm, pc);
@@ -861,7 +862,7 @@ void KevesVM::cmd_RAISE_CONSTANT(KevesVM* vm, const_KevesIterator pc) {
   *registers = *registers->sfp();
 
   if (StackFrameKev::isBottom(registers)) {
-    pc = vm->base_->code_HALT_;
+    pc = vm->base_->builtin()->code_HALT();
     std::cout << "cmd_RAISE_CONSTANT: raise!!!!!!!!!!!!!" << std::endl; 
     vm->gr1_ = condition;
     return PushGr1ToArgumentSafe(vm, pc);
@@ -1173,7 +1174,7 @@ void KevesVM::cmd_TEST_PAIR0(KevesVM* vm, const_KevesIterator pc) {
       
 void KevesVM::RaiseAssertReqRealNum(KevesVM* vm, const_KevesIterator pc) {
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base_->GetMesgText(KevesBase::mesg_ReqRealNum);
+  vm->gr1_ = vm->base_->GetMesgText(KevesBuiltinValues::mesg_ReqRealNum);
   vm->gr2_ = EMB_NULL;
   return RaiseAssertCondition(vm, pc);
 }
@@ -1419,7 +1420,7 @@ void KevesVM::cmd_UNWIND_CONTINUATION(KevesVM* vm, const_KevesIterator pc) {
       pc = registers->unwind();
       vm->gc_->ToMutable(conti_obj->btmp())->set_pc(pc);
       *registers = conti_obj->registers();
-      pc = vm->base_->code_REVERT_DYNAMIC_WIND_and_APPLY_;
+      pc = vm->base_->builtin()->code_REVERT_DYNAMIC_WIND_and_APPLY();
       vm->acc_ = conti_obj;
       vm->gr1_ = vm->keves_vals_->at(1);
 
@@ -1439,7 +1440,7 @@ void KevesVM::cmd_UNWIND_CONTINUATION(KevesVM* vm, const_KevesIterator pc) {
       pc = registers->unwind();
       StackFrameKev stack_frame1;
       registers->windWithValues(pc, &stack_frame1, vm->keves_vals_);
-      pc = vm->base_->code_POP_APPLY_;
+      pc = vm->base_->builtin()->code_POP_APPLY();
       registers->replaceFirstArgument(conti_obj);
 
       StackFrameKev stack_frame2;
@@ -1480,9 +1481,9 @@ void KevesVM::RevertDynamicWind(KevesVM* vm, const_KevesIterator pc) {
   
   if (first_obj.Is<WindKev>()) {
     const WindKev* wind(first_obj);
-    pc = vm->base_->code_POP_APPLY_;
+    pc = vm->base_->builtin()->code_POP_APPLY();
     registers->wind(pc, &stack_frame, &arg_frame);
-    pc = vm->base_->code_APPLY_;
+    pc = vm->base_->builtin()->code_APPLY();
     registers->pushArgument(wind->before());
   }
   
@@ -1504,7 +1505,7 @@ void KevesVM::cmd_SET_DYNAMIC_WIND(KevesVM* vm, const_KevesIterator pc) {
   // wind
   StackFrameKev stack_frame1;
   registers->wind(pc, &stack_frame1, &arg_frame1);
-  pc = vm->base_->code_REMOVE_DYNAMIC_WIND_;
+  pc = vm->base_->builtin()->code_REMOVE_DYNAMIC_WIND();
 
   WindKev wind(before, thunk, after);
   registers->pushArgument(&wind);
@@ -1526,7 +1527,7 @@ void KevesVM::cmd_REMOVE_DYNAMIC_WIND(KevesVM* vm, const_KevesIterator pc) {
   pc = registers->unwind();
 
   registers->replaceLastArgument(result_of_thunk);
-  pc = vm->base_->code_POP_RETURN_;
+  pc = vm->base_->builtin()->code_POP_RETURN();
 
   // wind and push *after*
   ArgumentFrameKevWithArray<04> arg_frame;

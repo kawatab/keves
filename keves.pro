@@ -28,11 +28,11 @@ HEADERS += bignum.hpp \
 #           lib_rnrs_syntax_case.hpp \
 #           lib_rnrs_unicode.hpp \
            keves_base.hpp \
-#           keves_builtin_values.hpp \
+           keves_base-inl.hpp \
+           keves_builtin_values.hpp \
            keves_char.hpp \
 #           keves_eval_window.hpp \
            keves_file_io.hpp \
-           keves_file_io-inl.hpp \
            keves_fixnum.hpp \
            keves_frame.hpp \
            keves_gc.hpp \
@@ -66,6 +66,7 @@ SOURCES += bignum.cpp \
            generator_kev.cpp \
            jump_kev.cpp \
            keves_base.cpp \
+           keves_builtin_values.cpp \
            keves_char.cpp \
            keves_file_io.cpp \
            keves_frame.cpp \

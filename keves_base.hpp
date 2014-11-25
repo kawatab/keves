@@ -22,12 +22,14 @@
 #include <QHash>
 #include <QList>
 #include <QStack>
+#include "keves_builtin_values.hpp"
 #include "keves_gc.hpp"
 #include "keves_instruct.hpp"
 #include "keves_textual_port.hpp"
 #include "lib_keves_base.hpp"
 
 
+class KevesBuiltinValues;
 class KevesVM;
 class QString;
 
@@ -42,46 +44,10 @@ public:
 
   KevesVM* MakeVM();
   
-  // for Message Text
-public:
-  static const char mesg_Req0[];
-  static const char mesg_Req1Got0[];
-  static const char mesg_Req1GotMore[];
-  static const char mesg_Req2Got0[];
-  static const char mesg_Req2Got1[];
-  static const char mesg_Req2GotMore[];
-  static const char mesg_Req2OrMoreGot0[];
-  static const char mesg_Req2OrMoreGot1[];
-  static const char mesg_Req3Got0[];
-  static const char mesg_Req3Got1[];
-  static const char mesg_Req3Got2[];
-  static const char mesg_Req3GotMore[];
-  static const char mesg_ReqNotGet3Args[];
-  static const char mesg_ReqMoreGotLess[];
-  static const char mesg_ReqLessGotMore[];
-  static const char mesg_ReqNum[];
-  static const char mesg_ReqRealNum[];
-  static const char mesg_ReqIntNum[];
-  static const char mesg_ReqIntNumAs1st[];
-  static const char mesg_ReqIntNumAs2nd[];
-  static const char mesg_ReqIntNumAs3rd[];
-  static const char mesg_ReqChar[];
-  static const char mesg_ReqCharAs1st[];
-  static const char mesg_ReqCharAs2nd[];
-  static const char mesg_ReqStr[];
-  static const char mesg_ReqStrAs1st[];
-  static const char mesg_ReqSym[];
-  static const char mesg_ReqPair[];
-  static const char mesg_1stObjNotProcOrSyn[];
-
-  const StringKev* GetMesgText(const QString& key) const;
-
-private:
-  void InitMesgList(const QString& file_name);
-
-
   // for indexing of address
 public:
+  enum {ALIGN = 0x3, INDEX = 0x2};
+
   const QList<const Kev*> GetObjectList(const Kev* kev);
 
   static uioword IndexAddress(const QList<const Kev*>& object_list,
@@ -131,22 +97,28 @@ private:
   template<class KEV>
   void SetFunctionTable();
   
-  
-  // for output port
+
+  // General functions
 public:
-  KevesTextualOutputPort* default_result_field() {
-    return &default_result_field_;
-  }
-  
-  // for command table
+  const StringKev* GetMesgText(const QString& key) const;
   void InitCMDTable();
-  enum {
-    ALIGN = 0x3,
-    INDEX = 0x2
-  };
+  QString ToString(KevesValue) const;
+  void ToString_code(QString*, KevesValue, int) const;
+  void ToString_element(QString*, KevesValue) const;
+  void ToString_list(QString*, KevesValue, int) const;
+  void ToString_vector(QString*, KevesValue, int) const;
+
+
+  KevesBuiltinValues* builtin() {
+    return &builtin_;
+  }
   
   vm_func* cmd_table() {
     return cmd_table_;
+  }
+  
+  KevesTextualOutputPort* default_result_field() {
+    return &default_result_field_;
   }
   
   KevesGC* gc() {
@@ -157,37 +129,21 @@ public:
     return &lib_keves_base_;
   }
   
-  const KevesInstructTable* instruct_table() {
+  const KevesInstructTable* instruct_table() const {
     return &instruct_table_;
   }
-
-  // General functions
-public:
-  QString ToString(KevesValue);
-  void ToString_code(QString*, KevesValue, int);
-  void ToString_element(QString*, KevesValue);
-  void ToString_list(QString*, KevesValue, int);
-  void ToString_vector(QString*, KevesValue, int);
-
 
 private:
   // GC and tables
   KevesGC gc_;
   KevesInstructTable instruct_table_;
   vm_func cmd_table_[END_OF_LIST];
-  QHash<QString, const StringKev*> mesg_text_;
+  KevesBuiltinValues builtin_;
   KevesTextualOutputPort default_result_field_;
 
 public:
   // variables
   SymbolKev* sym_eval_;
-  CodeKev* builtin_code_;
-  const_KevesIterator code_APPLY_;
-  const_KevesIterator code_HALT_;
-  const_KevesIterator code_REMOVE_DYNAMIC_WIND_;
-  const_KevesIterator code_REVERT_DYNAMIC_WIND_and_APPLY_;
-  const_KevesIterator code_POP_APPLY_;
-  const_KevesIterator code_POP_RETURN_;
 
 private:
   // libraries

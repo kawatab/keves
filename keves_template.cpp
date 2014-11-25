@@ -19,10 +19,11 @@
 
 #include "keves_template.hpp"
 
+#include "keves_builtin_values.hpp"
 
 void Function::raiseGetAnything(KevesVM* vm, const_KevesIterator pc) {
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->GetMesgText(KevesBase::mesg_Req0);
+  vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_Req0);
   vm->gr2_ = EMB_NULL;
   return KevesVM::RaiseAssertCondition(vm, pc);
 }
@@ -32,8 +33,8 @@ void Function::raiseNotGet1Arg(KevesVM* vm, const_KevesIterator pc) {
   int argn(vm->registers_.argn());
   vm->acc_ = vm->gr2_;
   vm->gr1_ = base->GetMesgText(argn > 2 ?
-			       KevesBase::mesg_Req1GotMore :
-			       KevesBase::mesg_Req1Got0);
+			       KevesBuiltinValues::mesg_Req1GotMore :
+			       KevesBuiltinValues::mesg_Req1Got0);
   vm->gr2_ = EMB_NULL;
   return KevesVM::RaiseAssertCondition(vm, pc);
 }
@@ -44,9 +45,9 @@ void Function::raiseNotGet2Args(KevesVM* vm, const_KevesIterator pc) {
   vm->acc_ = vm->gr2_;
 
   vm->gr1_ =
-    argn > 3 ? base->GetMesgText(KevesBase::mesg_Req2GotMore) :
-    argn == 2 ? base->GetMesgText(KevesBase::mesg_Req2Got1) :
-    base->GetMesgText(KevesBase::mesg_Req2Got0);
+    argn > 3 ? base->GetMesgText(KevesBuiltinValues::mesg_Req2GotMore) :
+    argn == 2 ? base->GetMesgText(KevesBuiltinValues::mesg_Req2Got1) :
+    base->GetMesgText(KevesBuiltinValues::mesg_Req2Got0);
 
   vm->gr2_ = EMB_NULL;
   return KevesVM::RaiseAssertCondition(vm, pc);
@@ -58,8 +59,8 @@ void Function::raiseNotGet2OrMoreArgs(KevesVM* vm, const_KevesIterator pc) {
   vm->acc_ = vm->gr2_;
 
   vm->gr1_ = base->GetMesgText(argn == 2 ?
-			       KevesBase::mesg_Req2OrMoreGot1 :
-			       KevesBase::mesg_Req2OrMoreGot0);
+			       KevesBuiltinValues::mesg_Req2OrMoreGot1 :
+			       KevesBuiltinValues::mesg_Req2OrMoreGot0);
 
   vm->gr2_ = EMB_NULL;
   return KevesVM::RaiseAssertCondition(vm, pc);
@@ -70,10 +71,10 @@ void Function::raiseNotGet3Args(KevesVM* vm, const_KevesIterator pc) {
   int argn(vm->registers_.argn());
   vm->acc_ = vm->gr2_;
 
-  vm->gr1_ = base->GetMesgText(argn > 4 ? KevesBase::mesg_Req3GotMore :
-			       argn == 3 ? KevesBase::mesg_Req3Got2 :
-			       argn == 2 ? KevesBase::mesg_Req3Got1 :
-			       KevesBase::mesg_Req3Got0);
+  vm->gr1_ = base->GetMesgText(argn > 4 ? KevesBuiltinValues::mesg_Req3GotMore :
+			       argn == 3 ? KevesBuiltinValues::mesg_Req3Got2 :
+			       argn == 2 ? KevesBuiltinValues::mesg_Req3Got1 :
+			       KevesBuiltinValues::mesg_Req3Got0);
   
   vm->gr2_ = EMB_NULL;
   return KevesVM::RaiseAssertCondition(vm, pc);
@@ -84,19 +85,19 @@ bool Function::IsFixnum::func(KevesValue kev) {
 }
 
 KevesValue Function::IsFixnum::message(KevesBase* base) {
-  return base->GetMesgText(KevesBase::mesg_ReqIntNum);
+  return base->GetMesgText(KevesBuiltinValues::mesg_ReqIntNum);
 }
 
 KevesValue Function::IsFixnum::message1(KevesBase* base) {
-  return base->GetMesgText(KevesBase::mesg_ReqIntNumAs1st);
+  return base->GetMesgText(KevesBuiltinValues::mesg_ReqIntNumAs1st);
 }
 
 KevesValue Function::IsFixnum::message2(KevesBase* base) {
-  return base->GetMesgText(KevesBase::mesg_ReqIntNumAs2nd);
+  return base->GetMesgText(KevesBuiltinValues::mesg_ReqIntNumAs2nd);
 }
 
 KevesValue Function::IsFixnum::message3(KevesBase* base) {
-  return base->GetMesgText(KevesBase::mesg_ReqIntNumAs3rd);
+  return base->GetMesgText(KevesBuiltinValues::mesg_ReqIntNumAs3rd);
 }
 
 bool Function::IsChar::func(KevesValue kev) {
@@ -104,15 +105,15 @@ bool Function::IsChar::func(KevesValue kev) {
 }
 
 KevesValue Function::IsChar::message(KevesBase* base) {
-  return base->GetMesgText(KevesBase::mesg_ReqChar);
+  return base->GetMesgText(KevesBuiltinValues::mesg_ReqChar);
 }
 
 KevesValue Function::IsChar::message1(KevesBase* base) {
-  return base->GetMesgText(KevesBase::mesg_ReqCharAs1st);
+  return base->GetMesgText(KevesBuiltinValues::mesg_ReqCharAs1st);
 }
 
 KevesValue Function::IsChar::message2(KevesBase* base) {
-  return base->GetMesgText(KevesBase::mesg_ReqCharAs2nd);
+  return base->GetMesgText(KevesBuiltinValues::mesg_ReqCharAs2nd);
 }
 
 bool Function::IsString::func(KevesValue kev) {
@@ -120,11 +121,11 @@ bool Function::IsString::func(KevesValue kev) {
 }
 
 KevesValue Function::IsString::message(KevesBase* base) {
-  return base->GetMesgText(KevesBase::mesg_ReqStr);
+  return base->GetMesgText(KevesBuiltinValues::mesg_ReqStr);
 }
 
 KevesValue Function::IsString::message1(KevesBase* base) {
-  return base->GetMesgText(KevesBase::mesg_ReqStrAs1st);
+  return base->GetMesgText(KevesBuiltinValues::mesg_ReqStrAs1st);
 }
 
 bool Function::IsSymbol::func(KevesValue kev) {
@@ -132,7 +133,7 @@ bool Function::IsSymbol::func(KevesValue kev) {
 }
 
 KevesValue Function::IsSymbol::message(KevesBase* base) {
-  return base->GetMesgText(KevesBase::mesg_ReqSym);
+  return base->GetMesgText(KevesBuiltinValues::mesg_ReqSym);
 }
 
 bool Function::IsPair::func(KevesValue kev) {
@@ -140,5 +141,5 @@ bool Function::IsPair::func(KevesValue kev) {
 }
 
 KevesValue Function::IsPair::message(KevesBase* base) {
-  return base->GetMesgText(KevesBase::mesg_ReqPair);
+  return base->GetMesgText(KevesBuiltinValues::mesg_ReqPair);
 }

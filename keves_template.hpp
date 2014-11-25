@@ -20,6 +20,7 @@
 #pragma once
 
 #include "keves_base.hpp"
+#include "keves_builtin_values.hpp"
 #include "keves_vm.hpp"
 #include "number_kev.hpp"
 
@@ -413,7 +414,7 @@ namespace Arithmatic {
 	return func5<OPERATOR1, OPERATOR2>(vm, pc);
       
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = KevesValue(vm->base()->GetMesgText(KevesBase::mesg_ReqNum));
+      vm->gr1_ = KevesValue(vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqNum));
       vm->gr2_ = EMB_NULL;
       return KevesVM::RaiseAssertCondition(vm, pc);
     }
@@ -445,7 +446,7 @@ namespace Arithmatic {
 	return OPERATOR1::funcInexactComplexFixnum(vm, pc);
 
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = KevesValue(vm->base()->GetMesgText(KevesBase::mesg_ReqNum));
+      vm->gr1_ = KevesValue(vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqNum));
       vm->gr2_ = EMB_NULL;
       return KevesVM::RaiseAssertCondition(vm, pc);
     }
@@ -506,7 +507,7 @@ namespace Arithmatic {
     }
 
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = KevesValue(vm->base()->GetMesgText(KevesBase::mesg_ReqNum));
+    vm->gr1_ = KevesValue(vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqNum));
     vm->gr2_ = EMB_NULL;
     return KevesVM::RaiseAssertCondition(vm, pc);
   }
@@ -535,7 +536,7 @@ namespace Arithmatic {
 	return OPERATOR1::funcInexactComplexRational(vm, pc);
       
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = KevesValue(vm->base()->GetMesgText(KevesBase::mesg_ReqNum));
+      vm->gr1_ = KevesValue(vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqNum));
       vm->gr2_ = EMB_NULL;
       return KevesVM::RaiseAssertCondition(vm, pc);
     }
@@ -598,7 +599,7 @@ namespace Arithmatic {
     }
     
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = KevesValue(vm->base()->GetMesgText(KevesBase::mesg_ReqNum));
+    vm->gr1_ = KevesValue(vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqNum));
     vm->gr2_ = EMB_NULL;
     return KevesVM::RaiseAssertCondition(vm, pc);
   }
@@ -627,7 +628,7 @@ namespace Arithmatic {
 	return OPERATOR1::funcInexactComplexFlonum(vm, pc);
 
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = KevesValue(vm->base()->GetMesgText(KevesBase::mesg_ReqNum));
+      vm->gr1_ = KevesValue(vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqNum));
       vm->gr2_ = EMB_NULL;
       return KevesVM::RaiseAssertCondition(vm, pc);
     }
@@ -688,7 +689,7 @@ namespace Arithmatic {
     }
 
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = KevesValue(vm->base()->GetMesgText(KevesBase::mesg_ReqNum));
+    vm->gr1_ = KevesValue(vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqNum));
     vm->gr2_ = EMB_NULL;
     return KevesVM::RaiseAssertCondition(vm, pc);
   }
@@ -717,7 +718,7 @@ namespace Arithmatic {
 	return OPERATOR1::funcInexactComplexExactComplex(vm, pc);
       
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = KevesValue(vm->base()->GetMesgText(KevesBase::mesg_ReqNum));
+      vm->gr1_ = KevesValue(vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqNum));
       vm->gr2_ = EMB_NULL;
       return KevesVM::RaiseAssertCondition(vm, pc);
     }
@@ -778,7 +779,7 @@ namespace Arithmatic {
     }
 
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = KevesValue(vm->base()->GetMesgText(KevesBase::mesg_ReqNum));
+    vm->gr1_ = KevesValue(vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqNum));
     vm->gr2_ = EMB_NULL;
     return KevesVM::RaiseAssertCondition(vm, pc);
   }
@@ -807,7 +808,7 @@ namespace Arithmatic {
 	return OPERATOR1::funcInexactComplexInexactComplex(vm, pc);
       
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = KevesValue(vm->base()->GetMesgText(KevesBase::mesg_ReqNum));
+      vm->gr1_ = KevesValue(vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqNum));
       vm->gr2_ = EMB_NULL;
       return KevesVM::RaiseAssertCondition(vm, pc);
     }
@@ -840,7 +841,7 @@ namespace Arithmatic {
       result.CopyFrom(OPERATOR2::func(*num2, *num1));
     } else {
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = KevesValue(vm->base()->GetMesgText(KevesBase::mesg_ReqNum));
+      vm->gr1_ = KevesValue(vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqNum));
       vm->gr2_ = EMB_NULL;
       return KevesVM::RaiseAssertCondition(vm, pc);
     }

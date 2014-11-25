@@ -34,54 +34,16 @@
 #include "vector_kev.hpp"
 #include "wind_kev.hpp"
 
-#define DEFINE_MESG_KEY(mesg) const char KevesBase::mesg_ ## mesg[] = #mesg
-DEFINE_MESG_KEY(Req0);
-DEFINE_MESG_KEY(Req1Got0);
-DEFINE_MESG_KEY(Req1GotMore);
-DEFINE_MESG_KEY(Req2Got0);
-DEFINE_MESG_KEY(Req2Got1);
-DEFINE_MESG_KEY(Req2GotMore);
-DEFINE_MESG_KEY(Req2OrMoreGot0);
-DEFINE_MESG_KEY(Req2OrMoreGot1);
-DEFINE_MESG_KEY(Req3Got0);
-DEFINE_MESG_KEY(Req3Got1);
-DEFINE_MESG_KEY(Req3Got2);
-DEFINE_MESG_KEY(Req3GotMore);
-DEFINE_MESG_KEY(ReqNotGet3Args);
-DEFINE_MESG_KEY(ReqMoreGotLess);
-DEFINE_MESG_KEY(ReqLessGotMore);
-DEFINE_MESG_KEY(ReqNum);
-DEFINE_MESG_KEY(ReqRealNum);
-DEFINE_MESG_KEY(ReqIntNum);
-DEFINE_MESG_KEY(ReqIntNumAs1st);
-DEFINE_MESG_KEY(ReqIntNumAs2nd);
-DEFINE_MESG_KEY(ReqIntNumAs3rd);
-DEFINE_MESG_KEY(ReqChar);
-DEFINE_MESG_KEY(ReqCharAs1st);
-DEFINE_MESG_KEY(ReqCharAs2nd);
-DEFINE_MESG_KEY(ReqStr);
-DEFINE_MESG_KEY(ReqStrAs1st);
-DEFINE_MESG_KEY(ReqSym);
-DEFINE_MESG_KEY(ReqPair);
-DEFINE_MESG_KEY(1stObjNotProcOrSyn);
-#undef DEFINE_MESG_KEY
 
 KevesBase::KevesBase()
   : gc_(10),
     cmd_table_(),
-    mesg_text_(),
+    builtin_(),
     sym_eval_(),
-    builtin_code_(),
-    code_APPLY_(),
-    code_HALT_(),
-    code_REMOVE_DYNAMIC_WIND_(),
-    code_REVERT_DYNAMIC_WIND_and_APPLY_(),
-    code_POP_APPLY_(),
-    code_POP_RETURN_(),
     lib_keves_base_() {
 
   InitCMDTable();
-  InitMesgList("mesg_text.csv");
+  builtin_.Init(&gc_);
 
   SetFunctionTable<CodeKev>();
   SetFunctionTable<Bignum>();
@@ -103,25 +65,6 @@ KevesBase::KevesBase()
   SetFunctionTable<PairKev>();
 
   sym_eval_ = SymbolKev::Make(&gc_, "eval");
-
-  constexpr int CODE_SIZE(8);
-  builtin_code_ = CodeKev::make(&gc_, CODE_SIZE);
-  KevesIterator iter(builtin_code_->begin());
-  code_HALT_ = iter;
-  *iter++ = KevesInstruct(CMD_HALT);
-  code_POP_APPLY_ = iter;
-  *iter++ = KevesInstruct(CMD_POP);
-  code_APPLY_ = iter;
-  *iter++ = KevesInstruct(CMD_APPLY);
-  code_POP_RETURN_ = iter;
-  *iter++ = KevesInstruct(CMD_POP);
-  *iter++ = KevesInstruct(CMD_RETURN);
-  code_REVERT_DYNAMIC_WIND_and_APPLY_ = iter;
-  *iter++ = KevesInstruct(CMD_REVERT_DYNAMIC_WIND);
-  *iter++ = KevesInstruct(CMD_APPLY);
-  code_REMOVE_DYNAMIC_WIND_ = iter;
-  *iter++ = KevesInstruct(CMD_REMOVE_DYNAMIC_WIND);
-  Q_ASSERT(iter <= builtin_code_->begin() + CODE_SIZE);
 
   lib_keves_base_.Init(&gc_);
 }
@@ -272,54 +215,8 @@ void KevesBase::InitCMDTable() {
 #undef INIT_CHECK_SUM
 }
 
-void KevesBase::InitMesgList(const QString& file_name) {
-  QFile mesg_file(file_name);
-
-  if (!mesg_file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    std::cerr << "Not found `mesg_text.csv'\n";
-    return;
-  }
-  
-  QString temp, key, value;
-  int line_num(0);
-
-  while (!mesg_file.atEnd()) {
-    temp = mesg_file.readLine();
-    ++line_num;
-    int pos(temp.indexOf('\t'));
-    int size(temp.length());
-
-    if (size == 0) continue;
-
-    if (pos < 0 || pos == size - 1) {
-      std::cerr << "Error: There is no value in line: " << line_num
-		<< ", mesg_text.csv.\n";
-      continue;
-    }
-
-    key = temp.left(pos).trimmed();
-    value = temp.mid(pos + 1).trimmed();
-
-    if (key.isEmpty()) {
-      std::cerr << "Error: There is no key in line: " << line_num
-		<< ", mesg_text.csv.\n";
-      continue;
-    }
-
-    if (value.isEmpty()) {
-      std::cerr << "Error: There is no value in line: " << line_num
-		<< ", mesg_text.csv.\n";
-      continue;
-    }
-
-    mesg_text_.insert(key, StringKev::Make(&gc_, value));
-  }
-
-  mesg_file.close();
-}
-
 const StringKev* KevesBase::GetMesgText(const QString& key) const {
-  return mesg_text_.value(key);
+  return builtin_.GetMesgText(key);
 }
 
 const QList<const Kev*> KevesBase::GetObjectList(const Kev* kev) {
@@ -365,7 +262,7 @@ void KevesBase::RevertValue(const QList<Kev*>& object_list,
   if (IsIndex(*value)) *value = object_list.at(value->toUIntPtr() >> 2);
 }
 
-QString KevesBase::ToString(KevesValue value) {
+QString KevesBase::ToString(KevesValue value) const {
   QString str;
 
   if (value.IsPtr()) ToString_list(&str, value, 0);
@@ -374,7 +271,7 @@ QString KevesBase::ToString(KevesValue value) {
   return str;
 }
 
-void KevesBase::ToString_list(QString* str, KevesValue value, int nest) {
+void KevesBase::ToString_list(QString* str, KevesValue value, int nest) const {
   if (value.IsPair()) {
     if (nest > 8) {
       str->append("(...)");
@@ -414,7 +311,7 @@ void KevesBase::ToString_list(QString* str, KevesValue value, int nest) {
   }
 }
 
-void KevesBase::ToString_vector(QString* str, KevesValue value, int nest) {
+void KevesBase::ToString_vector(QString* str, KevesValue value, int nest) const {
   const VectorKev* vector(value);
 
   if (vector->size() == 0) {
@@ -442,7 +339,7 @@ void KevesBase::ToString_vector(QString* str, KevesValue value, int nest) {
   str->append(")");
 }
 
-void KevesBase::ToString_code(QString* str, KevesValue value, int nest) {
+void KevesBase::ToString_code(QString* str, KevesValue value, int nest) const {
   const CodeKev* code(value);
 
   if (code->size() == 0) {
@@ -470,7 +367,7 @@ void KevesBase::ToString_code(QString* str, KevesValue value, int nest) {
   str->append(")");
 }
 
-void KevesBase::ToString_element(QString* str, KevesValue value) {
+void KevesBase::ToString_element(QString* str, KevesValue value) const {
   if (value.IsBool()) {
     str->append(value == EMB_TRUE ? "#t" : "#f");
   } else if (value == EMB_NULL) {

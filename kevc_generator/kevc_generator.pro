@@ -17,6 +17,7 @@ HEADERS += ../bignum.hpp \
            ../environment_kev.hpp \
            ../keves_base.hpp \
            ../keves_base-inl.hpp \
+           ../keves_builtin_values.hpp \
            ../keves_char.hpp \
            ../keves_file_io.hpp \
            ../keves_frame.hpp \
@@ -48,6 +49,7 @@ SOURCES += main.cpp \
            ../condition_kev.cpp \
            ../environment_kev.cpp \
            ../keves_base.cpp \
+           ../keves_builtin_values.cpp \
            ../keves_char.cpp \
            ../keves_file_io.cpp \
            ../keves_frame.cpp \
