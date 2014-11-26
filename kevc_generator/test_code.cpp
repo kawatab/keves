@@ -34,7 +34,7 @@
 #include "kev/string.hpp"
 #include "kev/symbol.hpp"
 #include "kev/vector.hpp"
-#include "library/library.hpp"
+#include "lib/library.hpp"
 #include "value/char.hpp"
 
 
