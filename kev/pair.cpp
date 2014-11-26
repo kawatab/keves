@@ -1,4 +1,4 @@
-// Keves/pair_kev.cpp - pairs for Keves
+// keves/kev/pair.cpp - pairs for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -19,8 +19,6 @@
 
 #include "kev/pair.hpp"
 
-#include "keves_gc.hpp"
-
 
 void PairKev::CopyFrom(const PairKev& org) {
   this->car_ = org.car_;
@@ -35,9 +33,4 @@ void PairKev::CopyFrom(PairKev&& org) {
 void PairKev::Set(KevesValue car, KevesValue cdr) {
   this->car_ = car;
   this->cdr_ = cdr;
-}
-
-PairKev* PairKev::Make(KevesGC* gc, KevesValue car, KevesValue cdr) {
-  auto ctor = [car, cdr](void* ptr) { return new(ptr) PairKev(car, cdr); };
-  return gc->Make(ctor, alloc_size(nullptr));
 }

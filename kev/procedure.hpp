@@ -1,4 +1,4 @@
-// Keves/procedure_kev.hpp - procedures for Keves
+// keves/kev/procedure.hpp - procedures for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -153,7 +153,8 @@ public:
     this->index_ = index;
   }
   
-  static LambdaKev* make(KevesGC* gc, FreeVarFrameKev* free_vars, CodeKev* code, int index);
+  template<class ZONE>
+  static LambdaKev* Make(ZONE* zone, FreeVarFrameKev* free_vars, CodeKev* code, int index);
   
 private:
   const FreeVarFrameKev* free_vars_;
@@ -211,7 +212,7 @@ public:
     uioword free_vars, code;
     ioword index;
     in >> free_vars >> code >> index;
-    return make(gc,
+    return Make(gc,
 		KevesValue::template FromUioword<FreeVarFrameKev>(free_vars),
 		KevesValue::template FromUioword<CodeKev>(code),
 		index);

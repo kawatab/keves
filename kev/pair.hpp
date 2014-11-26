@@ -1,4 +1,4 @@
-// Keves/pair_kev.hpp - pairs for Keves
+// keves/kev/pair.hpp - pairs for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -60,7 +60,8 @@ public:
     cdr_ = value;
   }
 
-  static PairKev* Make(KevesGC* gc, KevesValue car, KevesValue cdr);
+  template<class ZONE>
+  static PairKev* Make(ZONE* zone, KevesValue car, KevesValue cdr);
 
 private:
   KevesValue car_;

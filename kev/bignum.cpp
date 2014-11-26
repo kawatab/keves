@@ -1,4 +1,4 @@
-// Keves/bignum.cpp - bignums for Keves
+// keves/kev/bignum.cpp - bignums for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -21,7 +21,6 @@
 
 #include <memory>
 #include <QString>
-
 #include "keves_gc.hpp"
 
 

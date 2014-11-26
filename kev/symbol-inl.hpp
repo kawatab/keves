@@ -1,4 +1,4 @@
-// keves/kev/jump.cpp - jumps for Keves
+// keves/kev/symbol-inl.hpp - symbols for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -17,17 +17,19 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "kev/jump.hpp"
+#pragma once
 
 
-// class JumpKev ----------------------------------------
-JumpKev::JumpKev()
-  : JumpKev(KevesIterator()) {}
+template<class ZONE>
+SymbolKev* SymbolKev::Make(ZONE* zone, StringCoreKev* core, int idx, int len) {
+  auto ctor = [core, idx, len](void* ptr) {
+    return new(ptr) SymbolKev(core, idx, len);
+  };
+    
+  return zone->Make(ctor, alloc_size(nullptr));
+}
 
-JumpKev::JumpKev(KevesIterator dest)
-  : MutableKev(TYPE), destination_(dest) {}
-
-// class DestinationKev ----------------------------------------
-DestinationKev::DestinationKev(const JumpKev* kev)
-  : MutableKev(TYPE), label_(kev) {}
-  
+template<class ZONE>
+SymbolKev* SymbolKev::Make(ZONE* zone, const QString& str) {
+  return zone->Make(ctor(zone, str), alloc_size(nullptr));
+}

@@ -1,4 +1,4 @@
-// Keves/number_kev.hpp - pairs for Keves
+// keves/kev/number.hpp - pairs for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -21,9 +21,9 @@
 
 #include <cmath>
 #include <functional>
-
 #include "kev/bignum.hpp"
 #include "value/fixnum.hpp"
+
 
 class ExactComplexNumberKev;
 class RationalNumberKev;
@@ -165,7 +165,8 @@ public:
 private:
   double toDouble() const;
 
-  static RationalNumberKev* make(KevesGC*);
+  template<class ZONE>
+  static RationalNumberKev* Make(ZONE* zone);
 
 protected:
   bool neg_;
@@ -224,7 +225,7 @@ public:
     ioword neg;
     uioword numerator, denominator;
     in >> neg >> numerator >> denominator;
-    RationalNumberKev* rational(make(gc));
+    RationalNumberKev* rational(Make(gc));
     
     rational->set(static_cast<bool>(neg),
 		  KevesValue::template FromUioword<Bignum>(numerator),
@@ -364,7 +365,9 @@ public:
   QString toQString(bool sign, int) const;
   FlonumKev truncate() const;
 
-  static FlonumKev* make(KevesGC*, double);
+  template<class ZONE>
+  static FlonumKev* Make(ZONE* zone, double);
+
   static FlonumKev fromString(StringKev, bool*);
 
 private:
@@ -412,7 +415,7 @@ public:
   static Kev* ReadObject(STREAM& in, GC* gc) {
     double value;
     in >> value;
-    return make(gc, value);
+    return Make(gc, value);
   }
   
   template<class /*BASE*/, class LIST>
@@ -473,7 +476,9 @@ public:
   InexactComplexNumberKev toInexact() const;
   QString toQString() const;
 
-  static ExactComplexNumberKev* make(KevesGC*);
+  template<class ZONE>
+  static ExactComplexNumberKev* Make(ZONE* zone);
+
   static KevesValue makeFromBinary(KevesGC*, StringKev, StringKev, int);
 
 protected:
@@ -548,7 +553,7 @@ public:
        >> real_numerator >> real_denominator
        >> imag_numerator >> imag_denominator;
 
-    ExactComplexNumberKev* complex(make(gc));
+    ExactComplexNumberKev* complex(Make(gc));
     complex->real_neg_ = real_neg;
     complex->imag_neg_ = imag_neg;
 

@@ -1,4 +1,4 @@
-// keves/kev/jump.cpp - jumps for Keves
+// keves/kev/condition-inl.hpp - conditions for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -17,17 +17,24 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "kev/jump.hpp"
+#pragma once
 
 
-// class JumpKev ----------------------------------------
-JumpKev::JumpKev()
-  : JumpKev(KevesIterator()) {}
+template<class ZONE>
+SimpleConditionKev* SimpleConditionKev::Make(ZONE* zone, const RecordKev* field, KevesValue value) {
+  auto ctor = [field, value](void* ptr) {
+    return new(ptr) SimpleConditionKev(field, value);
+  };
 
-JumpKev::JumpKev(KevesIterator dest)
-  : MutableKev(TYPE), destination_(dest) {}
+  return zone->Make(ctor, alloc_size(nullptr));
+}
 
-// class DestinationKev ----------------------------------------
-DestinationKev::DestinationKev(const JumpKev* kev)
-  : MutableKev(TYPE), label_(kev) {}
-  
+
+template<class ZONE>
+CompoundConditionKev* CompoundConditionKev::Make(ZONE* zone, VectorKev* values) {
+  auto ctor = [values](void* ptr) {
+    return new(ptr) CompoundConditionKev(values);
+  };
+
+  return zone->Make(ctor, alloc_size(nullptr));
+}

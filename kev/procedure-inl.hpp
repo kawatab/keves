@@ -1,4 +1,4 @@
-// keves/kev/jump.cpp - jumps for Keves
+// keves/kev/procedure-inl.hpp - procedures for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -17,17 +17,16 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "kev/jump.hpp"
+#pragma once
 
 
-// class JumpKev ----------------------------------------
-JumpKev::JumpKev()
-  : JumpKev(KevesIterator()) {}
+template<class ZONE>
+LambdaKev* LambdaKev::Make(ZONE* zone, FreeVarFrameKev* free_vars,
+			   CodeKev* code, int index) {
+  auto ctor = [free_vars, code, index](void* ptr) {
+    return new(ptr) LambdaKev(free_vars, code, index);
+  };
 
-JumpKev::JumpKev(KevesIterator dest)
-  : MutableKev(TYPE), destination_(dest) {}
-
-// class DestinationKev ----------------------------------------
-DestinationKev::DestinationKev(const JumpKev* kev)
-  : MutableKev(TYPE), label_(kev) {}
+  return zone->Make(ctor, sizeof(LambdaKev));
+}
   

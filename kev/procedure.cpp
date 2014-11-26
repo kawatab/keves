@@ -1,4 +1,4 @@
-// Keves/procedure_kev.cpp - procedures for Keves
+// keves/kev/procedure.cpp - procedures for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -19,7 +19,6 @@
 
 #include "kev/procedure.hpp"
 
-#include "keves_gc.hpp"
 
 // class CPSKev ----------------------------------------
 CPSKev::CPSKev()
@@ -43,25 +42,13 @@ LambdaKev::LambdaKev(CodeKev* code, int index)
 LambdaKev::LambdaKev(const FreeVarFrameKev* free_vars, CodeKev* code, int index)
   : MutableKev(TYPE), free_vars_(free_vars), code_(code), index_(index) {}
 
-LambdaKev::LambdaKev(const FreeVarFrameKev* free_vars,
-		     CodeKev* code,
+LambdaKev::LambdaKev(const FreeVarFrameKev* free_vars, CodeKev* code,
 		     const_KevesIterator pc)
   : MutableKev(TYPE),
     free_vars_(free_vars),
     code_(code),
     index_(pc - code_->begin()) {}
 
-LambdaKev* LambdaKev::make(KevesGC* gc,
-			   FreeVarFrameKev* free_vars,
-			   CodeKev* code,
-			   int index) {
-  auto ctor = [free_vars, code, index](void* ptr) {
-    return new(ptr) LambdaKev(free_vars, code, index);
-  };
-
-  return gc->Make(ctor, sizeof(LambdaKev));
-}
-  
 
 
 // class ContinuationKev ----------------------------------------

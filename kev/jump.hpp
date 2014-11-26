@@ -1,4 +1,4 @@
-// Keves/jump_kev.hpp - jumps for Keves
+// keves/kev/jump.hpp - jumps for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -21,9 +21,6 @@
 
 #include "keves_iterator.hpp"
 #include "value/value.hpp"
-
-
-class KevesGC;
 
 
 // class JumpKev ----------------------------------------
@@ -70,7 +67,8 @@ public:
     this->destination_ = destination;
   }
 
-  static JumpKev* make(KevesGC* gc);
+  template<class ZONE>
+  static JumpKev* Make(ZONE* zone);
 
 protected:
   KevesIterator destination_;

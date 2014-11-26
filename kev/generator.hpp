@@ -1,4 +1,4 @@
-// Keves/generator_kev.hpp - generators for Keves
+// keves/kev/generator.hpp - generators for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>

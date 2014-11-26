@@ -1,4 +1,4 @@
-// Keves/bignum.hpp - bignums for Keves
+// keves/kev/bignum.hpp - bignums for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -20,7 +20,6 @@
 #pragma once
 
 #include <cmath>
-
 #include <gmpxx.h>
 #include "keves_iterator.hpp"
 #include "value/fixnum.hpp"

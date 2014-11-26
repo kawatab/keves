@@ -1,4 +1,4 @@
-// Keves/vector_kev.hpp - vectors for Keves
+// keves/kev/vector.hpp - vectors for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -22,7 +22,6 @@
 #include "keves_iterator.hpp"
 #include "value/value.hpp"
 
-class KevesGC;
 
 class VectorKev : public MutableKev {
 public:
@@ -52,7 +51,8 @@ public:
     return size_;
   }
 
-  static VectorKev* Make(KevesGC* gc, int);
+  template<class ZONE>
+  static VectorKev* Make(ZONE* zone, int);
 
 protected:
   explicit VectorKev(int);

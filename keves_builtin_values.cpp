@@ -23,6 +23,7 @@
 #include <QFile>
 #include "kev/code.hpp"
 #include "kev/string.hpp"
+#include "kev/string-inl.hpp"
 #include "value/instruct.hpp"
 
 
@@ -65,7 +66,7 @@ DEFINE_MESG_KEY(1stObjNotProcOrSyn);
 void KevesBuiltinValues::Init(KevesGC* gc) {
   InitMesgList("mesg_text.csv", gc);
 
-  builtin_code_ = CodeKev::make(gc, 8);
+  builtin_code_ = CodeKev::Make(gc, 8);
   {
     KevesIterator iter(builtin_code_->begin());
     code_HALT_ = iter;

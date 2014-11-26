@@ -37,8 +37,10 @@
 #include "kev/record.hpp"
 #include "kev/reference.hpp"
 #include "kev/string.hpp"
+#include "kev/string-inl.hpp"
 #include "kev/symbol.hpp"
 #include "kev/vector.hpp"
+#include "kev/vector-inl.hpp"
 #include "kev/wind.hpp"
 #include "kev/wrapped.hpp"
 #include "lib/lib_keves_base.hpp"
@@ -824,7 +826,7 @@ void KevesVM::cmd_BOX(KevesVM* vm, const_KevesIterator pc) {
 	actual_frame_size *= 2;
       } while (frame_size > actual_frame_size);
 
-      LocalVarFrameKev* env_frame(LocalVarFrameKev::make(&vm->gc_, actual_frame_size));
+      LocalVarFrameKev* env_frame(LocalVarFrameKev::Make(&vm->gc_, actual_frame_size));
 
       registers->extendEnvFrame(env_frame);
     }
@@ -1269,7 +1271,7 @@ void KevesVM::cmd_TERMINATE_EXPAND(KevesVM* vm, const_KevesIterator pc) {
     if (temp.IsDestination()) ++cnt;
   }
   
-  CodeKev* code(CodeKev::make(&vm->gc_, size - cnt));
+  CodeKev* code(CodeKev::Make(&vm->gc_, size - cnt));
   // CodeKev* code(CodeKev::makeWithPermanent(&vm->gc_, size - cnt));
   // CodeKev* code(CodeKev::makeWithTenured(&vm->gc_, size - cnt));
   KevesIterator itr(code->end());

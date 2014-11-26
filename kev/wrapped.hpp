@@ -1,4 +1,4 @@
-// Keves/wrapped_kev.hpp - wrappeds for Keves
+// keves/kev/wrapped.hpp - wrappeds for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -21,6 +21,7 @@
 
 #include "keves_iterator.hpp"
 #include "value/value.hpp"
+
 
 class WrappedKev : public MutableKev {
 public:
@@ -75,7 +76,9 @@ public:
   }
 
   static KevesValue getDatum(KevesValue);
-  static WrappedKev* make(KevesIterator*, KevesValue, KevesValue, KevesValue, KevesValue);
+
+  template<class ZONE>
+  static WrappedKev* Make(ZONE*, KevesValue, KevesValue, KevesValue, KevesValue);
 
 private:
   KevesValue form_;

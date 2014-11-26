@@ -1,4 +1,4 @@
-// Keves/reference_kev.cpp - references for Keves
+// keves/kev/reference.cpp - references for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -18,11 +18,3 @@
 
 
 #include "kev/reference.hpp"
-
-#include "keves_gc.hpp"
-
-
-ReferenceKev* ReferenceKev::make(KevesGC* gc, KevesValue ref) {
-  auto ctor = [ref](void* ptr) { return new(ptr) ReferenceKev(ref); };
-  return gc->Make(ctor, alloc_size(nullptr));
-}

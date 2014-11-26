@@ -1,4 +1,4 @@
-// Keves/number_kev.cpp - numbers for Keves
+// keves/kev/number.cpp - numbers for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -21,9 +21,9 @@
 
 #include <iostream>
 #include <sstream>
-
 #include "keves_gc.hpp"
 #include "kev/string.hpp"
+#include "kev/string-inl.hpp"
 
 namespace {
   int getSignOfNumberString(StringKev str, bool* ptr_neg) {
@@ -99,7 +99,7 @@ namespace {
 	if (next_str)
 	  return NumberKev_makeFromDecimal(gc, *next_str, nullptr, radix, exct, rational);
 	RationalNumberKev* imag(rational);
-	ExactComplexNumberKev* complex(ExactComplexNumberKev::make(gc));
+	ExactComplexNumberKev* complex(ExactComplexNumberKev::Make(gc));
 	complex->set(*real, *imag);
 	return complex;
       }
@@ -1207,11 +1207,6 @@ RationalNumberKev* RationalNumberKev::makeFromInt(KevesIterator* iter, bg_int re
 }
 */
 
-RationalNumberKev* RationalNumberKev::make(KevesGC* gc) {
-  auto ctor = [](void* ptr) { return new(ptr) RationalNumberKev(); };
-  return gc->Make(ctor, alloc_size(nullptr));
-}
-
 RationalNumberKev* RationalNumberKev::makeFromInt(KevesGC* gc, bg_int real) {
   return gc->Make(ctorFromInt(gc, real), alloc_size(nullptr));
 }
@@ -1229,7 +1224,7 @@ RationalNumberKev* RationalNumberKev::makeFromString(KevesGC* gc, StringKev str)
   int pos(str.IndexOf("/"));
   QString str1;
   QString str2;
-  RationalNumberKev* number(RationalNumberKev::make(gc));
+  RationalNumberKev* number(RationalNumberKev::Make(gc));
 
   if (pos > 0) { // rational
     str1.operator=(str.Left(pos).ToQString());
@@ -1317,7 +1312,7 @@ RationalNumberKev* RationalNumberKev::makeFromString(KevesGC* gc, StringKev str,
     str_denominator.CopyFrom(str_one);
   }
   
-  RationalNumberKev* number(RationalNumberKev::make(gc));
+  RationalNumberKev* number(RationalNumberKev::Make(gc));
 
   if (str_numerator.Left(1).Equals("+")) {
     number->neg_ = false;
@@ -1336,7 +1331,7 @@ RationalNumberKev* RationalNumberKev::makeFromString(KevesGC* gc, StringKev str,
 }
 
 KevesValue RationalNumberKev::makeRationalFromString(KevesGC* gc, bool negative, StringKev str_num, StringKev str_den) {
-  RationalNumberKev* number(RationalNumberKev::make(gc));
+  RationalNumberKev* number(RationalNumberKev::Make(gc));
   number->neg_ = negative;
   number->numerator_ = Bignum::makeFromString(gc, str_num.ToQString());
   number->denominator_ = Bignum::makeFromString(gc, str_den.ToQString());
@@ -1345,7 +1340,7 @@ KevesValue RationalNumberKev::makeRationalFromString(KevesGC* gc, bool negative,
 }
 
 KevesValue RationalNumberKev::makeRationalFromString(KevesGC* gc, bool negative, StringKev str_num, StringKev str_den, int radix) {
-  RationalNumberKev* number(RationalNumberKev::make(gc));
+  RationalNumberKev* number(RationalNumberKev::Make(gc));
   number->neg_ = negative;
   number->numerator_ = Bignum::makeFromString(gc, str_num.ToQString(), radix);
   number->denominator_ = Bignum::makeFromString(gc, str_den.ToQString(), radix);
@@ -1354,7 +1349,7 @@ KevesValue RationalNumberKev::makeRationalFromString(KevesGC* gc, bool negative,
 }
 
 KevesValue RationalNumberKev::makeFractionFromString(KevesGC* gc, bool negative, StringKev str_int, StringKev str_fract, int expt) {
-  RationalNumberKev* number(RationalNumberKev::make(gc));
+  RationalNumberKev* number(RationalNumberKev::Make(gc));
   
   QString str(str_int.ToQString() + str_fract.ToQString());
   expt -= str_fract.size();
@@ -1369,7 +1364,7 @@ KevesValue RationalNumberKev::makeFractionFromString(KevesGC* gc, bool negative,
 }
 
 KevesValue RationalNumberKev::makeIntegerFromString(KevesGC* gc, bool negative, StringKev str, int radix) {
-  RationalNumberKev* number(RationalNumberKev::make(gc));
+  RationalNumberKev* number(RationalNumberKev::Make(gc));
   number->neg_ = negative;
   number->numerator_ = Bignum::makeFromString(gc, str.ToQString(), radix);
   number->denominator_ = Bignum::makeFromString(gc, "1");
@@ -1980,11 +1975,6 @@ RationalNumberKev FlonumKev::toExact(KevesGC* gc) const {
   return { gc, exact };
 }
 
-FlonumKev* FlonumKev::make(KevesGC* gc, double d) {
-  auto ctor = [d](void* ptr) { return new(ptr) FlonumKev(d); };
-  return gc->Make(ctor, alloc_size(nullptr));
-}
-
 FlonumKev* FlonumKev::copy(KevesGC* gc) const {
   Q_ASSERT(type() == TYPE);
 
@@ -2121,14 +2111,9 @@ KevesValue ExactComplexNumberKev::makeFromBinary(KevesGC* gc, StringKev str_real
     return int_num.IsFixnum() ? int_num : KevesValue(real);
   }
 
-  ExactComplexNumberKev* complex(make(gc));
+  ExactComplexNumberKev* complex(Make(gc));
   complex->set(*real, *imag);
   return complex;
-}
-
-ExactComplexNumberKev* ExactComplexNumberKev::make(KevesGC* gc) {
-  auto ctor = [](void* ptr) { return new(ptr) ExactComplexNumberKev(); };
-  return gc->Make(ctor, alloc_size(nullptr));
 }
 
 ExactComplexNumberKev ExactComplexNumberKev::add(KevesGC* gc, KevesFixnum addend) const {
@@ -2414,7 +2399,7 @@ KevesValue InexactComplexNumberKev::makeFromBinary(KevesGC* gc, StringKev str_re
 	      static_cast<double>(str_real.ToInt(nullptr, radix)));
 
   if (str_imag.Equals("0"))
-    return FlonumKev::make(gc, real);
+    return FlonumKev::Make(gc, real);
 
   double imag(static_cast<double>(str_imag.ToInt(nullptr, radix)));
   

@@ -1,4 +1,4 @@
-// Keves/wrapped_kev.cpp - wrappeds for Keves
+// keves/kev/wrapped.cpp - wrappeds for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -21,25 +21,23 @@
 
 
 WrappedKev::WrappedKev()
-  : WrappedKev(EMB_UNDEF, EMB_NULL, EMB_NULL, EMB_NULL) {
-}
+  : WrappedKev(EMB_UNDEF, EMB_NULL, EMB_NULL, EMB_NULL) {}
 
-WrappedKev::WrappedKev(KevesValue form, KevesValue local_vars, KevesValue free_vars, KevesValue global_vars)
+WrappedKev::WrappedKev(KevesValue form, KevesValue local_vars,
+		       KevesValue free_vars, KevesValue global_vars)
   : MutableKev(TYPE),
     form_(form),
     local_vars_(local_vars),
     free_vars_(free_vars),
     global_vars_(global_vars) {
-  if (!form.IsWrapped())
-    return;
+  if (!form.IsWrapped()) return;
   
   const WrappedKev* wrapped(form);
   this->copyFrom(*wrapped);
 }
 
 WrappedKev::WrappedKev(KevesValue form, const WrappedKev* env)
-  : WrappedKev(form, env->local_vars(), env->free_vars(), env->global_vars()) {
-}
+  : WrappedKev(form, env->local_vars(), env->free_vars(), env->global_vars()) {}
 
 void WrappedKev::copyFrom(const WrappedKev& other) {
   this->form_ = other.form_;
@@ -62,19 +60,10 @@ void WrappedKev::set(KevesValue form, KevesValue local_vars, KevesValue free_var
   this->global_vars_ = global_vars;
 }
 
-WrappedKev* WrappedKev::make(KevesIterator* iter, KevesValue form, KevesValue local_vars, KevesValue free_vars, KevesValue global_vars) {
-  auto ctor = [form, local_vars, free_vars, global_vars](void *ptr) {
-    return new(ptr) WrappedKev(form, local_vars, free_vars, global_vars);
-  };
-
-  return iter->make(ctor, alloc_size(nullptr));
-}
-
 KevesValue WrappedKev::getDatum(KevesValue obj) {
   if (!obj.IsWrapped())
     return obj;
 
   const WrappedKev* wrapped(obj);
   return wrapped->form();
-
 }

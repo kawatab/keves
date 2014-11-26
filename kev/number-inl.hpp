@@ -1,4 +1,4 @@
-// keves/kev/jump.cpp - jumps for Keves
+// keves/kev/number-inl.hpp - pairs for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -17,17 +17,22 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "kev/jump.hpp"
+#pragma once
 
+template<class ZONE>
+RationalNumberKev* RationalNumberKev::Make(ZONE* zone) {
+  auto ctor = [](void* ptr) { return new(ptr) RationalNumberKev(); };
+  return zone->Make(ctor, alloc_size(nullptr));
+}
 
-// class JumpKev ----------------------------------------
-JumpKev::JumpKev()
-  : JumpKev(KevesIterator()) {}
+template<class ZONE>
+FlonumKev* FlonumKev::Make(ZONE* zone, double d) {
+  auto ctor = [d](void* ptr) { return new(ptr) FlonumKev(d); };
+  return zone->Make(ctor, alloc_size(nullptr));
+}
 
-JumpKev::JumpKev(KevesIterator dest)
-  : MutableKev(TYPE), destination_(dest) {}
-
-// class DestinationKev ----------------------------------------
-DestinationKev::DestinationKev(const JumpKev* kev)
-  : MutableKev(TYPE), label_(kev) {}
-  
+template<class ZONE>
+ExactComplexNumberKev* ExactComplexNumberKev::Make(ZONE* zone) {
+  auto ctor = [](void* ptr) { return new(ptr) ExactComplexNumberKev(); };
+  return zone->Make(ctor, alloc_size(nullptr));
+}

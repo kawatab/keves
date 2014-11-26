@@ -1,4 +1,4 @@
-// Keves/wind_kev.hpp - winds for Keves
+// keves/kev/wind.hpp - winds for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -21,8 +21,6 @@
 
 #include "value/value.hpp"
 
-
-class KevesGC;
 
 class WindKev : public MutableKev {
 public:
@@ -49,7 +47,8 @@ public:
     return after_;
   }
 
-  static WindKev* make(KevesGC* gc, KevesValue before, KevesValue thunk,
+  template<class ZONE>
+  static WindKev* Make(ZONE* zone, KevesValue before, KevesValue thunk,
 		       KevesValue after);
 
 private:
@@ -108,7 +107,7 @@ public:
   static Kev* ReadObject(STREAM& in, GC* gc) {
     uioword before, thunk, after;
     in >> before >> thunk >> after;
-    return make(gc,
+    return Make(gc,
 		KevesValue::template FromUioword<Kev>(before),
 		KevesValue::template FromUioword<Kev>(thunk),
 		KevesValue::template FromUioword<Kev>(after));

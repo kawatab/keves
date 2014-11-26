@@ -1,4 +1,4 @@
-// Keves/keves_frame.hpp - frames for Keves
+// keves/kev/frame.hpp - frames for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -20,9 +20,7 @@
 #pragma once
 
 #include "keves_iterator.hpp"
-#include "value/fixnum.hpp"
 #include "value/value.hpp"
-// #include "reference_kev.hpp"
 
 class KevesGC;
 
@@ -77,7 +75,8 @@ public:
     return size_;
   }
 
-  static ArgumentFrameKev* make(KevesGC* gc, int size);
+  template<class ZONE>
+  static ArgumentFrameKev* Make(ZONE* zone, int size);
 
 private:
   void CopyTo(ArgumentFrameKev* other, int size) const;
@@ -148,7 +147,7 @@ public:
   static Kev* ReadObject(STREAM& in, GC* gc) {
     ioword size;
     in >> size;
-    ArgumentFrameKev* frame(ArgumentFrameKev::make(gc, size));
+    ArgumentFrameKev* frame(ArgumentFrameKev::Make(gc, size));
     BASE::ReadArray(in, frame);
     return frame;
   }
@@ -226,7 +225,8 @@ public:
     return size_;
   }
 
-  static LocalVarFrameKev* make(KevesGC* gc, int);
+  template<class ZONE>
+  static LocalVarFrameKev* Make(ZONE* zone, int);
 
 private:
   static size_t alloc_size(int size) {
@@ -299,7 +299,7 @@ public:
     ioword size;
     uioword next;
     in >> size >> next;
-    LocalVarFrameKev* frame(LocalVarFrameKev::make(gc, size));
+    LocalVarFrameKev* frame(LocalVarFrameKev::Make(gc, size));
     BASE::ReadArray(in, frame);
     return frame;
   }
@@ -387,7 +387,8 @@ public:
   }
 
   // static FreeVarFrameKev* make(KevesIterator*, int, FreeVarFrameKev*);
-  static FreeVarFrameKev* make(KevesGC* gc, int, FreeVarFrameKev*);
+  template<class ZONE>
+  static FreeVarFrameKev* Make(ZONE* zone, int, FreeVarFrameKev*);
 
   FreeVarFrameKev(int size, FreeVarFrameKev* next)
     : MutableKev(TYPE), size_(size), next_(next) {}
@@ -468,7 +469,7 @@ public:
     in >> size >> next;
 
     FreeVarFrameKev* frame
-      (make(gc,
+      (Make(gc,
 	    size,
 	    KevesValue::template FromUioword<FreeVarFrameKev>(next)));
 
@@ -592,7 +593,9 @@ public:
     return envp_->at(envn_ - idx -1);
   }
 
-  static StackFrameKev* make(KevesGC* gc);
+  template<class ZONE>
+  static StackFrameKev* Make(ZONE* zone);
+
   void makeEnvFrame(KevesGC* gc, int);
 
   const_KevesIterator pc() const {
@@ -769,7 +772,7 @@ public:
     ioword argn, envn;
     in >> argp >> argn >> envp >> envn >> clsr >> fp >> sfp;
 
-    StackFrameKev* frame(StackFrameKev::make(gc));
+    StackFrameKev* frame(StackFrameKev::Make(gc));
     frame->argp_ = KevesValue::template FromUioword<ArgumentFrameKev>(argp);
     frame->argn_ = argn;
     frame->envp_ = KevesValue::template FromUioword<LocalVarFrameKev>(envp);

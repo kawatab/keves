@@ -1,21 +1,20 @@
-/* symbol_kev.hpp - symbols for Keves
- * Keves will be an R6RS Scheme implementation.
- *
- *  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
- *
- *  This program is free software: you can redistribute it and/or modify it
- *  under the terms of the GNU Lesser General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or any
- *  later version.
- *
- *  This program is distributed in the hope that it will be useful, but WITHOUT
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
- *  License for more details.
- *
- *  You should have received a copy of the GNU Lesser General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+// keves/kev/symbol.hpp - symbols for Keves
+// Keves will be an R6RS Scheme implementation.
+//
+//  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
+//
+//  This program is free software: you can redistribute it and/or modify it
+//  under the terms of the GNU Lesser General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or any
+//  later version.
+//
+//  This program is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
+//  License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #pragma once
@@ -47,8 +46,11 @@ public:
   void Set(StringCoreKev*, int, int);
   StringKev ToStringKev() const;
 
-  static SymbolKev* Make(KevesGC* gc, const QString&);
-  static SymbolKev* Make(KevesGC* gc, StringCoreKev*, int, int);
+  template<class ZONE>
+  static SymbolKev* Make(ZONE* zone, const QString&);
+
+  template<class ZONE>
+  static SymbolKev* Make(ZONE* zone, StringCoreKev*, int, int);
 
   template<class ZONE>
   static std::function<SymbolKev*(void*)> ctor(ZONE* zone, const QString& str) {

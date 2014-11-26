@@ -1,4 +1,4 @@
-// Keves/reference_kev.hpp - references for Keves
+// keves/kev/reference.hpp - references for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -20,8 +20,6 @@
 #pragma once
 
 #include "value/value.hpp"
-
-class KevesGC;
 
 
 class ReferenceKev: public MutableKev {
@@ -48,7 +46,8 @@ public:
     val_ = value;
   }
 
-  static ReferenceKev* make(KevesGC* gc, KevesValue);
+  template<class ZONE>
+  static ReferenceKev* Make(ZONE* zone, KevesValue);
 
 private:
   KevesValue val_;
@@ -97,7 +96,7 @@ public:
   static Kev* ReadObject(STREAM& in, GC* gc) {
     uioword val;
     in >> val;
-    return make(gc, KevesValue::template FromUioword<Kev>(val));
+    return Make(gc, KevesValue::template FromUioword<Kev>(val));
   }
   
   template<class BASE, class LIST>

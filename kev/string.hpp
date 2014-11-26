@@ -1,21 +1,20 @@
-/* string_kev.hpp - strings for Keves
- * Keves will be an R6RS Scheme implementation.
- *
- *  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
- *
- *  This program is free software: you can redistribute it and/or modify it
- *  under the terms of the GNU Lesser General Public License as published by
- *  the Free Software Foundation, either version 3 of the License, or any
- *  later version.
- *
- *  This program is distributed in the hope that it will be useful, but WITHOUT
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
- *  License for more details.
- *
- *  You should have received a copy of the GNU Lesser General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
+// keves/kev/string.hpp - strings for Keves
+// Keves will be an R6RS Scheme implementation.
+//
+//  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
+//
+//  This program is free software: you can redistribute it and/or modify it
+//  under the terms of the GNU Lesser General Public License as published by
+//  the Free Software Foundation, either version 3 of the License, or any
+//  later version.
+//
+//  This program is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
+//  License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public License
+//  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
 #pragma once
@@ -60,9 +59,14 @@ public:
   StringCoreKev* ToTitleCase(KevesGC* gc, const QChar*, int) const;
   StringCoreKev* ToUpper(KevesGC* gc, const QChar*, int) const;
 
-  static StringCoreKev* Make(KevesGC* gc, int size);
-  static StringCoreKev* Make(KevesGC* gc, const QString& str);
-  static StringCoreKev* MakeAsImmovableT(KevesGC* gc, const QString& str);
+  template<class ZONE>
+  static StringCoreKev* Make(ZONE* zone, int size);
+
+  template<class ZONE>
+  static StringCoreKev* Make(ZONE* zone, const QString& str);
+
+  template<class ZONE>
+  static StringCoreKev* MakeAsImmovableT(ZONE* zone, const QString& str);
 
 private:
   void set(const QString&);
@@ -235,12 +239,18 @@ public:
   StringKev ToTitleCase(KevesGC* gc) const;
   StringKev ToUpper(KevesGC* gc) const;
 
-  static StringKev* Make(KevesGC* gc, int);
-  static StringKev* Make(KevesGC* gc, const QString&);
+  template<class ZONE>
+  static StringKev* Make(ZONE* zone, int);
+
+  template<class ZONE>
+  static StringKev* Make(ZONE* zone, const QString&);
   // static StringKev* make(KevesIterator*, const QString&);
   // static StringKev* make(KevesValue*, size_t, const QString&);
-  static StringKev* Make(KevesGC* gc, StringCoreKev*, int, int);
-  static StringKev* MakeSubstring(KevesGC* gc, const StringKev*, int, int);
+  template<class ZONE>
+  static StringKev* Make(ZONE* zone, StringCoreKev*, int, int);
+
+  template<class ZONE>
+  static StringKev* MakeSubstring(ZONE* zone, const StringKev*, int, int);
 
   template<class ZONE>
   static std::function<StringKev*(void*)> ctor(ZONE* zone, int size) {

@@ -1,4 +1,4 @@
-// Keves/condition_kev.hpp - conditions for Keves
+// keves/kev/condition.hpp - conditions for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -22,7 +22,9 @@
 #include "value/value.hpp"
 #include "kev/vector.hpp"
 
+
 class RecordKev;
+
 
 class SimpleConditionKev : public MutableKev {
 public:
@@ -74,7 +76,8 @@ public:
     return value_;
   }
   
-  static SimpleConditionKev* make(KevesGC*, const RecordKev*, KevesValue);
+  template<class ZONE>
+  static SimpleConditionKev* Make(ZONE* zone, const RecordKev*, KevesValue);
 
 protected:
   const RecordKev* record_type_;
@@ -129,7 +132,8 @@ public:
     return values_;
   }
 
-  static CompoundConditionKev* make(KevesGC*, VectorKev*);
+  template<class ZONE>
+  static CompoundConditionKev* Make(ZONE* zone, VectorKev*);
 
 protected:
   const VectorKev* values_;

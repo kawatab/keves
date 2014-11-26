@@ -1,4 +1,4 @@
-// Keves/condition_kev.cpp - conditions for Keves
+// keves/kev/condition.cpp - conditions for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -19,9 +19,8 @@
 
 #include "kev/condition.hpp"
 
-#include "keves_gc.hpp"
-#include "keves_gc-inl.hpp"
 #include "kev/record.hpp"
+
 
 // class SimpleConditionKev ----------------------------------------
 SimpleConditionKev::SimpleConditionKev()
@@ -44,14 +43,6 @@ const QString& SimpleConditionKev::getFieldName() const {
   return record_type_->name();
 }
 
-SimpleConditionKev* SimpleConditionKev::make(KevesGC* gc, const RecordKev* field, KevesValue value) {
-  auto ctor = [field, value](void* ptr) {
-    return new(ptr) SimpleConditionKev(field, value);
-  };
-
-  return gc->Make(ctor, alloc_size(nullptr));
-}
-
 
 // class CompoundConditionKev ----------------------------------------
 CompoundConditionKev::CompoundConditionKev()
@@ -68,12 +59,4 @@ void CompoundConditionKev::CopyFrom(const CompoundConditionKev& other) {
 
 void CompoundConditionKev::CopyFrom(CompoundConditionKev&& other) {
   this->values_ = other.values_;
-}
-
-CompoundConditionKev* CompoundConditionKev::make(KevesGC* gc, VectorKev* values) {
-  auto ctor = [values](void* ptr) {
-    return new(ptr) CompoundConditionKev(values);
-  };
-
-  return gc->Make(ctor, alloc_size(nullptr));
 }

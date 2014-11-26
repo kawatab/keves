@@ -31,7 +31,9 @@
 #include "keves_template.hpp"
 #include "keves_vm.hpp"
 #include "kev/code.hpp"
+#include "kev/code-inl.hpp"
 #include "kev/procedure.hpp"
+#include "kev/procedure-inl.hpp"
 #include "kev/symbol.hpp"
 
 LibKevesBase::LibKevesBase()
@@ -55,7 +57,7 @@ KevesLibrary* LibKevesBase::Init(KevesGC* gc) {
   AddBind("display", &proc_display_);
   AddBind("newline", &proc_newline_);
 
-  code_ = CodeKev::make(gc, 16);
+  code_ = CodeKev::Make(gc, 16);
   KevesIterator iter(gc->ToMutable(code_.ToPtr<CodeKev>())->begin());
   *iter++ = KevesInstruct(CMD_FRAME_R);
   *iter++ = KevesFixnum(5);

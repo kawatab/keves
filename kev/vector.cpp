@@ -1,4 +1,4 @@
-// Keves/vector_kev.cpp - vectors for Keves
+// keves/kev/vector.cpp - vectors for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -19,7 +19,6 @@
 
 #include "kev/vector.hpp"
 
-#include "keves_gc.hpp"
 
 VectorKev::VectorKev(int n) : MutableKev(TYPE), size_(n) {
   Clear();
@@ -61,11 +60,6 @@ const KevesValue* VectorKev::array() const {
 
 KevesValue* VectorKev::array() {
   return reinterpret_cast<KevesValue*>(this + 1);
-}
-
-VectorKev* VectorKev::Make(KevesGC* gc, int size) {
-  auto ctor = [size](void* ptr) { return new(ptr) VectorKev(size); };
-  return gc->Make(ctor, alloc_size(size));
 }
 
 void VectorKev::Clear() {

@@ -1,4 +1,4 @@
-// Keves/environment_kev.hpp - environments for Keves
+// keves/kev/environment.hpp - environments for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -77,7 +77,8 @@ public:
   const KevesValue* table() const;
   KevesValue values() const;
 
-  static EnvironmentKev* make(KevesGC*, KevesValue, const KevesValue*);
+  template<class ZONE>
+  static EnvironmentKev* Make(ZONE* zone, KevesValue, const KevesValue*);
 
 private:
   KevesValue values_;

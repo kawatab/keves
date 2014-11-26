@@ -1,4 +1,4 @@
-// Keves/environment_kev.cpp - environments for Keves
+// keves/kev/environment.cpp - environments for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -19,7 +19,6 @@
 
 #include "kev/environment.hpp"
 
-#include "keves_gc.hpp"
 #include "kev/pair.hpp"
 #include "kev/symbol.hpp"
 
@@ -128,12 +127,4 @@ const KevesValue* EnvironmentKev::table() const {
 
 KevesValue EnvironmentKev::values() const {
   return values_;
-}
-
-EnvironmentKev* EnvironmentKev::make(KevesGC* gc, KevesValue values, const KevesValue* table) {
-  auto ctor = [values, table](void* ptr) {
-    return new(ptr) EnvironmentKev(values, table);
-  };
-
-  return gc->Make(ctor, alloc_size(nullptr));
 }

@@ -1,4 +1,4 @@
-// keves/kev/jump.cpp - jumps for Keves
+// keves/kev/wind-inl.hpp - winds for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -17,17 +17,15 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "kev/jump.hpp"
+#pragma once
 
 
-// class JumpKev ----------------------------------------
-JumpKev::JumpKev()
-  : JumpKev(KevesIterator()) {}
+template<class ZONE>
+WindKev* WindKev::Make(ZONE* zone, KevesValue before, KevesValue thunk,
+		       KevesValue after) {
+  auto ctor = [before, thunk, after](void* ptr) {
+    return new(ptr) WindKev(before, thunk, after);
+  };
 
-JumpKev::JumpKev(KevesIterator dest)
-  : MutableKev(TYPE), destination_(dest) {}
-
-// class DestinationKev ----------------------------------------
-DestinationKev::DestinationKev(const JumpKev* kev)
-  : MutableKev(TYPE), label_(kev) {}
-  
+  return zone->Make(ctor, alloc_size(nullptr));
+}

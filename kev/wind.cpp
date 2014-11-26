@@ -1,4 +1,4 @@
-// Keves/wind_kev.cpp - winds for Keves
+// keves/kev/wind.cpp - winds for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -19,19 +19,6 @@
 
 #include "kev/wind.hpp"
 
-#include "keves_gc.hpp"
-
 
 WindKev::WindKev(KevesValue before, KevesValue thunk, KevesValue after)
   : MutableKev(TYPE), before_(before), thunk_(thunk), after_(after) {}
-
-WindKev* WindKev::make(KevesGC* gc,
-		       KevesValue before,
-		       KevesValue thunk,
-		       KevesValue after) {
-  auto ctor = [before, thunk, after](void* ptr) {
-    return new(ptr) WindKev(before, thunk, after);
-  };
-
-  return gc->Make(ctor, alloc_size(nullptr));
-}

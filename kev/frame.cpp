@@ -1,4 +1,4 @@
-// Keves/keves_frame.cpp - frames for Keves
+// keves/kev/frame.cpp - frames for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -18,9 +18,11 @@
 
 
 #include "kev/frame.hpp"
+#include "kev/frame-inl.hpp"
 
 #include <iostream>
 #include "keves_gc.hpp"
+#include "value/fixnum.hpp"
 
 
 // class ArgumentFrameKev ----------------------------------------
@@ -31,16 +33,6 @@ void ArgumentFrameKev::CopyArray(const ArgumentFrameKev* org) {
   std::copy(org_begin, org_end, this_begin);
 }
   
-ArgumentFrameKev* ArgumentFrameKev::make(KevesGC* gc, int size) {
-  auto ctor = [size](void* ptr) {
-    ArgumentFrameKev* arg_frame(new(ptr) ArgumentFrameKev(size));
-    std::fill_n(arg_frame->array(), size, EMB_UNDEF);
-    return arg_frame;
-  };
-
-  return gc->Make(ctor, alloc_size(size));
-}
-
 void ArgumentFrameKev::append(int* num_this, const ArgumentFrameKev* other, int num_other) {
   const KevesValue* other_iter(other->array());
   std::copy(other_iter, other_iter + num_other, this->array() + *num_this);
@@ -79,16 +71,6 @@ void LocalVarFrameKev::CopyArray(const LocalVarFrameKev* org) {
   std::copy(org_begin, org_end, this_begin);
 }
 
-LocalVarFrameKev* LocalVarFrameKev::make(KevesGC* gc, int size) {
-  auto ctor = [size](void* ptr) {
-    LocalVarFrameKev* env_frame(new(ptr) LocalVarFrameKev(size));
-    std::fill_n(env_frame->array(), size, EMB_UNDEF);
-    return env_frame;
-  };
-  
-  return gc->Make(ctor, alloc_size(size));
-}
-
 void LocalVarFrameKev::CopyTo(LocalVarFrameKev* other, int num) const {
   Q_ASSERT(type() == TYPE);
 
@@ -124,26 +106,8 @@ FreeVarFrameKev* FreeVarFrameKev::prepend(KevesGC* gc, int addition) {
   return gc->Make(ctor, alloc_size(this->size() + addition));
 }
 
-FreeVarFrameKev* FreeVarFrameKev::make(KevesGC* gc, int size, FreeVarFrameKev* next) {
-  auto ctor = [size, next](void* ptr) {
-    FreeVarFrameKev* closure(new(ptr) FreeVarFrameKev(size, next));
-    std::fill_n(closure->array(), size, EMB_UNDEF);
-    return closure;
-  };
-  
-  return gc->Make(ctor, alloc_size(size));
-}
-
 
 // class StackFrameKev ----------------------------------------
-StackFrameKev* StackFrameKev::make(KevesGC* gc) {
-  auto ctor = [](void* ptr) {
-    return new(ptr) StackFrameKev();
-  };
-
-  return gc->Make(ctor, alloc_size(nullptr));
-}
-
 void StackFrameKev::setArgumentsToLocalVars() {
   for (int i(1); i < argn_; ++i) envp_->array()[i - 1] = argp_->at(i);
 }
@@ -158,7 +122,7 @@ void StackFrameKev::extendEnvFrame(LocalVarFrameKev* frame) {
 }
 
 void StackFrameKev::makeEnvFrame(KevesGC* gc, int frame_size) {
-  LocalVarFrameKev* env_frame(LocalVarFrameKev::make(gc, frame_size));
+  LocalVarFrameKev* env_frame(LocalVarFrameKev::Make(gc, frame_size));
   this->clearEnvFrame();
   this->extendEnvFrame(env_frame);
 }

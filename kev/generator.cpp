@@ -1,4 +1,4 @@
-// Keves/generator_kev.hpp - generators for Keves
+// keves/kev/generator.hpp - generators for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -20,11 +20,11 @@
 #include "kev/generator.hpp"
 
 
-GeneratorKev::GeneratorKev() : GeneratorKev(nullptr) {
-}
+GeneratorKev::GeneratorKev()
+  : GeneratorKev(nullptr) {}
 
-GeneratorKev::GeneratorKev(LambdaKev* proc) : MutableKev(TYPE), proc_(proc) {
-}
+GeneratorKev::GeneratorKev(LambdaKev* proc)
+  : MutableKev(TYPE), proc_(proc) {}
 
 void GeneratorKev::CopyFrom(const GeneratorKev& other) {
   this->proc_ = other.proc_;
