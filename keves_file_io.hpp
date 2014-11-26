@@ -21,8 +21,8 @@
 
 #include <QFile>
 #include <QList>
-#include "keves_library.hpp"
-#include "keves_value.hpp"
+#include "lib/library.hpp"
+#include "value/value.hpp"
 
 
 class KevesBase;

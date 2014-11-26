@@ -10,86 +10,87 @@ LIBS += -lgmpxx -lgmp
 QMAKE_CXXFLAGS += -std=c++11
 
 # Input
-HEADERS += bignum.hpp \
-           code_kev.hpp \
-           condition_kev.hpp \
-           environment_kev.hpp \
-           generator_kev.hpp \
-           jump_kev.hpp \
-#           library_kev.hpp \
-           lib_keves_base.hpp \
-           lib_keves_base-inl.hpp \
-#           lib_keves_parse.hpp \
-#           lib_rnrs_base.hpp \
-#           lib_rnrs_eval.hpp \
-#           lib_rnrs_exceptions.hpp \
-#           lib_rnrs_lists.hpp \
-#           lib_rnrs_mutable_strings.hpp \
-#           lib_rnrs_syntax_case.hpp \
-#           lib_rnrs_unicode.hpp \
-           keves_base.hpp \
+HEADERS += keves_base.hpp \
            keves_base-inl.hpp \
            keves_builtin_values.hpp \
-           keves_char.hpp \
 #           keves_eval_window.hpp \
            keves_file_io.hpp \
-           keves_fixnum.hpp \
-           keves_frame.hpp \
            keves_gc.hpp \
 #           keves_heap.hpp \
-           keves_instruct.hpp \
            keves_iterator.hpp \
-           keves_library.hpp \
+           keves_list.hpp \
            keves_stack.hpp \
            keves_template.hpp \
            keves_textual_port.hpp \
-           keves_value.hpp \
            keves_vm.hpp \
-#           macro_kev.hpp \
-           number_kev.hpp \
-           pair_kev.hpp \
-           procedure_kev.hpp \
-           record_kev.hpp \
-           reference_kev.hpp \
-           string_kev.hpp \
-           symbol_kev.hpp \
-#           template_kev.hpp \
-           vector_kev.hpp \
-           wind_kev.hpp \
-           wrapped_kev.hpp
+           kev/bignum.hpp \
+           kev/code.hpp \
+           kev/condition.hpp \
+           kev/environment.hpp \
+           kev/generator.hpp \
+           kev/jump.hpp \
+           kev/frame.hpp \
+#           kev/library_kev.hpp \
+#           kev/macro.hpp \
+           kev/number.hpp \
+           kev/pair.hpp \
+           kev/procedure.hpp \
+           kev/record.hpp \
+           kev/reference.hpp \
+           kev/string.hpp \
+           kev/symbol.hpp \
+#           kev/template.hpp \
+           kev/vector.hpp \
+           kev/wind.hpp \
+           kev/wrapped.hpp \
+           lib/lib_keves_base.hpp \
+           lib/lib_keves_base-inl.hpp \
+#           lib/lib_keves_parse.hpp \
+#           lib/lib_rnrs_base.hpp \
+#           lib/lib_rnrs_eval.hpp \
+#           lib/lib_rnrs_exceptions.hpp \
+#           lib/lib_rnrs_lists.hpp \
+#           lib/lib_rnrs_mutable_strings.hpp \
+#           lib/lib_rnrs_syntax_case.hpp \
+#           lib/lib_rnrs_unicode.hpp \
+           lib/library.hpp \
+           value/char.hpp \
+           value/fixnum.hpp \
+           value/instruct.hpp \
+           value/value.hpp
            
 
-SOURCES += bignum.cpp \
-           code_kev.cpp \
-           condition_kev.cpp \
-           environment_kev.cpp \
-           generator_kev.cpp \
-           jump_kev.cpp \
-           keves_base.cpp \
+SOURCES += keves_base.cpp \
            keves_builtin_values.cpp \
-           keves_char.cpp \
            keves_file_io.cpp \
-           keves_frame.cpp \
            keves_gc.cpp \
-           keves_instruct.cpp \
            keves_iterator.cpp \
-           keves_library.cpp \
            keves_stack.cpp \
            keves_template.cpp \
            keves_textual_port.cpp \
            keves_vm.cpp \
-           lib_keves_base.cpp \
            main.cpp \
-           number_kev.cpp \
-           pair_kev.cpp \
-           procedure_kev.cpp \
-           record_kev.cpp \
-           reference_kev.cpp \
-           string_kev.cpp \
-           symbol_kev.cpp \
-           vector_kev.cpp \
-           wind_kev.cpp \
-           wrapped_kev.cpp
+           kev/bignum.cpp \
+           kev/code.cpp \
+           kev/condition.cpp \
+           kev/environment.cpp \
+           kev/generator.cpp \
+           kev/jump.cpp \
+           kev/frame.cpp \
+           kev/number.cpp \
+           kev/pair.cpp \
+           kev/procedure.cpp \
+           kev/record.cpp \
+           kev/reference.cpp \
+           kev/string.cpp \
+           kev/symbol.cpp \
+           kev/vector.cpp \
+           kev/wind.cpp \
+           kev/wrapped.cpp \
+           lib/lib_keves_base.cpp \
+           lib/library.cpp \
+           value/char.cpp \
+           value/instruct.cpp
 
 CONFIG += debug
 # CONFIG += qt release

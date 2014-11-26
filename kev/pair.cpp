@@ -1,4 +1,4 @@
-// Keves/keves_stack.hpp - stacks for Keves
+// Keves/pair_kev.cpp - pairs for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -17,22 +17,27 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#pragma once
+#include "kev/pair.hpp"
 
-#include <QStack>
-#include "value/value.hpp"
+#include "keves_gc.hpp"
 
-class KevesStack : public QStack<KevesValue> {
-public:
-  KevesStack() = default;
-  KevesStack(const KevesStack&) = delete;
-  KevesStack(KevesStack&&) = delete;
-  KevesStack& operator=(const KevesStack&) = delete;
-  KevesStack& operator=(KevesStack&&) = delete;
-  ~KevesStack() = default;
 
-  typedef QStack<KevesValue>::iterator iterator;
-  typedef QStack<KevesValue>::const_iterator const_iterator;
+void PairKev::CopyFrom(const PairKev& org) {
+  this->car_ = org.car_;
+  this->cdr_ = org.cdr_;
+}
 
-  bool Find(KevesValue) const;
-};
+void PairKev::CopyFrom(PairKev&& org) {
+  this->car_ = org.car_;
+  this->cdr_ = org.cdr_;
+}
+
+void PairKev::Set(KevesValue car, KevesValue cdr) {
+  this->car_ = car;
+  this->cdr_ = cdr;
+}
+
+PairKev* PairKev::Make(KevesGC* gc, KevesValue car, KevesValue cdr) {
+  auto ctor = [car, cdr](void* ptr) { return new(ptr) PairKev(car, cdr); };
+  return gc->Make(ctor, alloc_size(nullptr));
+}

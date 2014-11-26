@@ -1,4 +1,4 @@
-// Keves/keves_stack.hpp - stacks for Keves
+// Keves/generator_kev.hpp - generators for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -17,22 +17,20 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#pragma once
+#include "kev/generator.hpp"
 
-#include <QStack>
-#include "value/value.hpp"
 
-class KevesStack : public QStack<KevesValue> {
-public:
-  KevesStack() = default;
-  KevesStack(const KevesStack&) = delete;
-  KevesStack(KevesStack&&) = delete;
-  KevesStack& operator=(const KevesStack&) = delete;
-  KevesStack& operator=(KevesStack&&) = delete;
-  ~KevesStack() = default;
+GeneratorKev::GeneratorKev() : GeneratorKev(nullptr) {
+}
 
-  typedef QStack<KevesValue>::iterator iterator;
-  typedef QStack<KevesValue>::const_iterator const_iterator;
+GeneratorKev::GeneratorKev(LambdaKev* proc) : MutableKev(TYPE), proc_(proc) {
+}
 
-  bool Find(KevesValue) const;
-};
+void GeneratorKev::CopyFrom(const GeneratorKev& other) {
+  this->proc_ = other.proc_;
+}
+
+void GeneratorKev::CopyFrom(GeneratorKev&& other) {
+  this->proc_ = other.proc_;
+}
+

@@ -22,26 +22,27 @@
 
 #include <QDataStream>
 #include <QFile>
-#include "bignum.hpp"
-#include "keves_char.hpp"
-#include "keves_instruct.hpp"
 #include "keves_vm.hpp"
-#include "number_kev.hpp"
-#include "pair_kev.hpp"
-#include "reference_kev.hpp"
-#include "string_kev.hpp"
-#include "symbol_kev.hpp"
-#include "vector_kev.hpp"
-#include "wind_kev.hpp"
+#include "kev/bignum.hpp"
+#include "kev/number.hpp"
+#include "kev/pair.hpp"
+#include "kev/reference.hpp"
+#include "kev/string.hpp"
+#include "kev/symbol.hpp"
+#include "kev/vector.hpp"
+#include "kev/wind.hpp"
+#include "value/char.hpp"
+#include "value/instruct.hpp"
 
 
 KevesBase::KevesBase()
-  : gc_(10),
+  : gc_(nullptr),
     cmd_table_(),
     builtin_(),
     sym_eval_(),
     lib_keves_base_() {
 
+  gc_.Set(&shared_list_);
   InitCMDTable();
   builtin_.Init(&gc_);
 
@@ -71,11 +72,13 @@ KevesBase::KevesBase()
 
 KevesBase::~KevesBase() {
   gc_.Reset();
+
+  for (int i(0); i < vm_list_.size(); ++i) delete vm_list_[i];
 }
 
 KevesVM* KevesBase::MakeVM() {
   KevesVM* vm(new KevesVM(this, default_result_field()));
-  gc_.Append(vm);
+  vm_list_.append(vm);
   return vm;
 }
 
@@ -236,6 +239,17 @@ const QList<const Kev*> KevesBase::GetObjectList(const Kev* kev) {
   return list;
 }
       
+void* KevesBase::Alloc(size_t alloc_size) {
+  KevesBaseNode node(new char[((alloc_size + sizeof(quintptr) - 1) | ~(sizeof(quintptr) - 1)) + sizeof(KevesPrefix)]);
+  shared_list_.Push(node);
+  return node.ToPtr();
+}
+
+void KevesBase::PushToSharedList(MutableKev* kev) {
+  kev->MarkPermanent();
+  shared_list_.Push(kev);
+}
+
 uioword KevesBase::IndexAddress(const QList<const Kev*>& table,
 				 KevesValue value) {
   if (!value.IsPtr()) return value.toUIntPtr();

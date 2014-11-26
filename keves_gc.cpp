@@ -17,28 +17,22 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "keves_gc.hpp"
+#include "keves_gc-inl.hpp"
 
 #include <iostream>
-#include "code_kev.hpp"
 #include "keves_vm.hpp"
-#include "pair_kev.hpp"
-#include "string_kev.hpp"
-#include "symbol_kev.hpp"
-#include "vector_kev.hpp"
+#include "kev/code.hpp"
+#include "kev/pair.hpp"
+#include "kev/string.hpp"
+#include "kev/symbol.hpp"
+#include "kev/vector.hpp"
 
 
-#define FUNCTION_TABLE(array, func)					\
-  array[CodeKev::TYPE]		       = CodeKev::func;			\
-  array[StringCoreKev::TYPE]	       = StringCoreKev::func;		\
-  array[StringKev::TYPE]	       = StringKev::func;		\
-  array[SymbolKev::TYPE]	       = SymbolKev::func;		\
-  array[VectorKev::TYPE]	       = VectorKev::func;		\
-  array[PairKev::TYPE]		       = PairKev::func;			\
-
-KevesGC::KevesGC(int)
+KevesGC:: KevesGC(KevesList<KevesNode<0> >* shared_list)
   : /* survivor_(),*/ tenured_(), /*permanent_(),*/
     tenured_list_(), /*permanent_list_(),*/  free_list_(),
     marked_list_(), unchecked_list_(),
+    shared_list_(shared_list),
     /*stack_lower_limit_(), stack_higher_limit_() ,*/
     jmp_exit_(),
     /* prev_global_vars_(), curt_global_vars_(),
@@ -52,29 +46,25 @@ KevesGC::KevesGC(int)
   tenured_.Set(this);
   // permanent_.Set(this);
 
-  FUNCTION_TABLE(ft_size_, alloc_size);
+  SetFunctionTable<CodeKev>();
+  SetFunctionTable<StringCoreKev>();
+  SetFunctionTable<StringKev>();
+  SetFunctionTable<SymbolKev>();
+  SetFunctionTable<VectorKev>();
+  SetFunctionTable<PairKev>();
 }
 
-#undef FUNCTION_TABLE
-
-KevesGC::~KevesGC() {
-  for (int i(0); i < vm_list_.size(); ++i) delete vm_list_[i];
+KevesGC::Tenured::Tenured()
+  : gc_(),
+    ft_CopyTo_(),
+    ft_CopyContents_() {
+  SetFunctionTable<CodeKev>();
+  SetFunctionTable<StringCoreKev>();
+  SetFunctionTable<StringKev>();
+  SetFunctionTable<SymbolKev>();
+  SetFunctionTable<VectorKev>();
+  SetFunctionTable<PairKev>();
 }
-
-#define FUNCTION_TABLE2(arr, fn, cl)					\
-  arr[CodeKev::TYPE]		     = CodeKev::fn<cl>;			\
-  arr[StringCoreKev::TYPE]	     = StringCoreKev::fn<cl>;		\
-  arr[StringKev::TYPE]		     = StringKev::fn<cl>;		\
-  arr[SymbolKev::TYPE]		     = SymbolKev::fn<cl>;		\
-  arr[VectorKev::TYPE]		     = VectorKev::fn<cl>;		\
-  arr[PairKev::TYPE]		     = PairKev::fn<cl>;			\
-
-KevesGC::Tenured::Tenured() : gc_(), ft_CopyTo_(), ft_CopyContents_() {
-  FUNCTION_TABLE2(ft_CopyTo_, CopyTo, Tenured);
-  FUNCTION_TABLE2(ft_CopyContents_, CopyContents, Tenured);
-}
-
-#undef FUNCTION_TABLE2
 
 /*
 void KevesGC::Set(jmp_buf* jmp_exit, KevesValue* acc, KevesValue* gr, void* higher, void* lower, const_KevesIterator pc) {
@@ -87,10 +77,6 @@ void KevesGC::Set(jmp_buf* jmp_exit, KevesValue* acc, KevesValue* gr, void* high
   reset();
 }
 */
-
-void KevesGC::Append(KevesVM* vm) {
-  vm_list_.append(vm);
-}
 
 void KevesGC::Reset() {
   while (!tenured_list_.IsEmpty()) tenured_list_.Pop().Dispose();

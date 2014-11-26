@@ -21,9 +21,9 @@
 
 #include "iostream"
 #include <QFile>
-#include "code_kev.hpp"
-#include "keves_instruct.hpp"
-#include "string_kev.hpp"
+#include "kev/code.hpp"
+#include "kev/string.hpp"
+#include "value/instruct.hpp"
 
 
 #define DEFINE_MESG_KEY(mesg) \

@@ -21,31 +21,31 @@
 
 #include <iostream>
 #include <QStack>
-#include "bignum.hpp"
-#include "code_kev.hpp"
-#include "condition_kev.hpp"
 #include "keves_base.hpp"
 #include "keves_builtin_values.hpp"
-#include "keves_char.hpp"
 #include "keves_file_io.hpp"
-#include "keves_fixnum.hpp"
-#include "keves_frame.hpp"
-#include "keves_instruct.hpp"
-#include "keves_library.hpp"
 #include "keves_stack.hpp"
 #include "keves_textual_port.hpp"
-#include "lib_keves_base.hpp"
-#include "jump_kev.hpp"
-#include "number_kev.hpp"
-#include "pair_kev.hpp"
-#include "procedure_kev.hpp"
-#include "record_kev.hpp"
-#include "reference_kev.hpp"
-#include "string_kev.hpp"
-#include "symbol_kev.hpp"
-#include "vector_kev.hpp"
-#include "wind_kev.hpp"
-#include "wrapped_kev.hpp"
+#include "kev/bignum.hpp"
+#include "kev/code.hpp"
+#include "kev/condition.hpp"
+#include "kev/frame.hpp"
+#include "kev/jump.hpp"
+#include "kev/number.hpp"
+#include "kev/pair.hpp"
+#include "kev/procedure.hpp"
+#include "kev/record.hpp"
+#include "kev/reference.hpp"
+#include "kev/string.hpp"
+#include "kev/symbol.hpp"
+#include "kev/vector.hpp"
+#include "kev/wind.hpp"
+#include "kev/wrapped.hpp"
+#include "lib/lib_keves_base.hpp"
+#include "lib/library.hpp"
+#include "value/char.hpp"
+#include "value/fixnum.hpp"
+#include "value/instruct.hpp"
 
 #include <QFile> // this purpose is test.
 #include <QDataStream> // this purpose is test.
@@ -53,7 +53,7 @@
 KevesVM::KevesVM(KevesBase* base, KevesTextualOutputPort* result_field)
   : base_(base),
     cmd_table_(base->cmd_table()),
-    gc_(base->gc()),
+    gc_(base->shared_list()),
     result_field_(result_field) {}
 
 void KevesVM::CheckStack(size_t* size, vm_func func, const_KevesIterator pc) {
@@ -197,7 +197,7 @@ int KevesVM::GetListLength(KevesValue temp) {
 
 // for strings
 StringKev* KevesVM::MakeString(int size) {
-  StringKev* string(StringKev::Make(this->gc_, size));
+  StringKev* string(StringKev::Make(&this->gc_, size));
   return string;
 }
 
@@ -209,7 +209,7 @@ const StringKev* KevesVM::MakeString(int size, QChar chr) {
 
 // for vectors
 VectorKev* KevesVM::MakeVector(int size) {
-  VectorKev* vector(VectorKev::Make(this->gc_, size));
+  VectorKev* vector(VectorKev::Make(&this->gc_, size));
   return vector;
 }
 
@@ -252,7 +252,7 @@ void KevesVM::PushGr1ToArgumentSafe(KevesVM* vm, const_KevesIterator pc) {
 
   vm->CheckStack(&argn, &PushGr1ToArgumentSafe, pc);
 
-  if (argn >= argp_size) registers->extendArgFrame(vm->gc_);
+  if (argn >= argp_size) registers->extendArgFrame(&vm->gc_);
   registers->pushArgument(vm->gr1_);
   return cmd_NOP(vm, pc);
 }
@@ -264,7 +264,7 @@ void KevesVM::PushAccToArgumentSafe(KevesVM* vm, const_KevesIterator pc) {
 
   vm->CheckStack(&argn, &PushAccToArgumentSafe, pc);
 
-  if (argn >= argp_size) registers->extendArgFrame(vm->gc_);
+  if (argn >= argp_size) registers->extendArgFrame(&vm->gc_);
   registers->pushArgument(vm->acc_);
   return cmd_NOP(vm, pc);
 }
@@ -278,7 +278,7 @@ void KevesVM::PushGr1ToArgument(KevesVM* vm, const_KevesIterator pc) {
   vm->CheckStack(&argn, &PushGr1ToArgument, pc);
 #endif
 
-  if (argn >= argp_size) registers->extendArgFrame(vm->gc_);
+  if (argn >= argp_size) registers->extendArgFrame(&vm->gc_);
   registers->pushArgument(vm->gr1_);
   return cmd_NOP(vm, pc);
 }
@@ -292,7 +292,7 @@ void KevesVM::PushAccToArgument(KevesVM* vm, const_KevesIterator pc) {
   vm->CheckStack(&argn, &PushAccToArgument, pc);
 #endif
 
-  if (argn >= argp_size) registers->extendArgFrame(vm->gc_);
+  if (argn >= argp_size) registers->extendArgFrame(&vm->gc_);
   registers->pushArgument(vm->acc_);
   return cmd_NOP(vm, pc);
 }
@@ -370,7 +370,7 @@ void KevesVM::returnExactComplexNumberKev(KevesVM* vm, const_KevesIterator pc) {
 
 void KevesVM::ExecuteGC(vm_func current_func, const_KevesIterator pc) {
   current_function_ = current_func;
-  return gc_->Execute(pc);
+  return gc_.Execute(pc);
 }
 
 int KevesVM::Execute(const QString& arg) {
@@ -420,7 +420,7 @@ int KevesVM::Execute_helper(const QString& arg) {
     return 1;
 
   case -1:
-    std::cout << "gc time: " << gc_->GetElapsedTime() << std::endl;
+    std::cout << "gc time: " << gc_.GetElapsedTime() << std::endl;
     return 0;
 
   default:
@@ -603,7 +603,7 @@ void KevesVM::cmd_CALL_LAMBDA(KevesVM* vm, const_KevesIterator pc) {
   int argn(registers->argn());
 
   if (argn == num_arg + 1) {
-    registers->makeEnvFrame(vm->gc_, num_arg);
+    registers->makeEnvFrame(&vm->gc_, num_arg);
     registers->setArgumentsToLocalVars();
     return cmd_CALL_LAMBDA_helper(vm, pc);
   }
@@ -618,7 +618,7 @@ void KevesVM::cmd_CALL_LAMBDA_helper(KevesVM* vm, const_KevesIterator pc) {
   registers->clearArgFrame();
 
   if (lambda->free_vars()) {
-    registers->setClosure(vm->gc_->ToMutable(lambda->free_vars()));
+    registers->setClosure(vm->gc_.ToMutable(lambda->free_vars()));
   }
 
   return cmd_NOP(vm, pc + 1);
@@ -632,7 +632,7 @@ void KevesVM::cmd_CALL_LAMBDA_VLA(KevesVM* vm, const_KevesIterator pc) {
   if (num_arg_in_list < 0)
     return RaiseAssertLambdaReqMore(vm, pc);
   
-  registers->makeEnvFrame(vm->gc_, num_arg + 1);
+  registers->makeEnvFrame(&vm->gc_, num_arg + 1);
   
   for (int idx(0); idx < num_arg; ++idx) {
     registers->assignLocalVar(idx, registers->argument(idx + 1));
@@ -787,14 +787,14 @@ void KevesVM::cmd_ASSIGN_MULT(KevesVM* vm, const_KevesIterator pc) {
 void KevesVM::cmd_CLOSE_R(KevesVM* vm, const_KevesIterator pc) {
   StackFrameKev* registers(&vm->registers_);
   KevesFixnum num_local_var(*(pc + 1));
-  FreeVarFrameKev* closure(registers->clsr()->prepend(vm->gc_, num_local_var));
+  FreeVarFrameKev* closure(registers->clsr()->prepend(&vm->gc_, num_local_var));
   const_KevesIterator body(pc + 2);
   Q_ASSERT(KevesValue(*body).IsInstruct());
   
   Q_ASSERT(num_local_var == registers->envn());
   registers->copyEnvFrameTo(closure);
   
-  LambdaKev lambda(closure, vm->gc_->ToMutable(vm->current_code_), body);
+  LambdaKev lambda(closure, vm->gc_.ToMutable(vm->current_code_), body);
   
   vm->keves_vals_ = nullptr;
   KevesFixnum offset(*pc);
@@ -804,7 +804,7 @@ void KevesVM::cmd_CLOSE_R(KevesVM* vm, const_KevesIterator pc) {
 
 void KevesVM::cmd_NEW_BOX(KevesVM* vm, const_KevesIterator pc) {
   KevesFixnum frame_size(*pc);
-  vm->registers_.makeEnvFrame(vm->gc_, frame_size);
+  vm->registers_.makeEnvFrame(&vm->gc_, frame_size);
   return cmd_NOP(vm, pc + 1);
 }
 
@@ -824,7 +824,7 @@ void KevesVM::cmd_BOX(KevesVM* vm, const_KevesIterator pc) {
 	actual_frame_size *= 2;
       } while (frame_size > actual_frame_size);
 
-      LocalVarFrameKev* env_frame(LocalVarFrameKev::make(vm->gc_, actual_frame_size));
+      LocalVarFrameKev* env_frame(LocalVarFrameKev::make(&vm->gc_, actual_frame_size));
 
       registers->extendEnvFrame(env_frame);
     }
@@ -834,7 +834,7 @@ void KevesVM::cmd_BOX(KevesVM* vm, const_KevesIterator pc) {
     };
 
   // vm->gc_.makeArray(StackFrameKev::InitializeEnvFrame(registers), size);
-    vm->gc_->MakeArray(ctor, sizeof(ReferenceKev), size);
+    vm->gc_.MakeArray(ctor, sizeof(ReferenceKev), size);
   }
 
   return cmd_NOP(vm, pc + 1);
@@ -1082,7 +1082,7 @@ void KevesVM::cmd_STRING_CLONE(KevesVM* vm, const_KevesIterator pc) {
 
   vm->CheckStack(&copy, &cmd_STRING_CLONE, pc);
 
-  if (str->size() > 0) copy.CopyFrom(str->Copy(vm->gc_));
+  if (str->size() > 0) copy.CopyFrom(str->Copy(&vm->gc_));
   vm->acc_ = &copy;
   return cmd_NOP(vm, pc);
 }
@@ -1095,7 +1095,7 @@ void KevesVM::cmd_STRING_APPEND(KevesVM* vm, const_KevesIterator pc) {
 
   vm->CheckStack(&string, &cmd_STRING_APPEND, pc);
 
-  string.CopyFrom(str1->Append(vm->gc_, *str2));
+  string.CopyFrom(str1->Append(&vm->gc_, *str2));
   vm->acc_ = &string;
   return cmd_NOP(vm, pc);
 }
@@ -1234,7 +1234,7 @@ void KevesVM::cmd_BEGIN(KevesVM* vm, const_KevesIterator pc) {
 void KevesVM::cmd_BEGIN_helper(KevesVM* vm, const_KevesIterator pc) {
   StackFrameKev* registers(&vm->registers_);
   KevesFixnum frame_size(vm->gr1_);
-  registers->makeEnvFrame(vm->gc_, frame_size);
+  registers->makeEnvFrame(&vm->gc_, frame_size);
   return cmd_NOP(vm, pc);
 }
 
@@ -1269,9 +1269,9 @@ void KevesVM::cmd_TERMINATE_EXPAND(KevesVM* vm, const_KevesIterator pc) {
     if (temp.IsDestination()) ++cnt;
   }
   
-  CodeKev* code(CodeKev::make(vm->gc_, size - cnt));
-  // CodeKev* code(CodeKev::makeWithPermanent(vm->gc_, size - cnt));
-  // CodeKev* code(CodeKev::makeWithTenured(vm->gc_, size - cnt));
+  CodeKev* code(CodeKev::make(&vm->gc_, size - cnt));
+  // CodeKev* code(CodeKev::makeWithPermanent(&vm->gc_, size - cnt));
+  // CodeKev* code(CodeKev::makeWithTenured(&vm->gc_, size - cnt));
   KevesIterator itr(code->end());
 
   while (size-- > 0) {
@@ -1280,7 +1280,7 @@ void KevesVM::cmd_TERMINATE_EXPAND(KevesVM* vm, const_KevesIterator pc) {
     if (temp.IsDestination()) {
       const DestinationKev* dest(temp);
       const JumpKev* jump_obj(dest->label());
-      vm->gc_->ToMutable(jump_obj)->set(itr);
+      vm->gc_.ToMutable(jump_obj)->set(itr);
     } else {
       *--itr = temp;
     }
@@ -1418,7 +1418,7 @@ void KevesVM::cmd_UNWIND_CONTINUATION(KevesVM* vm, const_KevesIterator pc) {
   for (;;) {
     if (StackFrameKev::isBottom(fp)) {
       pc = registers->unwind();
-      vm->gc_->ToMutable(conti_obj->btmp())->set_pc(pc);
+      vm->gc_.ToMutable(conti_obj->btmp())->set_pc(pc);
       *registers = conti_obj->registers();
       pc = vm->base_->builtin()->code_REVERT_DYNAMIC_WIND_and_APPLY();
       vm->acc_ = conti_obj;

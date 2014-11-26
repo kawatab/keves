@@ -1,4 +1,4 @@
-// Keves/keves_stack.hpp - stacks for Keves
+// Keves/jump_kev.cpp - jumps for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -17,22 +17,24 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#pragma once
+#include "kev/jump.hpp"
 
-#include <QStack>
-#include "value/value.hpp"
+#include "keves_gc.hpp"
+#include "keves_gc-inl.hpp"
 
-class KevesStack : public QStack<KevesValue> {
-public:
-  KevesStack() = default;
-  KevesStack(const KevesStack&) = delete;
-  KevesStack(KevesStack&&) = delete;
-  KevesStack& operator=(const KevesStack&) = delete;
-  KevesStack& operator=(KevesStack&&) = delete;
-  ~KevesStack() = default;
+// class JumpKev ----------------------------------------
+JumpKev::JumpKev()
+  : JumpKev(KevesIterator()) {}
 
-  typedef QStack<KevesValue>::iterator iterator;
-  typedef QStack<KevesValue>::const_iterator const_iterator;
+JumpKev::JumpKev(KevesIterator dest)
+  : MutableKev(TYPE), destination_(dest) {}
 
-  bool Find(KevesValue) const;
-};
+JumpKev* JumpKev::make(KevesGC* gc) {
+  auto ctor = [](void *ptr) { return new(ptr) JumpKev(); };
+  return gc->Make(ctor, alloc_size(nullptr));
+}
+
+// class DestinationKev ----------------------------------------
+DestinationKev::DestinationKev(const JumpKev* kev)
+  : MutableKev(TYPE), label_(kev) {}
+  

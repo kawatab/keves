@@ -24,9 +24,10 @@
 #include <QStack>
 #include "keves_builtin_values.hpp"
 #include "keves_gc.hpp"
-#include "keves_instruct.hpp"
+#include "keves_gc-inl.hpp"
 #include "keves_textual_port.hpp"
-#include "lib_keves_base.hpp"
+#include "lib/lib_keves_base.hpp"
+#include "value/instruct.hpp"
 
 
 class KevesBuiltinValues;
@@ -98,6 +99,25 @@ private:
   void SetFunctionTable();
   
 
+  // Allocation for objects
+public:
+  template<class CTOR>
+  auto Make(CTOR ctor, size_t size) -> decltype(ctor(nullptr)) {
+    void* ptr(Alloc(size));
+    decltype(ctor(nullptr)) temp(ctor(ptr));
+    // temp->MarkDynamic(); // IMPORTANT !!!
+    // gc_->PushToMarkedList(temp); // IMPORTANT !!!
+    return temp;
+  }
+
+  KevesList<KevesNode<0> >* shared_list() {
+    return &shared_list_;
+  }
+
+private:
+  void* Alloc(size_t alloc_size);
+  void PushToSharedList(MutableKev* kev);
+
   // General functions
 public:
   const StringKev* GetMesgText(const QString& key) const;
@@ -140,6 +160,7 @@ private:
   vm_func cmd_table_[END_OF_LIST];
   KevesBuiltinValues builtin_;
   KevesTextualOutputPort default_result_field_;
+  QList<KevesVM*> vm_list_;
 
 public:
   // variables
@@ -148,6 +169,8 @@ public:
 private:
   // libraries
   LibKevesBase lib_keves_base_;
+
+  KevesList<KevesNode<0> > shared_list_;
 
   void (*ft_PushChildren_[0177])(QStack<const Kev*>*, KevesValue);
   void (*ft_RevertObject_[0177])(const QList<Kev*>&, MutableKevesValue);

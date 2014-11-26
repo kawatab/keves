@@ -23,19 +23,19 @@
 #include <QDataStream>
 #include <QFile>
 #include <QList>
-#include "bignum.hpp"
-#include "code_kev.hpp"
-#include "keves_char.hpp"
 #include "keves_file_io.hpp"
-#include "keves_frame.hpp"
 #include "keves_base.hpp"
-#include "keves_library.hpp"
-#include "number_kev.hpp"
-#include "pair_kev.hpp"
-#include "reference_kev.hpp"
-#include "string_kev.hpp"
-#include "symbol_kev.hpp"
-#include "vector_kev.hpp"
+#include "kev/bignum.hpp"
+#include "kev/code.hpp"
+#include "kev/frame.hpp"
+#include "kev/number.hpp"
+#include "kev/pair.hpp"
+#include "kev/reference.hpp"
+#include "kev/string.hpp"
+#include "kev/symbol.hpp"
+#include "kev/vector.hpp"
+#include "library/library.hpp"
+#include "value/char.hpp"
 
 
 // void TestCode::Code01::Write(KevesBase* /*base*/, const char* file_name) {

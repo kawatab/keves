@@ -21,13 +21,14 @@
 
 #include <setjmp.h>
 #include <QChar>
-#include "environment_kev.hpp"
-#include "keves_value.hpp"
-#include "keves_frame.hpp"
+#include "keves_gc.hpp"
+#include "keves_gc-inl.hpp"
+#include "kev/environment.hpp"
+#include "kev/frame.hpp"
+#include "value/value.hpp"
 
 class CodeKev;
 class ExactComplexNumberKev;
-class KevesGC;
 class KevesBase;
 class KevesLibrary;
 class KevesTextualOutputPort;
@@ -248,7 +249,7 @@ public:
 private:
   KevesBase* base_;
   vm_func* cmd_table_;
-  KevesGC* gc_;
+  KevesGC gc_;
   KevesTextualOutputPort* result_field_;
 
   EnvironmentKev curt_global_vars_;

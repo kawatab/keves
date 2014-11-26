@@ -1,4 +1,4 @@
-// Keves/keves_stack.hpp - stacks for Keves
+// Keves/wind_kev.cpp - winds for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -17,22 +17,21 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#pragma once
+#include "kev/wind.hpp"
 
-#include <QStack>
-#include "value/value.hpp"
+#include "keves_gc.hpp"
 
-class KevesStack : public QStack<KevesValue> {
-public:
-  KevesStack() = default;
-  KevesStack(const KevesStack&) = delete;
-  KevesStack(KevesStack&&) = delete;
-  KevesStack& operator=(const KevesStack&) = delete;
-  KevesStack& operator=(KevesStack&&) = delete;
-  ~KevesStack() = default;
 
-  typedef QStack<KevesValue>::iterator iterator;
-  typedef QStack<KevesValue>::const_iterator const_iterator;
+WindKev::WindKev(KevesValue before, KevesValue thunk, KevesValue after)
+  : MutableKev(TYPE), before_(before), thunk_(thunk), after_(after) {}
 
-  bool Find(KevesValue) const;
-};
+WindKev* WindKev::make(KevesGC* gc,
+		       KevesValue before,
+		       KevesValue thunk,
+		       KevesValue after) {
+  auto ctor = [before, thunk, after](void* ptr) {
+    return new(ptr) WindKev(before, thunk, after);
+  };
+
+  return gc->Make(ctor, alloc_size(nullptr));
+}
