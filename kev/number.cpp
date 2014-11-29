@@ -18,10 +18,13 @@
 
 
 #include "kev/number.hpp"
+#include "kev/number-inl.hpp"
 
 #include <iostream>
 #include <sstream>
 #include "keves_gc.hpp"
+#include "kev/bignum.hpp"
+#include "kev/bignum-inl.hpp"
 #include "kev/string.hpp"
 #include "kev/string-inl.hpp"
 
@@ -837,12 +840,6 @@ RationalNumberKev::RationalNumberKev()
 RationalNumberKev::RationalNumberKev(bool neg, const Bignum* num, const Bignum* den) : MutableKev(TYPE), neg_(neg), numerator_(num), denominator_(den) {
 }
 
-RationalNumberKev::RationalNumberKev(KevesGC* gc, const mpq_class& mpq_num)
-  : RationalNumberKev(sgn(mpq_num) < 0,
-		      Bignum::makeFromMPZ(gc, mpq_num.get_num()),
-		      Bignum::makeFromMPZ(gc, mpq_num.get_den())) {
-}
-
 void RationalNumberKev::CopyFrom(const RationalNumberKev& other) {
   this->neg_ = other.neg_;
   this->numerator_ = other.numerator_;
@@ -868,12 +865,6 @@ const Bignum* RationalNumberKev::numerator() const {
 
 const Bignum* RationalNumberKev::denominator() const {
   return denominator_;
-}
-
-void RationalNumberKev::reduce(KevesGC* gc) {
-  mpq_class mpq_num(makeMPQ());
-  mpq_num.canonicalize();
-  this->CopyFrom({ gc, mpq_num });
 }
 
 RationalNumberKev RationalNumberKev::add(KevesGC* gc, KevesFixnum addend) const {
@@ -1217,84 +1208,6 @@ RationalNumberKev* RationalNumberKev::makeFromLong(KevesGC* gc, bg_long real) {
 
 RationalNumberKev* RationalNumberKev::makeFromMPQ(KevesGC* gc, const mpq_class& mpq_num) {
   return gc->Make(ctorFromMPQ(gc, mpq_num), alloc_size(nullptr));
-}
-
-RationalNumberKev* RationalNumberKev::makeFromString(KevesGC* gc, StringKev str) {
-  int i;
-  int pos(str.IndexOf("/"));
-  QString str1;
-  QString str2;
-  RationalNumberKev* number(RationalNumberKev::Make(gc));
-
-  if (pos > 0) { // rational
-    str1.operator=(str.Left(pos).ToQString());
-    str2.operator=(str.Right(str.size() - pos - 1).ToQString());
-
-    number->CopyFrom(str1.left(1) == "+" ?
-		     RationalNumberKev(false,
-			 Bignum::makeFromString(gc,
-						str1.right(str1.size() - 1)),
-			 Bignum::makeFromString(gc, str2)) :
-		     str1.left(1) == "-" ?
-		     RationalNumberKev(true,
-			 Bignum::makeFromString(gc,
-						str1.right(str1.size() - 1)),
-			 Bignum::makeFromString(gc, str2)) :
-		     RationalNumberKev(false,
-			 Bignum::makeFromString(gc, str1),
-			 Bignum::makeFromString(gc, str2)));
-  } else { // not rational
-    if ((pos = str.IndexOf("e")) < 0 &&
-	(pos = str.IndexOf("s")) < 0 &&
-	(pos = str.IndexOf("f")) < 0 &&
-	(pos = str.IndexOf("d")) < 0 &&
-	(pos = str.IndexOf("l")) < 0) {
-      str1.operator=(str.ToQString());
-      i = 0;
-    } else {
-      bool ok;
-      str1.operator=(str.Left(pos).ToQString());
-      str2.operator=(str.Right(str.size() - pos - 1).ToQString());
-      i = -str2.toInt(&ok);
-
-      if (!ok)
-	return nullptr; // error exponantial part is invalid
-    }
-
-    pos = str1.indexOf(".");
-
-    if (pos > 0) {
-      str1.remove(pos, 1);
-      i += str1.size() - pos;
-    }
-
-    if (i < 0) {
-      str2.operator=({ -i, QChar('0') });
-      str1.append(str2);
-      i = 0;
-    }
-
-    number->CopyFrom(str1.left(1) == "+" ?
-		     RationalNumberKev(false,
-			 Bignum::makeFromString(gc,
-						str1.right(str1.size() - 1)),
-			 Bignum::exponentiationWithBase10(gc, i)) :
-		     str1.left(1) == "-" ?
-		     RationalNumberKev(true,
-			 Bignum::makeFromString(gc, str1.right(str1.size() - 1)),
-			 Bignum::exponentiationWithBase10(gc, i)) :
-		     RationalNumberKev(false,
-			 Bignum::makeFromString(gc, str1),
-			 Bignum::exponentiationWithBase10(gc, i)));
-  }
-
-  if (number->denominator()->isZero()) {
-    Q_ASSERT(0);
-    return number;
-  }
-  
-  number->reduce(gc);
-  return number;
 }
 
 RationalNumberKev* RationalNumberKev::makeFromString(KevesGC* gc, StringKev str, int radix) {
@@ -2403,14 +2316,6 @@ KevesValue InexactComplexNumberKev::makeFromBinary(KevesGC* gc, StringKev str_re
 
   double imag(static_cast<double>(str_imag.ToInt(nullptr, radix)));
   
-  auto ctor = [real, imag](void* ptr) {
-    return new(ptr) InexactComplexNumberKev(real, imag);
-  };
-
-  return gc->Make(ctor, alloc_size(nullptr));
-}
-
-InexactComplexNumberKev* InexactComplexNumberKev::makeFromFlonums(KevesGC* gc, FlonumKev real, FlonumKev imag) {
   auto ctor = [real, imag](void* ptr) {
     return new(ptr) InexactComplexNumberKev(real, imag);
   };

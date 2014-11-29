@@ -31,6 +31,7 @@ typedef qint64 bg_long;
 typedef quint64 bg_ulong;
 
 class BignumInt;
+class QString;
 class KevesGC;
 
 
@@ -77,12 +78,19 @@ public:
   bg_ulong toULong(bool* ok) const;
 
   static int calculateLength(const mpz_class& mpz_num);
-  static Bignum* exponentiationWithBase10(KevesGC* gc, int a);
+
+  template<class ZONE>
+  static Bignum* exponentiationWithBase10(ZONE* zone, int a);
+
   static Bignum* ldexp(KevesGC* gc, bg_ulong significand, int exponent);
   static Bignum* makeFromInt(KevesGC* gc, bg_uint n);
   static Bignum* makeFromLong(KevesGC* gc, bg_ulong n);
-  static Bignum* makeFromMPZ(KevesGC* gc, const mpz_class& num);
-  static Bignum* makeFromString(KevesGC* gc, const QString& str, int radix = 10);
+
+  template<class ZONE>
+  static Bignum* makeFromMPZ(ZONE* zone, const mpz_class& num);
+
+  template<class ZONE>
+  static Bignum* makeFromString(ZONE* zone, const QString& str, int radix = 10);
 
 protected:
   void clear();
@@ -110,7 +118,9 @@ private:
   
   static int calculateLength(bg_uint a, int b);
   // static void clearUIntArray(bg_uint*, int);
-  static Bignum* makeFromLength(KevesGC* gc, int len);
+
+  template<class ZONE>
+  static Bignum* makeFromLength(ZONE* zone, int len);
   
   int len_;
 

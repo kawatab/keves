@@ -30,7 +30,6 @@
 class CodeKev;
 class ExactComplexNumberKev;
 class KevesBase;
-class KevesLibrary;
 class KevesTextualOutputPort;
 class RationalNumberKev;
 class RecordKev;

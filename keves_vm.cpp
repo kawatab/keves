@@ -20,7 +20,6 @@
 #include "keves_vm.hpp"
 
 #include <iostream>
-#include <QStack>
 #include "keves_base.hpp"
 #include "keves_builtin_values.hpp"
 #include "keves_file_io.hpp"
@@ -28,11 +27,17 @@
 #include "keves_textual_port.hpp"
 #include "kev/bignum.hpp"
 #include "kev/code.hpp"
+#include "kev/code-inl.hpp"
 #include "kev/condition.hpp"
+#include "kev/condition-inl.hpp"
 #include "kev/frame.hpp"
+#include "kev/frame-inl.hpp"
 #include "kev/jump.hpp"
+#include "kev/jump-inl.hpp"
 #include "kev/number.hpp"
+#include "kev/number-inl.hpp"
 #include "kev/pair.hpp"
+#include "kev/pair-inl.hpp"
 #include "kev/procedure.hpp"
 #include "kev/record.hpp"
 #include "kev/reference.hpp"
@@ -49,8 +54,6 @@
 #include "value/fixnum.hpp"
 #include "value/instruct.hpp"
 
-#include <QFile> // this purpose is test.
-#include <QDataStream> // this purpose is test.
 
 KevesVM::KevesVM(KevesBase* base, KevesTextualOutputPort* result_field)
   : base_(base),

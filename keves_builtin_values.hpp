@@ -20,10 +20,12 @@
 #pragma once
 
 #include <QHash>
-#include "keves_gc.hpp"
+#include "keves_iterator.hpp"
 
 
 class CodeKev;
+class KevesBase;
+class KevesGC;
 class QString;
 class StringKev;
 
@@ -36,7 +38,7 @@ public:
   KevesBuiltinValues& operator=(const KevesBuiltinValues&&) = delete;
   ~KevesBuiltinValues() = default;
 
-  void Init(KevesGC* gc);
+  void Init(KevesBase* base);
 
   // for messages
   static const char mesg_Req0[];
@@ -97,7 +99,7 @@ public:
   }
 
 private:
-  void InitMesgList(const QString& file_name, KevesGC* gc);
+  void InitMesgList(const QString& file_name, KevesBase* base);
 
   QHash<QString, const StringKev*> mesg_text_;
   CodeKev* builtin_code_;

@@ -26,6 +26,7 @@
 #include "keves_file_io.hpp"
 #include "keves_base.hpp"
 #include "kev/bignum.hpp"
+#include "kev/bignum-inl.hpp"
 #include "kev/code.hpp"
 #include "kev/code-inl.hpp"
 #include "kev/frame.hpp"
@@ -34,6 +35,8 @@
 #include "kev/number-inl.hpp"
 #include "kev/pair.hpp"
 #include "kev/pair-inl.hpp"
+#include "kev/procedure.hpp"
+#include "kev/procedure-inl.hpp"
 #include "kev/reference.hpp"
 #include "kev/reference-inl.hpp"
 #include "kev/string.hpp"
@@ -103,12 +106,12 @@
 */
 
 void TestCode::Code02::Write(KevesBase* base, const char* file_name) {
-  StringKev* str(StringKev::Make(base->gc(), "abdefgh"));
-  SymbolKev* sym(SymbolKev::Make(base->gc(), "sYmbOl"));
+  StringKev* str(StringKev::Make(base, "abdefgh"));
+  SymbolKev* sym(SymbolKev::Make(base, "sYmbOl"));
 
-  PairKev* pair2(PairKev::Make(base->gc(), KevesChar('a'), str)); 
+  PairKev* pair2(PairKev::Make(base, KevesChar('a'), str)); 
 
-  VectorKev* vector1(VectorKev::Make(base->gc(), 3));
+  VectorKev* vector1(VectorKev::Make(base, 3));
   {
     KevesIterator iter(vector1->begin());
     *iter++ = EMB_FALSE;
@@ -116,36 +119,36 @@ void TestCode::Code02::Write(KevesBase* base, const char* file_name) {
     *iter++ = EMB_NULL;
   }
 
-  PairKev* pair1(PairKev::Make(base->gc(), EMB_TRUE, vector1)); 
-  PairKev* pair3(PairKev::Make(base->gc(), pair1, KevesFixnum(100)));
-  PairKev* pair4(PairKev::Make(base->gc(), pair2, pair3));
-  PairKev* pair5(PairKev::Make(base->gc(), sym, pair4));
-  ReferenceKev* ref(ReferenceKev::Make(base->gc(), pair5));
+  PairKev* pair1(PairKev::Make(base, EMB_TRUE, vector1)); 
+  PairKev* pair3(PairKev::Make(base, pair1, KevesFixnum(100)));
+  PairKev* pair4(PairKev::Make(base, pair2, pair3));
+  PairKev* pair5(PairKev::Make(base, sym, pair4));
+  ReferenceKev* ref(ReferenceKev::Make(base, pair5));
   pair1->set_car(pair5);
   
-  Bignum* bignum(Bignum::makeFromString(base->gc(),
+  Bignum* bignum(Bignum::makeFromString(base,
 					"12334242342342431233424234234243"));
 
-  StringKev* str_num(StringKev::Make(base->gc(),
+  StringKev* str_num(StringKev::Make(base,
 				     "123423423414127897/8907807843218742"));
 
   RationalNumberKev*
-    rational(RationalNumberKev::makeFromString(base->gc(), *str_num));
+    rational(RationalNumberKev::makeFromString(base, *str_num));
 
-  FlonumKev* flonum(FlonumKev::Make(base->gc(), 1.2345678));
+  FlonumKev* flonum(FlonumKev::Make(base, 1.2345678));
   
   ExactComplexNumberKev*
-    exact_complex(ExactComplexNumberKev::Make(base->gc()));
+    exact_complex(ExactComplexNumberKev::Make(base));
 
   exact_complex->set_real(*rational);
   exact_complex->set_imag(*rational);
 
   InexactComplexNumberKev*
-    inexact_complex(InexactComplexNumberKev::makeFromFlonums(base->gc(),
+    inexact_complex(InexactComplexNumberKev::makeFromFlonums(base,
 							     FlonumKev(1.234),
 							     FlonumKev(-3.234)));
 
-  CodeKev* code(CodeKev::Make(base->gc(), 12));
+  CodeKev* code(CodeKev::Make(base, 12));
   {
     KevesIterator iter(code->begin());
     *iter++ = pair1;
@@ -162,8 +165,8 @@ void TestCode::Code02::Write(KevesBase* base, const char* file_name) {
     Q_ASSERT(iter <= code->end());
   }
     
-  FreeVarFrameKev* clsr(FreeVarFrameKev::Make(base->gc(), 3, nullptr));
-  LambdaKev* lambda(LambdaKev::Make(base->gc(), clsr, code, 2));
+  FreeVarFrameKev* clsr(FreeVarFrameKev::Make(base, 3, nullptr));
+  LambdaKev* lambda(LambdaKev::Make(base, clsr, code, 2));
 
   KevesLibrary this_lib;
   this_lib.id_ << "main";
@@ -204,13 +207,13 @@ void TestCode::Code02::Read(KevesBase* base, const char* file_name) {
 }
 
 void TestCode::Code03::Write(KevesBase* base, const char* file_name) {
-  ArgumentFrameKev* argp(ArgumentFrameKev::Make(base->gc(), 5)); 
-  LocalVarFrameKev* envp(LocalVarFrameKev::Make(base->gc(), 5)); 
-  FreeVarFrameKev* clsr1(FreeVarFrameKev::Make(base->gc(), 5, nullptr)); 
-  FreeVarFrameKev* clsr2(FreeVarFrameKev::Make(base->gc(), 5, clsr1)); 
+  ArgumentFrameKev* argp(ArgumentFrameKev::Make(base, 5)); 
+  LocalVarFrameKev* envp(LocalVarFrameKev::Make(base, 5)); 
+  FreeVarFrameKev* clsr1(FreeVarFrameKev::Make(base, 5, nullptr)); 
+  FreeVarFrameKev* clsr2(FreeVarFrameKev::Make(base, 5, clsr1)); 
   KevesIterator pc;
 
-  StackFrameKev* fp(StackFrameKev::Make(base->gc()));
+  StackFrameKev* fp(StackFrameKev::Make(base));
   fp->set_fp(nullptr);
   fp->set_pc(pc);
   fp->set_arg(argp, 3);

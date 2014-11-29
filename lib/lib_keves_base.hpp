@@ -28,6 +28,7 @@
 
 
 class CodeKev;
+class KevesBase;
 class KevesBuiltInValues;
 class LibKevesParse;
 class LibRnrsBase;
@@ -51,7 +52,7 @@ public:
   LibKevesBase& operator=(LibKevesBase&&) = delete;
   ~LibKevesBase() = default;
 
-  KevesLibrary* Init(KevesGC* gc);
+  KevesLibrary* Init(KevesBase* base);
 
   SymbolKev* sym_display_;
   CPSKev proc_display_;

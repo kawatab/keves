@@ -24,11 +24,16 @@
 #include <QFile>
 #include "keves_vm.hpp"
 #include "kev/bignum.hpp"
+#include "kev/bignum-inl.hpp"
+#include "kev/code.hpp"
+#include "kev/code-inl.hpp"
+#include "kev/frame.hpp"
 #include "kev/frame-inl.hpp"
 #include "kev/number.hpp"
 #include "kev/number-inl.hpp"
 #include "kev/pair.hpp"
 #include "kev/pair-inl.hpp"
+#include "kev/procedure.hpp"
 #include "kev/procedure-inl.hpp"
 #include "kev/reference.hpp"
 #include "kev/reference-inl.hpp"
@@ -41,19 +46,16 @@
 #include "kev/wind.hpp"
 #include "kev/wind-inl.hpp"
 #include "value/char.hpp"
-#include "value/instruct.hpp"
 
 
 KevesBase::KevesBase()
-  : gc_(nullptr),
-    cmd_table_(),
+  : cmd_table_(),
     builtin_(),
     sym_eval_(),
     lib_keves_base_() {
 
-  gc_.Set(&shared_list_);
   InitCMDTable();
-  builtin_.Init(&gc_);
+  builtin_.Init(this);
 
   SetFunctionTable<CodeKev>();
   SetFunctionTable<Bignum>();
@@ -74,15 +76,16 @@ KevesBase::KevesBase()
   SetFunctionTable<StackFrameKev>();
   SetFunctionTable<PairKev>();
 
-  sym_eval_ = SymbolKev::Make(&gc_, "eval");
+  sym_eval_ = SymbolKev::Make(this, "eval");
 
-  lib_keves_base_.Init(&gc_);
+  // lib_keves_base_.Init(&gc_);
+  lib_keves_base_.Init(this);
 }
 
 KevesBase::~KevesBase() {
-  gc_.Reset();
+  // gc_.Reset();
 
-  for (int i(0); i < vm_list_.size(); ++i) delete vm_list_[i];
+  // for (int i(0); i < vm_list_.size(); ++i) delete vm_list_[i];
 }
 
 KevesVM* KevesBase::MakeVM() {
@@ -249,7 +252,7 @@ const QList<const Kev*> KevesBase::GetObjectList(const Kev* kev) {
 }
       
 void* KevesBase::Alloc(size_t alloc_size) {
-  KevesBaseNode node(new char[((alloc_size + sizeof(quintptr) - 1) | ~(sizeof(quintptr) - 1)) + sizeof(KevesPrefix)]);
+  KevesBaseNode node(new char[((alloc_size + sizeof(quintptr) - 1) & ~(sizeof(quintptr) - 1)) + sizeof(KevesPrefix)]);
   shared_list_.Push(node);
   return node.ToPtr();
 }

@@ -27,6 +27,7 @@
 #include <QTextStream>
 
 #include "keves_base.hpp"
+#include "keves_base-inl.hpp"
 #include "keves_builtin_values.hpp"
 #include "keves_template.hpp"
 #include "keves_vm.hpp"
@@ -34,7 +35,9 @@
 #include "kev/code-inl.hpp"
 #include "kev/procedure.hpp"
 #include "kev/procedure-inl.hpp"
+#include "kev/string-inl.hpp"
 #include "kev/symbol.hpp"
+#include "kev/symbol-inl.hpp"
 
 LibKevesBase::LibKevesBase()
   : KevesLibrary(),
@@ -44,12 +47,12 @@ LibKevesBase::LibKevesBase()
   ver_num_ << 0 << 1;
 }
 
-KevesLibrary* LibKevesBase::Init(KevesGC* gc) {
+KevesLibrary* LibKevesBase::Init(KevesBase* base) {
   std::cout << "LibKevesBase::Init()" << std::endl;
 
 					       
-  sym_display_ = SymbolKev::Make(gc, "display");
-  sym_newline_ = SymbolKev::Make(gc, "newline");
+  sym_display_ = SymbolKev::Make(base, "display");
+  sym_newline_ = SymbolKev::Make(base, "newline");
 
   proc_display_.set(procDisplay, sym_display_);
   proc_newline_.set(&Function::thunk<Newline>, sym_newline_);
@@ -57,8 +60,8 @@ KevesLibrary* LibKevesBase::Init(KevesGC* gc) {
   AddBind("display", &proc_display_);
   AddBind("newline", &proc_newline_);
 
-  code_ = CodeKev::Make(gc, 16);
-  KevesIterator iter(gc->ToMutable(code_.ToPtr<CodeKev>())->begin());
+  code_ = CodeKev::Make(base, 16);
+  KevesIterator iter(base->ToMutable(code_.ToPtr<CodeKev>())->begin());
   *iter++ = KevesInstruct(CMD_FRAME_R);
   *iter++ = KevesFixnum(5);
   *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);

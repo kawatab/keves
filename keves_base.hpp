@@ -19,18 +19,15 @@
 
 #pragma once
 
-#include <QHash>
 #include <QList>
 #include <QStack>
 #include "keves_builtin_values.hpp"
-#include "keves_gc.hpp"
-#include "keves_gc-inl.hpp"
+#include "keves_list.hpp"
 #include "keves_textual_port.hpp"
 #include "lib/lib_keves_base.hpp"
 #include "value/instruct.hpp"
 
 
-class KevesBuiltinValues;
 class KevesVM;
 class QString;
 
@@ -47,7 +44,7 @@ public:
   
   // for indexing of address
 public:
-  enum {ALIGN = 0x3, INDEX = 0x2};
+  enum { ALIGN = 0x3, INDEX = 0x2 };
 
   const QList<const Kev*> GetObjectList(const Kev* kev);
 
@@ -78,7 +75,8 @@ public:
   template<class KEV>
   static void WriteArray(const QList<const Kev*>& list, QDataStream& out, KEV* kev);
 
-  Kev* (*ft_ReadObject(uioword value))(QDataStream&, KevesGC*) {
+  // Kev* (*ft_ReadObject(uioword value))(QDataStream&, KevesGC*) {
+  Kev* (*ft_ReadObject(uioword value))(QDataStream&, KevesBase*) {
     return ft_ReadObject_[value];
   }
   
@@ -122,6 +120,10 @@ private:
 public:
   const StringKev* GetMesgText(const QString& key) const;
   void InitCMDTable();
+
+  template<class KEV>
+  KEV* ToMutable(const KEV* kev);
+
   QString ToString(KevesValue) const;
   void ToString_code(QString*, KevesValue, int) const;
   void ToString_element(QString*, KevesValue) const;
@@ -141,9 +143,11 @@ public:
     return &default_result_field_;
   }
   
+  /*
   KevesGC* gc() {
     return &gc_;
   }
+  */
 
   LibKevesBase* lib_keves_base() {
     return &lib_keves_base_;
@@ -155,7 +159,7 @@ public:
 
 private:
   // GC and tables
-  KevesGC gc_;
+  // KevesGC gc_;
   KevesInstructTable instruct_table_;
   vm_func cmd_table_[END_OF_LIST];
   KevesBuiltinValues builtin_;
@@ -174,6 +178,7 @@ private:
 
   void (*ft_PushChildren_[0177])(QStack<const Kev*>*, KevesValue);
   void (*ft_RevertObject_[0177])(const QList<Kev*>&, MutableKevesValue);
-  Kev* (*ft_ReadObject_[0177])(QDataStream&, KevesGC*);
+  // Kev* (*ft_ReadObject_[0177])(QDataStream&, KevesGC*);
+  Kev* (*ft_ReadObject_[0177])(QDataStream&, KevesBase*);
   void (*ft_WriteObject_[0177])(const QList<const Kev*>&, QDataStream&, KevesValue);
 };

@@ -47,7 +47,9 @@ public:
   ~RationalNumberKev() = default;
   
   RationalNumberKev(bool, const Bignum*, const Bignum*);
-  RationalNumberKev(KevesGC*, const mpq_class&);
+
+  template<class ZONE>
+  RationalNumberKev(ZONE*, const mpq_class&);
 
   RationalNumberKev abs() const;
   FlonumKev add(FlonumKev) const;
@@ -87,7 +89,9 @@ public:
   const Bignum* numerator() const;
   KevesValue optimize();
   RationalNumberKev reciprocal() const;
-  void reduce(KevesGC*);
+
+  template<class ZONE>
+  void reduce(ZONE*);
 
   void set(bool neg, const Bignum* numerator, const Bignum* denominator){
     this->neg_ = neg;
@@ -122,7 +126,10 @@ public:
   static RationalNumberKev* makeFromInt(KevesGC*, bg_int);
   static RationalNumberKev* makeFromLong(KevesGC*, bg_long);
   static RationalNumberKev* makeFromMPQ(KevesGC*, const mpq_class&);
-  static RationalNumberKev* makeFromString(KevesGC*, StringKev);
+
+  template<class ZONE>
+  static RationalNumberKev* makeFromString(ZONE*, StringKev);
+
   static RationalNumberKev* makeFromString(KevesGC*, StringKev, int);
 
   template<class ZONE>
@@ -632,7 +639,9 @@ public:
   QString toQString(int) const;
 
   static KevesValue makeFromBinary(KevesGC*, StringKev, StringKev, int);
-  static InexactComplexNumberKev* makeFromFlonums(KevesGC*, FlonumKev, FlonumKev);
+
+  template<class ZONE>
+  static InexactComplexNumberKev* makeFromFlonums(ZONE*, FlonumKev, FlonumKev);
   
 private:
   double real_;

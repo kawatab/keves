@@ -21,8 +21,6 @@
 
 #include <QDataStream>
 #include "keves_base.hpp"
-#include "keves_gc.hpp"
-#include "keves_gc-inl.hpp"
 #include "kev/bignum.hpp"
 #include "kev/code.hpp"
 #include "kev/frame.hpp"
@@ -76,7 +74,7 @@ QList<KevesLibrary> KevesFileIO::Read(KevesBase* base) {
 
   while (!in.atEnd()) {
     in >> value;
-    libs[0].object_list_.append((*base->ft_ReadObject(value))(in, base->gc()));
+    libs[0].object_list_.append((*base->ft_ReadObject(value))(in, base));
   }
 
   base->RevertObjects(libs[0].object_list_);

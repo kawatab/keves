@@ -19,9 +19,11 @@
 
 #include "keves_builtin_values.hpp"
 
-#include "iostream"
+#include <iostream>
 #include <QFile>
+#include "keves_base.hpp"
 #include "kev/code.hpp"
+#include "kev/code-inl.hpp"
 #include "kev/string.hpp"
 #include "kev/string-inl.hpp"
 #include "value/instruct.hpp"
@@ -63,10 +65,10 @@ DEFINE_MESG_KEY(1stObjNotProcOrSyn);
 #undef DEFINE_MESG_KEY
 
 
-void KevesBuiltinValues::Init(KevesGC* gc) {
-  InitMesgList("mesg_text.csv", gc);
+void KevesBuiltinValues::Init(KevesBase* base) {
+  InitMesgList("mesg_text.csv", base);
 
-  builtin_code_ = CodeKev::Make(gc, 8);
+  builtin_code_ = CodeKev::Make(base, 8);
   {
     KevesIterator iter(builtin_code_->begin());
     code_HALT_ = iter;
@@ -87,7 +89,7 @@ void KevesBuiltinValues::Init(KevesGC* gc) {
   }
 }
 
-void KevesBuiltinValues::InitMesgList(const QString& file_name, KevesGC *gc) {
+void KevesBuiltinValues::InitMesgList(const QString& file_name, KevesBase* base) {
   QFile mesg_file(file_name);
 
   if (!mesg_file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -127,7 +129,7 @@ void KevesBuiltinValues::InitMesgList(const QString& file_name, KevesGC *gc) {
       continue;
     }
 
-    mesg_text_.insert(key, StringKev::Make(gc, value));
+    mesg_text_.insert(key, StringKev::Make(base, value));
   }
 
   mesg_file.close();

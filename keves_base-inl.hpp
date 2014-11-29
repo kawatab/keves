@@ -75,11 +75,26 @@ void KevesBase::SetFunctionTable() {
     = KEV::template PushChildren<KevesBase, QStack<const Kev*> >;
 
   ft_ReadObject_[KEV::TYPE]
-    = KEV::template ReadObject<KevesBase, QDataStream, KevesGC>;
+    // = KEV::template ReadObject<KevesBase, QDataStream, KevesGC>;
+    = KEV::template ReadObject<KevesBase, QDataStream, KevesBase>;
 
   ft_RevertObject_[KEV::TYPE]
     = KEV::template RevertObject<KevesBase, QList<Kev*> >;
 
   ft_WriteObject_[KEV::TYPE]
     = KEV::template WriteObject<KevesBase, QList<const Kev*>, QDataStream>;
+}
+
+template<class KEV>
+KEV* KevesBase::ToMutable(const KEV* kev) {
+  KEV* mutable_kev(const_cast<KEV*>(kev));
+    
+  /*
+  if (IsInTenured(mutable_kev) && !mutable_kev->IsMarkedDynamic()) {
+    mutable_kev->MarkDynamic(); // IMPORTANT !!!
+    this->PushToMarkedList(mutable_kev); // IMPORTANT !!!
+  }
+  */
+    
+  return mutable_kev;
 }

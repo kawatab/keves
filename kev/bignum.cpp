@@ -18,6 +18,7 @@
 
 
 #include "bignum.hpp"
+#include "bignum-inl.hpp"
 
 #include <memory>
 #include <QString>
@@ -163,26 +164,6 @@ Bignum* Bignum::makeFromLong(KevesGC* gc, bg_ulong n) {
   return gc->Make(ctor, sizeof(BignumLong));
 }
 
-Bignum* Bignum::makeFromMPZ(KevesGC* gc, const mpz_class& num) {
-  int len(calculateLength(num));
-
-  auto ctor = [&num, len](void* ptr) {
-    Bignum* result(new(ptr) Bignum(len));
-    
-    mpz_export(result->array(), nullptr, -1, sizeof(bg_uint), 0, 0,
-	       num.get_mpz_t());
-    
-    return result;
-  };
-
-  return gc->Make(ctor, alloc_size(len));
-}
-
-Bignum* Bignum::makeFromLength(KevesGC* gc, int len) {
-  auto ctor = [len](void *ptr) { return new(ptr) Bignum(len); };
-  return gc->Make(ctor, alloc_size(len));
-}
-
 int Bignum::calculateLength(bg_uint a, int b) {
   constexpr double log0x1p32[]
     { log(2.0) / log(0x1p32), // 1. <= x < 2.0
@@ -202,20 +183,6 @@ int Bignum::calculateLength(bg_uint a, int b) {
 int Bignum::calculateLength(const mpz_class& mpz_num) {
   constexpr int num_bit(8 * sizeof(bg_uint));
   return (mpz_sizeinbase(mpz_num.get_mpz_t(), 2) + num_bit - 1) / num_bit;
-}
-
-Bignum* Bignum::makeFromString(KevesGC* gc, const QString& str, int radix) {
-  if (radix != 2 && radix != 8 && radix != 10 && radix != 16) 
-    return nullptr;
-  
-  mpz_class mpz_num(str.toLocal8Bit().constData(), radix);
-  int len(calculateLength(mpz_num));
-  Bignum* result(makeFromLength(gc, len));
-  
-  mpz_export(result->array(), nullptr, -1, sizeof(bg_uint), 0, 0,
-	     mpz_num.get_mpz_t());
-  
-  return result;
 }
 
 void Bignum::clear() {
@@ -256,12 +223,6 @@ Bignum* Bignum::ldexp(KevesGC* gc, bg_ulong significand, int exponent) {
   }
 
   return bignum;
-}
-
-Bignum* Bignum::exponentiationWithBase10(KevesGC* gc, int a) {
-  mpz_class mpz;
-  mpz_ui_pow_ui(mpz.get_mpz_t(), 10, a);
-  return makeFromMPZ(gc, mpz);
 }
 
 void Bignum::CopyFrom(const Bignum& org) {
