@@ -20,6 +20,7 @@
 #include "keves_vm.hpp"
 
 #include <iostream>
+#include <unistd.h>
 #include "keves_base.hpp"
 #include "keves_builtin_values.hpp"
 #include "keves_file_io.hpp"
@@ -55,12 +56,28 @@
 #include "value/instruct.hpp"
 
 
-KevesVM::KevesVM(KevesBase* base, KevesTextualOutputPort* result_field)
-  : base_(base),
-    cmd_table_(base->cmd_table()),
-    gc_(base->shared_list()),
-    result_field_(result_field) {}
+/*
+KevesVM::KevesVM(QObject *parent)
+  : QObject(parent) {}
+*/
 
+KevesVM* KevesVM::Make(KevesBase* base) {
+  return Make(base, base->default_result_field());
+}
+
+KevesVM* KevesVM::Make(KevesBase* base, KevesTextualOutputPort* result_field) {
+  KevesVM* vm(new KevesVM());
+  vm->base_ = base;
+  vm->cmd_table_ = base->cmd_table();
+  vm->gc_.Init(vm, base->shared_list());
+  vm->result_field_ = result_field;
+  return vm;
+}
+
+void KevesVM::run() {
+  Execute("");
+}
+  
 void KevesVM::CheckStack(size_t* size, vm_func func, const_KevesIterator pc) {
   if (static_cast<void*>(size)
       < static_cast<void*>(static_cast<char*>(stack_safety_limit_) + *size)) {
@@ -387,7 +404,9 @@ int KevesVM::Execute(const QString& arg) {
   stack_higher_limit_ = static_cast<char*>(stack_lower_limit_) + stack_size;
   stack_safety_limit_ = static_cast<char*>(stack_lower_limit_) + 1024 * 1024;
   stack_higher_limit_ = reinterpret_cast<char*>(&attr);
+  std::cout << "higher limit: " << stack_higher_limit_ << std::endl;
 
+  sleep(2);
   return Execute_helper(arg);
 }
 
@@ -593,7 +612,7 @@ void KevesVM::ApplyProcedure(KevesVM* vm, const_KevesIterator pc) {
 }
 
 void KevesVM::RaiseAssertFirstObjNotProc(KevesVM* vm, const_KevesIterator pc) {
-  vm->acc_ = vm->base_->sym_eval_;
+  vm->acc_ = vm->base_->builtin()->sym_eval();
   vm->gr2_ = vm->gr1_;
   vm->gr1_ = vm->base_->GetMesgText(KevesBuiltinValues::mesg_1stObjNotProcOrSyn);
   return RaiseAssertCondition(vm, pc);

@@ -28,23 +28,16 @@
 #include "kev/vector.hpp"
 
 
-KevesGC:: KevesGC(KevesList<KevesNode<0> >* shared_list)
-  : /* survivor_(),*/ tenured_(), /*permanent_(),*/
-    tenured_list_(), /*permanent_list_(),*/  free_list_(),
-    marked_list_(), unchecked_list_(),
-    shared_list_(shared_list),
-    /*stack_lower_limit_(), stack_higher_limit_() ,*/
-    jmp_exit_(),
-    /* prev_global_vars_(), curt_global_vars_(),
-    registers_(),
-    vals_(),*/
-    pc_(), acc_(), gr1_(), gr2_(), gr3_(),
-    // life_span_(life_span),
-    // count_of_mark_and_sweep_(), mark_and_sweep_frequency_(frequency),
-    ft_size_() {
-  // survivor_.Set(this, 0x1000000UL); // 4 Mi Word = 16 MiB
-  tenured_.Set(this);
-  // permanent_.Set(this);
+void KevesGC::Init(KevesVM* vm, KevesList<KevesNode<0> >* shared_list) {
+  stack_lower_limit_ = vm->stack_lower_limit();
+  stack_higher_limit_ = vm->stack_higher_limit();
+  jmp_exit_ = vm->ptr_jmp_exit();
+  acc_ = &vm->acc_;
+  gr1_ = &vm->gr1_;
+  gr2_ = &vm->gr2_;
+  gr3_ = &vm->gr3_;
+
+  shared_list_ = shared_list;
 
   SetFunctionTable<CodeKev>();
   SetFunctionTable<StringCoreKev>();
@@ -52,6 +45,8 @@ KevesGC:: KevesGC(KevesList<KevesNode<0> >* shared_list)
   SetFunctionTable<SymbolKev>();
   SetFunctionTable<VectorKev>();
   SetFunctionTable<PairKev>();
+
+  tenured_.Set(this);
 }
 
 KevesGC::Tenured::Tenured()

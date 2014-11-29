@@ -40,9 +40,49 @@ public:
   KevesBase& operator=(const KevesBase&&) = delete;
   ~KevesBase();
 
+  ////////////////////////////////////////////////////////////////
+  // General functions                                          //
+  ////////////////////////////////////////////////////////////////
+public:
+  const StringKev* GetMesgText(const QString& key) const;
   KevesVM* MakeVM();
+
+  template<class KEV>
+  KEV* ToMutable(const KEV* kev);
+
+  QString ToString(KevesValue value) const;
+
+  KevesBuiltinValues* builtin() {
+    return &builtin_;
+  }
   
-  // for indexing of address
+  vm_func* cmd_table() {
+    return cmd_table_;
+  }
+  
+  KevesTextualOutputPort* default_result_field() {
+    return &default_result_field_;
+  }
+  
+  LibKevesBase* lib_keves_base() {
+    return &lib_keves_base_;
+  }
+  
+  const KevesInstructTable* instruct_table() const {
+    return &instruct_table_;
+  }
+
+private:
+  void InitCMDTable();
+  void ToString_code(QString*, KevesValue, int) const;
+  void ToString_element(QString*, KevesValue) const;
+  void ToString_list(QString*, KevesValue, int) const;
+  void ToString_vector(QString*, KevesValue, int) const;
+
+
+  ////////////////////////////////////////////////////////////////
+  // for indexing of address                                    //
+  ////////////////////////////////////////////////////////////////
 public:
   enum { ALIGN = 0x3, INDEX = 0x2 };
 
@@ -75,7 +115,6 @@ public:
   template<class KEV>
   static void WriteArray(const QList<const Kev*>& list, QDataStream& out, KEV* kev);
 
-  // Kev* (*ft_ReadObject(uioword value))(QDataStream&, KevesGC*) {
   Kev* (*ft_ReadObject(uioword value))(QDataStream&, KevesBase*) {
     return ft_ReadObject_[value];
   }
@@ -97,14 +136,15 @@ private:
   void SetFunctionTable();
   
 
-  // Allocation for objects
+  ////////////////////////////////////////////////////////////////
+  // Allocate and Make Objects                                  //
+  ////////////////////////////////////////////////////////////////
 public:
   template<class CTOR>
   auto Make(CTOR ctor, size_t size) -> decltype(ctor(nullptr)) {
     void* ptr(Alloc(size));
     decltype(ctor(nullptr)) temp(ctor(ptr));
-    // temp->MarkDynamic(); // IMPORTANT !!!
-    // gc_->PushToMarkedList(temp); // IMPORTANT !!!
+    PushToSharedList(temp);
     return temp;
   }
 
@@ -116,69 +156,20 @@ private:
   void* Alloc(size_t alloc_size);
   void PushToSharedList(MutableKev* kev);
 
-  // General functions
-public:
-  const StringKev* GetMesgText(const QString& key) const;
-  void InitCMDTable();
 
-  template<class KEV>
-  KEV* ToMutable(const KEV* kev);
-
-  QString ToString(KevesValue) const;
-  void ToString_code(QString*, KevesValue, int) const;
-  void ToString_element(QString*, KevesValue) const;
-  void ToString_list(QString*, KevesValue, int) const;
-  void ToString_vector(QString*, KevesValue, int) const;
-
-
-  KevesBuiltinValues* builtin() {
-    return &builtin_;
-  }
-  
-  vm_func* cmd_table() {
-    return cmd_table_;
-  }
-  
-  KevesTextualOutputPort* default_result_field() {
-    return &default_result_field_;
-  }
-  
-  /*
-  KevesGC* gc() {
-    return &gc_;
-  }
-  */
-
-  LibKevesBase* lib_keves_base() {
-    return &lib_keves_base_;
-  }
-  
-  const KevesInstructTable* instruct_table() const {
-    return &instruct_table_;
-  }
-
+  ////////////////////////////////////////////////////////////////
+  // variables                                                  //
+  ////////////////////////////////////////////////////////////////
 private:
-  // GC and tables
-  // KevesGC gc_;
   KevesInstructTable instruct_table_;
   vm_func cmd_table_[END_OF_LIST];
   KevesBuiltinValues builtin_;
   KevesTextualOutputPort default_result_field_;
   QList<KevesVM*> vm_list_;
-
-public:
-  // variables
-  SymbolKev* sym_eval_;
-
-private:
-  // libraries
   LibKevesBase lib_keves_base_;
-
   KevesList<KevesNode<0> > shared_list_;
-
   void (*ft_PushChildren_[0177])(QStack<const Kev*>*, KevesValue);
   void (*ft_RevertObject_[0177])(const QList<Kev*>&, MutableKevesValue);
-  // Kev* (*ft_ReadObject_[0177])(QDataStream&, KevesGC*);
   Kev* (*ft_ReadObject_[0177])(QDataStream&, KevesBase*);
   void (*ft_WriteObject_[0177])(const QList<const Kev*>&, QDataStream&, KevesValue);
 };

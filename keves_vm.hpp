@@ -21,6 +21,7 @@
 
 #include <setjmp.h>
 #include <QChar>
+#include <QRunnable>
 #include "keves_gc.hpp"
 #include "keves_gc-inl.hpp"
 #include "kev/environment.hpp"
@@ -36,16 +37,27 @@ class RecordKev;
 class StringKev;
 class VectorKev;
 
-class KevesVM {
+class KevesVM : public QRunnable {
 public:
-  KevesVM() = delete;
+  KevesVM() = default;
   KevesVM(const KevesVM&) = delete;
   KevesVM(const KevesVM&&) = delete;
   KevesVM& operator=(const KevesVM&) = delete;
   KevesVM& operator=(const KevesVM&&) = delete;
   ~KevesVM() = default;
 
-  KevesVM(KevesBase* base, KevesTextualOutputPort* result_field);
+  void run(); // for QRunnable
+  
+  int Execute(const QString& arg);
+  
+  ////////////////////////////////////////////////////////////////
+  // General                                                    //
+  ////////////////////////////////////////////////////////////////
+public:
+  int Execute_helper(const QString& arg);
+  
+  static KevesVM* Make(KevesBase* base);
+  static KevesVM* Make(KevesBase* base, KevesTextualOutputPort* result_field);
   
   KevesBase* base() {
     return base_;
@@ -54,17 +66,12 @@ public:
   KevesTextualOutputPort* result_field() {
     return result_field_;
   }
-  
-  int Execute(const QString& arg);
-  int Execute_helper(const QString& arg);
-  
-  // for GC
-  void CheckStack(size_t*, vm_func, const_KevesIterator);
-  void CheckStack(const void*, vm_func, const_KevesIterator);
-  void ExecuteGC(vm_func, const_KevesIterator);
-  KevesValue FindConditionValue(KevesValue, RecordKev*);
 
-  // for procedures
+  ////////////////////////////////////////////////////////////////
+  // for Instruct and Procedures                                //
+  ////////////////////////////////////////////////////////////////
+
+  // Push and Return Values
   void PushToArgument(KevesValue);
   static void PushAccToArgument(KevesVM*, const_KevesIterator);
   static void PushAccToArgumentSafe(KevesVM*, const_KevesIterator);
@@ -77,17 +84,16 @@ public:
   static void ReturnValue(KevesVM*, const_KevesIterator);
   static void ReturnTwoValues(KevesVM*, const_KevesIterator);
 
-  // for exceptions
+  // Make and Raise Exceptions
   static void MakeLexicalException(KevesVM*, const_KevesIterator);
   static void RaiseAssertFirstObjNotProc(KevesVM*, const_KevesIterator);
   static void RaiseAssertLambdaReqLess(KevesVM*, const_KevesIterator);
   static void RaiseAssertLambdaReqMore(KevesVM*, const_KevesIterator);
   static void RaiseAssertReqRealNum(KevesVM*, const_KevesIterator);
-public:
   static void RaiseAssertCondition(KevesVM*, const_KevesIterator);
 
 
-  // for numbers
+  // for Numbers
   static void ContinueRationalNumberKev(KevesVM* vm,
 					const_KevesIterator pc,
 					const RationalNumberKev* real,
@@ -245,6 +251,28 @@ public:
   static void cmd_TEST_ENVIRONMENT(KevesVM*, const_KevesIterator);
 
 
+  ////////////////////////////////////////////////////////////////
+  // for GC                                                     //
+  ////////////////////////////////////////////////////////////////
+
+  void CheckStack(size_t*, vm_func, const_KevesIterator);
+  void CheckStack(const void*, vm_func, const_KevesIterator);
+  void ExecuteGC(vm_func, const_KevesIterator);
+  KevesValue FindConditionValue(KevesValue, RecordKev*);
+
+  void* stack_lower_limit() {
+    return &stack_lower_limit_;
+  }
+
+  void* stack_higher_limit() {
+    return &stack_higher_limit_;
+  }
+
+  jmp_buf* ptr_jmp_exit() {
+    return &jmp_exit_;
+  }
+
+
 private:
   KevesBase* base_;
   vm_func* cmd_table_;
@@ -262,10 +290,8 @@ public:
   KevesValue gr2_;
   KevesValue gr3_;
 
-private:
   // for Cheney on the M.T.A.
   jmp_buf jmp_exit_;
-
   void* stack_lower_limit_;
   void* stack_higher_limit_;
   void* stack_safety_limit_;

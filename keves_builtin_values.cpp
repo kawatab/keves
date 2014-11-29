@@ -68,6 +68,8 @@ DEFINE_MESG_KEY(1stObjNotProcOrSyn);
 void KevesBuiltinValues::Init(KevesBase* base) {
   InitMesgList("mesg_text.csv", base);
 
+  sym_eval_ = SymbolKev::Make(base, "eval");
+
   builtin_code_ = CodeKev::Make(base, 8);
   {
     KevesIterator iter(builtin_code_->begin());

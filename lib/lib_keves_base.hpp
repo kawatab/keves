@@ -45,7 +45,7 @@ public:
   static constexpr int SIZE_OF_BUILTIN_CODE = 0x10000;
   static constexpr int SIZE_OF_PROC_TABLE = 512;
 
-  LibKevesBase();
+  LibKevesBase() = default;
   LibKevesBase(const LibKevesBase&) = delete;
   LibKevesBase(LibKevesBase&&) = delete;
   LibKevesBase& operator=(const LibKevesBase&) = delete;

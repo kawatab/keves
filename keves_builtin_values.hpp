@@ -28,6 +28,7 @@ class KevesBase;
 class KevesGC;
 class QString;
 class StringKev;
+class SymbolKev;
 
 class KevesBuiltinValues {
 public:
@@ -73,6 +74,10 @@ public:
 
   const StringKev* GetMesgText(const QString& key) const;
 
+  SymbolKev* sym_eval() {
+    return sym_eval_;
+  }
+
   // for builtin code
   const_KevesIterator code_APPLY() const {
     return code_APPLY_;
@@ -102,6 +107,7 @@ private:
   void InitMesgList(const QString& file_name, KevesBase* base);
 
   QHash<QString, const StringKev*> mesg_text_;
+  SymbolKev* sym_eval_;
   CodeKev* builtin_code_;
   const_KevesIterator code_APPLY_;
   const_KevesIterator code_HALT_;

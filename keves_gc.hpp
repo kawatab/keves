@@ -41,14 +41,14 @@ class KevesGC {
 #endif
 
 public:
-  KevesGC() = delete;
+  KevesGC() = default;
   KevesGC(const KevesGC&) = delete;
   KevesGC(const KevesGC&&) = delete;
   KevesGC& operator=(const KevesGC&) = delete;
   KevesGC& operator=(const KevesGC&&) = delete;
   ~KevesGC() = default;
 
-  KevesGC(KevesList<KevesNode<0> >* shared_list);
+  void Init(KevesVM* vm, KevesList<KevesNode<0> >* shared_list);
   
   template<class KEV>
   KEV* ToMutable(const KEV* kev);

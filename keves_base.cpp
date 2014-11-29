@@ -49,13 +49,20 @@
 
 
 KevesBase::KevesBase()
-  : cmd_table_(),
+  : instruct_table_(),
+    cmd_table_(),
     builtin_(),
-    sym_eval_(),
-    lib_keves_base_() {
-
+    default_result_field_(),
+    vm_list_(),
+    lib_keves_base_(),
+    shared_list_(),
+    ft_PushChildren_(),
+    ft_RevertObject_(),
+    ft_ReadObject_(),
+    ft_WriteObject_() {
   InitCMDTable();
   builtin_.Init(this);
+  lib_keves_base_.Init(this);
 
   SetFunctionTable<CodeKev>();
   SetFunctionTable<Bignum>();
@@ -75,21 +82,14 @@ KevesBase::KevesBase()
   SetFunctionTable<FreeVarFrameKev>();
   SetFunctionTable<StackFrameKev>();
   SetFunctionTable<PairKev>();
-
-  sym_eval_ = SymbolKev::Make(this, "eval");
-
-  // lib_keves_base_.Init(&gc_);
-  lib_keves_base_.Init(this);
 }
 
 KevesBase::~KevesBase() {
-  // gc_.Reset();
-
-  // for (int i(0); i < vm_list_.size(); ++i) delete vm_list_[i];
+  for (auto vm : vm_list_) delete vm;
 }
 
 KevesVM* KevesBase::MakeVM() {
-  KevesVM* vm(new KevesVM(this, default_result_field()));
+  KevesVM* vm(KevesVM::Make(this, default_result_field()));
   vm_list_.append(vm);
   return vm;
 }

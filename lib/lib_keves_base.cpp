@@ -39,17 +39,11 @@
 #include "kev/symbol.hpp"
 #include "kev/symbol-inl.hpp"
 
-LibKevesBase::LibKevesBase()
-  : KevesLibrary(),
-    sym_display_(), proc_display_(),
-    sym_newline_(), proc_newline_() {
-  id_ << "keves" << "base";
-  ver_num_ << 0 << 1;
-}
-
 KevesLibrary* LibKevesBase::Init(KevesBase* base) {
   std::cout << "LibKevesBase::Init()" << std::endl;
 
+  id_ << "keves" << "base";
+  ver_num_ << 0 << 1;
 					       
   sym_display_ = SymbolKev::Make(base, "display");
   sym_newline_ = SymbolKev::Make(base, "newline");
