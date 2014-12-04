@@ -19,8 +19,8 @@
 
 #pragma once
 
+#include "keves_value.hpp"
 #include "kev/procedure.hpp"
-#include "value/value.hpp"
 
 class GeneratorKev : public MutableKev {
 public:

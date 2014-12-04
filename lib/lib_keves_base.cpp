@@ -39,11 +39,17 @@
 #include "kev/symbol.hpp"
 #include "kev/symbol-inl.hpp"
 
-KevesLibrary* LibKevesBase::Init(KevesBase* base) {
+LibKevesBase* LibKevesBase::Make(KevesBase* base) {
+  LibKevesBase* library(new LibKevesBase());
+  library->Init(base);
+  return library;
+}
+
+void LibKevesBase::Init(KevesBase* base) {
   std::cout << "LibKevesBase::Init()" << std::endl;
 
-  id_ << "keves" << "base";
-  ver_num_ << 0 << 1;
+  SetID("keves", "base");
+  SetVerNum(0, 1);
 					       
   sym_display_ = SymbolKev::Make(base, "display");
   sym_newline_ = SymbolKev::Make(base, "newline");
@@ -54,8 +60,8 @@ KevesLibrary* LibKevesBase::Init(KevesBase* base) {
   AddBind("display", &proc_display_);
   AddBind("newline", &proc_newline_);
 
-  code_ = CodeKev::Make(base, 16);
-  KevesIterator iter(base->ToMutable(code_.ToPtr<CodeKev>())->begin());
+  GetCode() = CodeKev::Make(base, 16);
+  KevesIterator iter(base->ToMutable(GetCode().ToPtr<CodeKev>())->begin());
   *iter++ = KevesInstruct(CMD_FRAME_R);
   *iter++ = KevesFixnum(5);
   *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
@@ -69,9 +75,7 @@ KevesLibrary* LibKevesBase::Init(KevesBase* base) {
   *iter++ = FindBind("newline");
   *iter++ = KevesInstruct(CMD_APPLY);
   *iter++ = KevesInstruct(CMD_HALT);
-  Q_ASSERT(iter <= code_.ToPtr<CodeKev>()->end());
-
-  return this;
+  Q_ASSERT(iter <= GetCode().ToPtr<CodeKev>()->end());
 }
 
 void LibKevesBase::procDisplay(KevesVM* vm, const_KevesIterator pc) {

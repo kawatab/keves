@@ -1,4 +1,4 @@
-// Keves/keves_template.hpp - templates for Keves
+// keves/keves_template.hpp - templates for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>

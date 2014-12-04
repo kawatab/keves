@@ -22,8 +22,8 @@
 #include <cmath>
 #include <gmpxx.h>
 #include "keves_iterator.hpp"
+#include "keves_value.hpp"
 #include "value/fixnum.hpp"
-#include "value/value.hpp"
 
 typedef qint32 bg_int;
 typedef quint32 bg_uint;

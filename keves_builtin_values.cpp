@@ -1,4 +1,4 @@
-// Keves/keves_builtin_values.cpp - built-in values of Keves
+// keves/keves_builtin_values.cpp - built-in values of Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -26,6 +26,7 @@
 #include "kev/code-inl.hpp"
 #include "kev/string.hpp"
 #include "kev/string-inl.hpp"
+#include "kev/symbol.hpp"
 #include "value/instruct.hpp"
 
 

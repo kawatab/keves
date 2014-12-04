@@ -1,4 +1,4 @@
-// Keves/keves_iterator.cpp - iterators for Keves
+// keves/keves_iterator.cpp - iterators for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include "value/value.hpp"
+#include "keves_value.hpp"
 
 class const_KevesIterator;
 class KevesVM;

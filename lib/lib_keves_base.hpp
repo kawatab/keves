@@ -1,4 +1,4 @@
-// Keves/lib_keves_base.hpp - library of Keves base
+// keves/lib_keves_base.hpp - library of Keves base
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -20,11 +20,10 @@
 #pragma once
 
 #include <QHash>
+#include "keves_library.hpp"
 #include "kev/environment.hpp"
 #include "kev/generator.hpp"
-// #include "kev/macro.hpp"
 #include "kev/symbol.hpp"
-#include "lib/library.hpp"
 
 
 class CodeKev;
@@ -45,25 +44,31 @@ public:
   static constexpr int SIZE_OF_BUILTIN_CODE = 0x10000;
   static constexpr int SIZE_OF_PROC_TABLE = 512;
 
+private:
   LibKevesBase() = default;
   LibKevesBase(const LibKevesBase&) = delete;
   LibKevesBase(LibKevesBase&&) = delete;
   LibKevesBase& operator=(const LibKevesBase&) = delete;
   LibKevesBase& operator=(LibKevesBase&&) = delete;
+public:
   ~LibKevesBase() = default;
-
-  KevesLibrary* Init(KevesBase* base);
 
   SymbolKev* sym_display_;
   CPSKev proc_display_;
   SymbolKev* sym_newline_;
   CPSKev proc_newline_;
 
-  static KevesValue makeLexicalCondition(KevesIterator*, KevesValue, KevesValue, KevesValue);
+  static LibKevesBase* Make(KevesBase* base);
+  
+  static KevesValue makeLexicalCondition(KevesIterator*,
+					 KevesValue, KevesValue, KevesValue);
 
   static void procDisplay(KevesVM*, const_KevesIterator);
 
   struct Newline {
     static void func(KevesVM*, const_KevesIterator);
   };
+
+private:
+  void Init(KevesBase* base);
 };

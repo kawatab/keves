@@ -24,7 +24,7 @@
 #include <QString>
 
 #include "keves_iterator.hpp"
-#include "value/value.hpp"
+#include "keves_value.hpp"
 
 class KevesGC;
 

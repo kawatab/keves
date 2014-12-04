@@ -4,8 +4,8 @@
 
 TEMPLATE = app
 TARGET = 
-DEPENDPATH += .
-INCLUDEPATH += . ..
+DEPENDPATH += . .. ../kev ../lib ../value
+INCLUDEPATH += . .. ../kev ../lib ../value
 LIBS += -lgmpxx -lgmp
 QMAKE_CXXFLAGS += -std=c++11
 
@@ -17,8 +17,10 @@ HEADERS += test_code.hpp \
            ../keves_file_io.hpp \
            ../keves_gc.hpp \
            ../keves_iterator.hpp \
+           ../keves_library.hpp \
            ../keves_template.hpp \
            ../keves_textual_port.hpp \
+           ../keves_value.hpp \
            ../keves_vm.hpp \
            ../kev/bignum.hpp \
            ../kev/code.hpp \
@@ -36,10 +38,8 @@ HEADERS += test_code.hpp \
            ../kev/wind.hpp \
            ../kev/wrapped.hpp \
            ../lib/lib_keves_base.hpp \
-           ../lib/library.hpp \
            ../value/char.hpp \
-           ../value/instruct.hpp \
-           ../value/value.hpp
+           ../value/instruct.hpp
 
 
 SOURCES += main.cpp \
@@ -49,8 +49,10 @@ SOURCES += main.cpp \
            ../keves_file_io.cpp \
            ../keves_gc.cpp \
            ../keves_iterator.cpp \
+           ../keves_library.cpp \
            ../keves_template.cpp \
            ../keves_textual_port.cpp \
+           ../keves_value.cpp \
            ../keves_vm.cpp \
            ../kev/bignum.cpp \
            ../kev/code.cpp \
@@ -68,10 +70,8 @@ SOURCES += main.cpp \
            ../kev/wind.cpp \
            ../kev/wrapped.cpp \
            ../lib/lib_keves_base.cpp \
-           ../lib/library.cpp \
            ../value/char.cpp \
-           ../value/instruct.cpp \
-           ../value/value.cpp
+           ../value/instruct.cpp
 
 CONFIG += debug
 # CONFIG += qt release

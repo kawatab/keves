@@ -1,4 +1,4 @@
-// Keves/keves_template.cpp - templates for Keves
+// keves/keves_template.cpp - templates for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -20,6 +20,7 @@
 #include "keves_template.hpp"
 
 #include "keves_builtin_values.hpp"
+#include "kev/string.hpp"
 
 void Function::raiseGetAnything(KevesVM* vm, const_KevesIterator pc) {
   vm->acc_ = vm->gr2_;

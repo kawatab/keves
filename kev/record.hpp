@@ -20,8 +20,7 @@
 #pragma once
 
 #include <QString>
-
-#include "value/value.hpp"
+#include "keves_value.hpp"
 
 
 class RecordKev : public MutableKev {

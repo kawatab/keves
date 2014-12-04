@@ -1,4 +1,4 @@
-// Keves/keves_textual_port.cpp - textual port for Keves
+// keves/keves_textual_port.cpp - textual port for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
