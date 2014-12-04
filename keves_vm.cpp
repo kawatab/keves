@@ -1,4 +1,4 @@
-// Keves/keves_vm.cpp - VM for Keves
+// keves/keves_vm.cpp - VM for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -8,10 +8,10 @@
 //  the Free Software Foundation, either version 3 of the License, or any
 //  later version.
 // 
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU Lesser General Public License for more details.
+//  This program is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
+//  License for more details.
 // 
 //  You should have received a copy of the GNU Lesser General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
@@ -24,6 +24,7 @@
 #include "keves_base.hpp"
 #include "keves_builtin_values.hpp"
 #include "keves_file_io.hpp"
+#include "keves_library.hpp"
 #include "keves_stack.hpp"
 #include "keves_textual_port.hpp"
 #include "kev/bignum.hpp"
@@ -50,7 +51,6 @@
 #include "kev/wind.hpp"
 #include "kev/wrapped.hpp"
 #include "lib/lib_keves_base.hpp"
-#include "lib/library.hpp"
 #include "value/char.hpp"
 #include "value/fixnum.hpp"
 #include "value/instruct.hpp"
@@ -415,7 +415,7 @@ int KevesVM::Execute_helper(const QString& arg) {
   registers_.set_fp(&registers_);
 
   registers_.changeToBottomFrame();
-  const_KevesIterator pc(base_->lib_keves_base()->code_.ToPtr<CodeKev>()->begin());
+  const_KevesIterator pc(base_->GetLibrary("keves", "base")->GetCode().ToPtr<CodeKev>()->begin());
   Q_ASSERT(pc->IsInstruct());
 
   // prepare environment frame

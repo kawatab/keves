@@ -1,4 +1,4 @@
-// Keves/keves_base.cpp - base of Keves
+// keves/keves_base.cpp - base of Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -20,8 +20,6 @@
 #include "keves_base.hpp"
 #include "keves_base-inl.hpp"
 
-#include <QDataStream>
-#include <QFile>
 #include "keves_vm.hpp"
 #include "kev/bignum.hpp"
 #include "kev/bignum-inl.hpp"
@@ -45,6 +43,7 @@
 #include "kev/vector-inl.hpp"
 #include "kev/wind.hpp"
 #include "kev/wind-inl.hpp"
+#include "lib/lib_keves_base.hpp"
 #include "value/char.hpp"
 
 
@@ -53,8 +52,8 @@ KevesBase::KevesBase()
     cmd_table_(),
     builtin_(),
     default_result_field_(),
-    vm_list_(),
-    lib_keves_base_(),
+    thread_pool_(),
+    library_list_(),
     shared_list_(),
     ft_PushChildren_(),
     ft_RevertObject_(),
@@ -62,7 +61,8 @@ KevesBase::KevesBase()
     ft_WriteObject_() {
   InitCMDTable();
   builtin_.Init(this);
-  lib_keves_base_.Init(this);
+  thread_pool_.setMaxThreadCount(4);
+  AddLibrary(LibKevesBase::Make(this));
 
   SetFunctionTable<CodeKev>();
   SetFunctionTable<Bignum>();
@@ -85,13 +85,13 @@ KevesBase::KevesBase()
 }
 
 KevesBase::~KevesBase() {
-  for (auto vm : vm_list_) delete vm;
+  thread_pool_.waitForDone();
+  for (auto library : library_list_) delete library;
 }
 
-KevesVM* KevesBase::MakeVM() {
+void KevesBase::RunThread() {
   KevesVM* vm(KevesVM::Make(this, default_result_field()));
-  vm_list_.append(vm);
-  return vm;
+  thread_pool_.start(vm);
 }
 
 void KevesBase::InitCMDTable() {
@@ -251,6 +251,45 @@ const QList<const Kev*> KevesBase::GetObjectList(const Kev* kev) {
   return list;
 }
       
+void KevesBase::AddLibrary(KevesLibrary* library) {
+  library_list_.append(library);
+}
+
+KevesLibrary* KevesBase::GetLibrary(const QString& id1) {
+  for (auto lib : library_list_)
+    if (lib->Match(id1)) return lib;
+
+  std::cerr << "Not found library: ("
+	    << qPrintable(id1) << ')';
+
+  return nullptr;
+}
+
+KevesLibrary* KevesBase::GetLibrary(const QString& id1, const QString& id2) {
+  for (auto lib : library_list_)
+    if (lib->Match(id1, id2)) return lib;
+
+  std::cerr << "Not found library: ("
+	    << qPrintable(id1) << ' '
+	    << qPrintable(id2) << ')';
+
+  return nullptr;
+}
+
+KevesLibrary* KevesBase::GetLibrary(const QString& id1,
+				  const QString& id2,
+				  const QString& id3) {
+  for (auto lib : library_list_)
+    if (lib->Match(id1, id2, id3)) return lib;
+
+  std::cerr << "Not found library: ("
+	    << qPrintable(id1) << ' '
+	    << qPrintable(id2) << ' '
+	    << qPrintable(id3) << ')';
+
+  return nullptr;
+}
+
 void* KevesBase::Alloc(size_t alloc_size) {
   KevesBaseNode node(new char[((alloc_size + sizeof(quintptr) - 1) & ~(sizeof(quintptr) - 1)) + sizeof(KevesPrefix)]);
   shared_list_.Push(node);

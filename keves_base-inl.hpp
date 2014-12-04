@@ -1,4 +1,4 @@
-// Keves/keves_base-inl.hpp - base of Keves
+// keves/keves_base-inl.hpp - base of Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -19,7 +19,9 @@
 
 #pragma once
 
+#include <QDataStream>
   
+
 template<class KEV>
 void KevesBase::PushValue(QStack<const Kev*>* pending, KEV* kev) {
   if (kev) pending->push(kev);

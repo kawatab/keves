@@ -1,4 +1,4 @@
-// Keves/keves_vm.hpp - VM for Keves
+// keves/keves_vm.hpp - VM for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -8,10 +8,10 @@
 //  the Free Software Foundation, either version 3 of the License, or any
 //  later version.
 // 
-//  This program is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-//  GNU Lesser General Public License for more details.
+//  This program is distributed in the hope that it will be useful, but WITHOUT
+//  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+//  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public
+//  License for more details.
 // 
 //  You should have received a copy of the GNU Lesser General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
@@ -24,9 +24,9 @@
 #include <QRunnable>
 #include "keves_gc.hpp"
 #include "keves_gc-inl.hpp"
+#include "keves_value.hpp"
 #include "kev/environment.hpp"
 #include "kev/frame.hpp"
-#include "value/value.hpp"
 
 class CodeKev;
 class ExactComplexNumberKev;

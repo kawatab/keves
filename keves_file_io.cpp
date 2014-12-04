@@ -1,4 +1,4 @@
-// Keves/keves_filehandler.cpp - file handler for Keves
+// keves/keves_file_io.cpp - file handler for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 // Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -21,6 +21,7 @@
 
 #include <QDataStream>
 #include "keves_base.hpp"
+#include "keves_library.hpp"
 #include "kev/bignum.hpp"
 #include "kev/code.hpp"
 #include "kev/frame.hpp"
@@ -32,7 +33,6 @@
 #include "kev/symbol.hpp"
 #include "kev/vector.hpp"
 #include "kev/wind.hpp"
-#include "lib/library.hpp"
 #include "value/char.hpp"
 #include "value/fixnum.hpp"
 
@@ -41,12 +41,12 @@ KevesFileIO::KevesFileIO(const QString& file_name)
   : file_(file_name) {}
 
 
-bool KevesFileIO::Write(KevesBase* base, const QList<KevesLibrary>& libs, KevesValue value) {
+bool KevesFileIO::Write(KevesBase* base, const KevesLibrary& lib, KevesValue value) {
   if (!file_.open(QIODevice::WriteOnly)) return false;
 
   QDataStream out(&file_);
 
-  out << libs;
+  out << lib;
 
   if (!value.IsPtr()) return false;
   
@@ -62,23 +62,23 @@ bool KevesFileIO::Write(KevesBase* base, const QList<KevesLibrary>& libs, KevesV
   return true;
 }
 
-QList<KevesLibrary> KevesFileIO::Read(KevesBase* base) {
-  QList<KevesLibrary> libs;
+KevesLibrary* KevesFileIO::Read(KevesBase* base) {
+  KevesLibrary* lib(new KevesLibrary());
 
-  if (!file_.open(QIODevice::ReadOnly)) return libs;
+  if (!file_.open(QIODevice::ReadOnly)) return lib;
 
   QDataStream in(&file_);
-  in >> libs;
+  in >> *lib;
   
   uioword value;
 
   while (!in.atEnd()) {
     in >> value;
-    libs[0].object_list_.append((*base->ft_ReadObject(value))(in, base));
+    lib->GetObjectList().append((*base->ft_ReadObject(value))(in, base));
   }
 
-  base->RevertObjects(libs[0].object_list_);
-  libs[0].code_ = libs[0].object_list_.at(0);
+  base->RevertObjects(lib->GetObjectList());
+  lib->GetCode() = lib->GetObjectList().at(0);
 
-  return libs;
+  return lib;
 }

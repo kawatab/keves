@@ -16,26 +16,13 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#include <iostream>
-#include <QThreadPool>
 #include "keves_base.hpp"
-#include "keves_vm.hpp"
 
 
 int main() {
   KevesBase base;
-  KevesVM* vm(base.MakeVM());
-  QThreadPool pool1;
-  pool1.start(vm);
-  KevesVM* vm2(base.MakeVM());
-  QThreadPool pool2;
-  pool2.start(vm2);
+  base.RunThread();
+  base.RunThread();
 
-  for (int i(0); i < 100; ++i) std::cout << i << "\t" << std::flush;
-  
-  std::cout << std::endl;
-
-  pool1.waitForDone();
-  pool2.waitForDone();
   return 0;
 }

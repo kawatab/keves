@@ -1,4 +1,4 @@
-// Keves/keves_base_kev.hpp - base of Keves
+// keves/keves_base_kev.hpp - base of Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -21,15 +21,17 @@
 
 #include <QList>
 #include <QStack>
+#include <QThreadPool>
 #include "keves_builtin_values.hpp"
 #include "keves_list.hpp"
 #include "keves_textual_port.hpp"
-#include "lib/lib_keves_base.hpp"
 #include "value/instruct.hpp"
 
 
+class KevesLibrary;
 class KevesVM;
 class QString;
+
 
 class KevesBase {
 public:
@@ -44,8 +46,15 @@ public:
   // General functions                                          //
   ////////////////////////////////////////////////////////////////
 public:
+  void AddLibrary(KevesLibrary* library);
+  KevesLibrary* GetLibrary(const QString& id1);
+  KevesLibrary* GetLibrary(const QString& id1, const QString& id2);
+
+  KevesLibrary* GetLibrary(const QString& id1, const QString& id2,
+			 const QString& id3);
+
   const StringKev* GetMesgText(const QString& key) const;
-  KevesVM* MakeVM();
+  void RunThread();
 
   template<class KEV>
   KEV* ToMutable(const KEV* kev);
@@ -64,9 +73,11 @@ public:
     return &default_result_field_;
   }
   
+  /*
   LibKevesBase* lib_keves_base() {
     return &lib_keves_base_;
   }
+  */
   
   const KevesInstructTable* instruct_table() const {
     return &instruct_table_;
@@ -165,8 +176,8 @@ private:
   vm_func cmd_table_[END_OF_LIST];
   KevesBuiltinValues builtin_;
   KevesTextualOutputPort default_result_field_;
-  QList<KevesVM*> vm_list_;
-  LibKevesBase lib_keves_base_;
+  QThreadPool thread_pool_;
+  QList<KevesLibrary*> library_list_;
   KevesList<KevesNode<0> > shared_list_;
   void (*ft_PushChildren_[0177])(QStack<const Kev*>*, KevesValue);
   void (*ft_RevertObject_[0177])(const QList<Kev*>&, MutableKevesValue);
