@@ -50,7 +50,6 @@
 #include "kev/vector-inl.hpp"
 #include "kev/wind.hpp"
 #include "kev/wrapped.hpp"
-#include "lib/lib_keves_base.hpp"
 #include "value/char.hpp"
 #include "value/fixnum.hpp"
 #include "value/instruct.hpp"

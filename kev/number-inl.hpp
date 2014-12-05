@@ -19,7 +19,6 @@
 
 #pragma once
 
-#include "kev/string.hpp"
 
 template<class ZONE>
 RationalNumberKev* RationalNumberKev::Make(ZONE* zone) {

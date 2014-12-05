@@ -4,9 +4,9 @@
 
 TEMPLATE = app
 TARGET = 
-DEPENDPATH += . kev lib value
-INCLUDEPATH += . kev lib value
-LIBS += -lgmpxx -lgmp
+DEPENDPATH += . kev lib/keves/base value
+INCLUDEPATH += . kev lib/keves/base value
+LIBS += -lgmpxx -lgmp -L/usr/lib/keves/keves/base/
 QMAKE_CXXFLAGS += -std=c++11
 
 # Input
@@ -45,7 +45,7 @@ HEADERS += keves_base.hpp \
            kev/vector.hpp \
            kev/wind.hpp \
            kev/wrapped.hpp \
-           lib/lib_keves_base.hpp \
+#            lib/keves/base/lib_keves_base.hpp \
 #           lib/lib_keves_parse.hpp \
 #           lib/lib_rnrs_base.hpp \
 #           lib/lib_rnrs_eval.hpp \
@@ -87,7 +87,7 @@ SOURCES += keves_base.cpp \
            kev/vector.cpp \
            kev/wind.cpp \
            kev/wrapped.cpp \
-           lib/lib_keves_base.cpp \
+ #           lib/keves/base/lib_keves_base.cpp \
            value/char.cpp \
            value/instruct.cpp
 

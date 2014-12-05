@@ -20,6 +20,9 @@
 #include "keves_base.hpp"
 #include "keves_base-inl.hpp"
 
+#include <iostream>
+#include <QLibrary>
+#include "keves_library.hpp"
 #include "keves_vm.hpp"
 #include "kev/bignum.hpp"
 #include "kev/bignum-inl.hpp"
@@ -43,7 +46,6 @@
 #include "kev/vector-inl.hpp"
 #include "kev/wind.hpp"
 #include "kev/wind-inl.hpp"
-#include "lib/lib_keves_base.hpp"
 #include "value/char.hpp"
 
 
@@ -62,7 +64,14 @@ KevesBase::KevesBase()
   InitCMDTable();
   builtin_.Init(this);
   thread_pool_.setMaxThreadCount(4);
-  AddLibrary(LibKevesBase::Make(this));
+
+  QLibrary keves_base("lib/keves-base/libkeves-base");
+
+  auto make_lib
+  = reinterpret_cast<KevesLibrary*(*)(KevesBase*)>(keves_base.resolve("Make"));
+
+  if (make_lib) AddLibrary(make_lib(this));
+  else std::cerr << qPrintable(keves_base.errorString());
 
   SetFunctionTable<CodeKev>();
   SetFunctionTable<Bignum>();
@@ -285,7 +294,7 @@ KevesLibrary* KevesBase::GetLibrary(const QString& id1,
   std::cerr << "Not found library: ("
 	    << qPrintable(id1) << ' '
 	    << qPrintable(id2) << ' '
-	    << qPrintable(id3) << ')';
+	    << qPrintable(id3) << ")\n";
 
   return nullptr;
 }

@@ -27,6 +27,7 @@
 #include "kev/string.hpp"
 #include "kev/string-inl.hpp"
 #include "kev/symbol.hpp"
+#include "kev/symbol-inl.hpp"
 #include "value/instruct.hpp"
 
 

@@ -1,4 +1,4 @@
-// Keves/lib_keves_base.cpp - library of Keves base
+// keves/lib/keves-base/keves-base.cpp - library of Keves base
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -17,8 +17,7 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-
-#include "lib/lib_keves_base.hpp"
+#include "lib/keves-base/keves-base.hpp"
 
 #include <QDir>
 #include <QFile>
@@ -33,17 +32,12 @@
 #include "keves_vm.hpp"
 #include "kev/code.hpp"
 #include "kev/code-inl.hpp"
-#include "kev/procedure.hpp"
 #include "kev/procedure-inl.hpp"
+#include "kev/string.hpp"
 #include "kev/string-inl.hpp"
 #include "kev/symbol.hpp"
 #include "kev/symbol-inl.hpp"
 
-LibKevesBase* LibKevesBase::Make(KevesBase* base) {
-  LibKevesBase* library(new LibKevesBase());
-  library->Init(base);
-  return library;
-}
 
 void LibKevesBase::Init(KevesBase* base) {
   std::cout << "LibKevesBase::Init()" << std::endl;
@@ -101,4 +95,17 @@ void LibKevesBase::Newline::func(KevesVM* vm, const_KevesIterator pc) {
   vm->result_field()->Append(QString("\n"));
   vm->acc_ = EMB_UNDEF;
   return KevesVM::ReturnValue(vm, pc);
+}
+
+
+////////////////////////////////////////////////////////////////
+// for loading this as a dynamic library                      //
+////////////////////////////////////////////////////////////////
+
+extern "C" {
+  KevesLibrary* Make(KevesBase* base) {
+    LibKevesBase* library(new LibKevesBase());
+    library->Init(base);
+    return library;
+  }
 }

@@ -23,13 +23,13 @@
 #include <functional>
 #include "kev/bignum.hpp"
 #include "value/fixnum.hpp"
+#include "kev/string.hpp"
 
 
 class ExactComplexNumberKev;
 class RationalNumberKev;
 class InexactComplexNumberKev;
 class FlonumKev;
-class StringKev;
 class QChar;
 
 
