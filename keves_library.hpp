@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <QFile>
 #include <QList>
 #include <QPair>
 #include <QString>
@@ -26,6 +27,9 @@
 #include "keves_value.hpp"
 
 typedef qint32 ver_num_t;
+
+
+class KevesBase;
 
 
 class KevesImportBinds {
@@ -44,6 +48,7 @@ public:
   ~KevesImportBinds() = default;
 
   void AddBind(const char* id);
+  int CountBinds() const;
   void Display() const;
   const QStringList& GetID() const;
   const QList<ver_num_t>& GetVerNum() const;
@@ -69,14 +74,20 @@ class KevesLibrary {
 public:
   KevesLibrary() = default;
   KevesLibrary(const KevesLibrary&) = delete;
-  // KevesLibrary(const KevesLibrary&&) = default; // Qt4.8 not support C+11
+  KevesLibrary(const KevesLibrary&&) = delete;
   KevesLibrary& operator=(const KevesLibrary&) = delete;
-  // KevesLibrary& operator=(const KevesLibrary&&) = delete; // Qt4.8 not support C+11
+  KevesLibrary& operator=(const KevesLibrary&&) = delete;
   ~KevesLibrary() = default;
 
   void AddBind(const char* id, KevesValue kev);
+  void AppendImportLib(const KevesImportBinds& import_lib);
+  const QList<QPair<QString, uioword> >* GetBindList() const;
+  KevesValue& GetCode();
+  KevesValue GetCode() const;
+  QList<Kev*>& GetObjectList();
+  const QList<Kev*>& GetObjectList() const;
   KevesValue FindBind(const char* id);
-  void Display() const;
+  void Display(KevesBase* base) const;
   int GetNumberOfExportBinds() const;
   int GetNumberOfInportBinds() const;
   bool Match(const QString& id1) const;
@@ -89,14 +100,15 @@ public:
   void SetVerNum(ver_num_t ver_num1);
   void SetVerNum(ver_num_t ver_num1, ver_num_t ver_num2);
   void SetVerNum(ver_num_t ver_num1, ver_num_t ver_num2, ver_num_t ver_num3);
-  // void AppendBind(const QString& id, uioword value);
-  void AppendImportLib(const KevesImportBinds& import_lib);
-  KevesValue& GetCode();
-  KevesValue GetCode() const;
-  QList<Kev*>& GetObjectList();
-  const QList<Kev*>& GetObjectList() const;
+  bool WriteToFile(const QString& file_name, KevesBase* base, KevesValue value);
+
+  static KevesLibrary* ReadFromFile(const QString& file_name, KevesBase* base);
 
 private:
+  int CountImportedBinds() const;
+
+  static const char* GetErrorString(QFile::FileError error_code);
+
   QStringList id_;
   QList<ver_num_t> ver_num_;
   QList<QPair<QString, uioword> > bind_list_;

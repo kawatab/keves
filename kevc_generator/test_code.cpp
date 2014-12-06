@@ -20,11 +20,11 @@
 #include "test_code.hpp"
 
 #include <iostream>
-#include <QDataStream>
-#include <QFile>
+// #include <QDataStream>
+// #include <QFile>
 #include <QList>
 #include "keves_base.hpp"
-#include "keves_file_io.hpp"
+// #include "keves_file_io.hpp"
 #include "keves_library.hpp"
 #include "kev/bignum.hpp"
 #include "kev/bignum-inl.hpp"
@@ -114,6 +114,7 @@ void TestCode::Code02::Write(KevesBase* base, const char* file_name) {
 
   KevesLibrary this_lib;
   this_lib.SetID("main");
+  this_lib.AddBind("my-code", lambda);
 
   KevesImportBinds required_lib;
   required_lib.SetID("rnrs", "io", "simple");
@@ -122,21 +123,21 @@ void TestCode::Code02::Write(KevesBase* base, const char* file_name) {
   required_lib.AddBind("newline");
   this_lib.AppendImportLib(required_lib);
 
-  KevesFileIO file(file_name);
-  file.Write(base, this_lib, lambda);
+  this_lib.WriteToFile(file_name, base, lambda);
 }
 
 void TestCode::Code02::Read(KevesBase* base, const char* file_name) {
-  KevesFileIO file(file_name);
+  // KevesFileIO file(file_name);
 
   std::cout << file_name << ":" << std::endl;
   
-  KevesLibrary* lib(file.Read(base));
+  // KevesLibrary* lib(file.Read(base));
+  KevesLibrary* lib(KevesLibrary::ReadFromFile(file_name, base));
 
   // std::cout << "export: " << libs.GetNumberOfExportBinds() << std::endl;
   // std::cout << "import: " << libs.GetNumberOfImportBinds() << std::endl;
 
-  lib->Display();
+  lib->Display(base);
   
   KevesValue value(lib->GetCode());
   std::cout << qPrintable(base->ToString(value)) << std::endl;
@@ -167,6 +168,7 @@ void TestCode::Code03::Write(KevesBase* base, const char* file_name) {
 
   KevesLibrary this_lib;
   this_lib.SetID("main");
+  this_lib.AddBind("my-code", fp);
 
   KevesImportBinds required_lib;
   required_lib.SetID("rnrs", "io", "simple");
@@ -174,17 +176,17 @@ void TestCode::Code03::Write(KevesBase* base, const char* file_name) {
   required_lib.AddBind("display");
   this_lib.AppendImportLib(required_lib);
 
-  KevesFileIO file(file_name);
-  file.Write(base, this_lib, fp);
+  this_lib.WriteToFile(file_name, base, fp);
 }
 
 void TestCode::Code03::Read(KevesBase* base, const char* file_name) {
-  KevesFileIO file(file_name);
+  // KevesFileIO file(file_name);
 
   std::cout << file_name << ":" << std::endl;
   
-  KevesLibrary* lib(file.Read(base));
-  lib->Display();
+  // KevesLibrary* lib(file.Read(base));
+  KevesLibrary* lib(KevesLibrary::ReadFromFile(file_name, base));
+  lib->Display(base);
   
   std::cout << qPrintable(base->ToString(lib->GetCode())) << std::endl;
 

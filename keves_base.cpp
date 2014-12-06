@@ -67,8 +67,8 @@ KevesBase::KevesBase()
 
   QLibrary keves_base("lib/keves-base/libkeves-base");
 
-  auto make_lib
-  = reinterpret_cast<KevesLibrary*(*)(KevesBase*)>(keves_base.resolve("Make"));
+  typedef KevesLibrary*(*FuncMakeLib)(KevesBase*);
+  auto make_lib = reinterpret_cast<FuncMakeLib>(keves_base.resolve("Make"));
 
   if (make_lib) AddLibrary(make_lib(this));
   else std::cerr << qPrintable(keves_base.errorString());
@@ -243,21 +243,18 @@ const StringKev* KevesBase::GetMesgText(const QString& key) const {
   return builtin_.GetMesgText(key);
 }
 
-const QList<const Kev*> KevesBase::GetObjectList(const Kev* kev) {
-  QList<const Kev*> list;
+void KevesBase::AppendObjectList(QList<const Kev*>* list, const Kev* kev) {
   QStack<const Kev*> pending;
   pending.push(kev);
 
   while (!pending.isEmpty()) {
     const Kev* temp(pending.pop());
 
-    if (list.indexOf(temp) < 0) {
+    if (list->indexOf(temp) < 0) {
       (*ft_PushChildren_[temp->type()])(&pending, temp);
-      list.append(temp);
+      list->append(temp);
     }
   }
-
-  return list;
 }
       
 void KevesBase::AddLibrary(KevesLibrary* library) {

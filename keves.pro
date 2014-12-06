@@ -4,8 +4,8 @@
 
 TEMPLATE = app
 TARGET = 
-DEPENDPATH += . kev lib/keves/base value
-INCLUDEPATH += . kev lib/keves/base value
+DEPENDPATH += .
+INCLUDEPATH += .
 LIBS += -lgmpxx -lgmp -L/usr/lib/keves/keves/base/
 QMAKE_CXXFLAGS += -std=c++11
 
@@ -14,7 +14,6 @@ HEADERS += keves_base.hpp \
            keves_base-inl.hpp \
            keves_builtin_values.hpp \
 #           keves_eval_window.hpp \
-           keves_file_io.hpp \
            keves_gc.hpp \
 #           keves_heap.hpp \
            keves_iterator.hpp \
@@ -45,15 +44,6 @@ HEADERS += keves_base.hpp \
            kev/vector.hpp \
            kev/wind.hpp \
            kev/wrapped.hpp \
-#            lib/keves/base/lib_keves_base.hpp \
-#           lib/lib_keves_parse.hpp \
-#           lib/lib_rnrs_base.hpp \
-#           lib/lib_rnrs_eval.hpp \
-#           lib/lib_rnrs_exceptions.hpp \
-#           lib/lib_rnrs_lists.hpp \
-#           lib/lib_rnrs_mutable_strings.hpp \
-#           lib/lib_rnrs_syntax_case.hpp \
-#           lib/lib_rnrs_unicode.hpp \
            value/char.hpp \
            value/fixnum.hpp \
            value/instruct.hpp
@@ -61,7 +51,6 @@ HEADERS += keves_base.hpp \
 
 SOURCES += keves_base.cpp \
            keves_builtin_values.cpp \
-           keves_file_io.cpp \
            keves_gc.cpp \
            keves_iterator.cpp \
            keves_library.cpp \
@@ -87,7 +76,6 @@ SOURCES += keves_base.cpp \
            kev/vector.cpp \
            kev/wind.cpp \
            kev/wrapped.cpp \
- #           lib/keves/base/lib_keves_base.cpp \
            value/char.cpp \
            value/instruct.cpp
 

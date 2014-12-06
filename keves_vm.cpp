@@ -23,7 +23,7 @@
 #include <unistd.h>
 #include "keves_base.hpp"
 #include "keves_builtin_values.hpp"
-#include "keves_file_io.hpp"
+// #include "keves_file_io.hpp"
 #include "keves_library.hpp"
 #include "keves_stack.hpp"
 #include "keves_textual_port.hpp"

@@ -73,12 +73,6 @@ public:
     return &default_result_field_;
   }
   
-  /*
-  LibKevesBase* lib_keves_base() {
-    return &lib_keves_base_;
-  }
-  */
-  
   const KevesInstructTable* instruct_table() const {
     return &instruct_table_;
   }
@@ -97,7 +91,7 @@ private:
 public:
   enum { ALIGN = 0x3, INDEX = 0x2 };
 
-  const QList<const Kev*> GetObjectList(const Kev* kev);
+  void AppendObjectList(QList<const Kev*>* list, const Kev* kev);
 
   static uioword IndexAddress(const QList<const Kev*>& object_list,
 			      KevesValue value);

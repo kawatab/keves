@@ -20,6 +20,8 @@
 #include "keves_library.hpp"
 
 #include <iostream>
+#include <QDataStream>
+#include "keves_base.hpp"
 
 
 void KevesImportBinds::AddBind(const char* id) {
@@ -70,6 +72,10 @@ void KevesImportBinds::SetVerNum(ver_num_t ver_num1, ver_num_t ver_num2,
   ver_num_ << ver_num1 << ver_num2 << ver_num3;
 }
 
+int KevesImportBinds::CountBinds() const {
+  return bind_list_.size();
+}
+
 void KevesImportBinds::Display() const {
   std::cout << "(";
   for (auto name : id_) std::cout << qPrintable(name) << " (";
@@ -86,13 +92,19 @@ void KevesImportBinds::Display() const {
   for (auto bind : bind_list_)
     std::cout << "  " << qPrintable(bind);
 
-  std::cout << std::endl;
+  std::cout << " (number of binds: " << CountBinds() << ')' <<  std::endl;
 }
 
 
 void KevesLibrary::AddBind(const char* id, KevesValue kev) {
   QPair<QString, uioword> bind(id, kev.toUIntPtr());
   bind_list_.append(bind);
+}
+
+int KevesLibrary::CountImportedBinds() const {
+  int cnt(0);
+  for (auto lib : import_libs_) cnt += lib.CountBinds();
+  return cnt;
 }
 
 KevesValue KevesLibrary::FindBind(const char* id) {
@@ -102,6 +114,10 @@ KevesValue KevesLibrary::FindBind(const char* id) {
   }
 
   return EMB_UNDEF;
+}
+
+const QList<QPair<QString, uioword> >* KevesLibrary::GetBindList() const {
+  return &bind_list_;
 }
 
 /*
@@ -194,10 +210,10 @@ const QList<Kev*>& KevesLibrary::GetObjectList() const {
   return object_list_;
 }
 
-void KevesLibrary::Display() const {
+void KevesLibrary::Display(KevesBase* base) const {
   std::cout << "(";
   for (auto name : id_) std::cout << qPrintable(name) << " (";
-    
+
   if (ver_num_.size() > 0) {
     auto iter(ver_num_.begin());
     auto end_iter(ver_num_.end());
@@ -207,12 +223,115 @@ void KevesLibrary::Display() const {
 
   std::cout << "))";
 
-  for (auto bind : bind_list_)
-    std::cout << "  " << qPrintable(bind.first) << std::flush;
+  std::cout << " (total number of imported binds: " << CountImportedBinds()
+	    << ')' << std::endl;
+    
+  for (auto bind : bind_list_) {
+    std::cout << "  " << qPrintable(bind.first) << ": "
+	      << qPrintable(base->ToString(KevesValue::FromUioword<Kev>(bind.second)))
+	      << std::endl;
+  }
 
   std::cout << std::endl;
   std::cout << "Import binds: " << std::endl;
   for (auto lib : import_libs_) lib.Display();
+}
+
+bool KevesLibrary::WriteToFile(const QString& file_name, KevesBase* base,
+			       KevesValue value) {
+  QFile file(file_name);
+
+  if (!file.open(QIODevice::WriteOnly)) {
+    std::cerr << "An error was occurred when writing the file: "
+	      << qPrintable(file_name)
+	      << ", \""
+	      << GetErrorString(file.error())
+	      << "\"\n";
+
+    return false;
+  }
+
+  QDataStream out(&file);
+
+  out << *this;
+
+  if (!value.IsPtr()) {
+    file.close();
+    return false;
+  }
+  
+  QList<const Kev*> list;
+
+  for (auto bind : *this->GetBindList())
+    base->AppendObjectList(&list, KevesValue::FromUioword<Kev>(bind.second));
+
+  int bind_count(list.size());
+  // base->AppendObjectList(&list, value.ToPtr());
+  int total_count(list.size());
+  
+  for (int index(0); index < total_count; ++index) {
+    const Kev* temp(list.at(index));
+    (*base->ft_WriteObject(temp->type()))(list, out, temp);
+  }
+  
+  file.close();
+  return true;
+}
+
+KevesLibrary* KevesLibrary::ReadFromFile(const QString& file_name,
+					 KevesBase* base) {
+  QFile file(file_name);
+  KevesLibrary* lib(new KevesLibrary());
+
+  if (!file.open(QIODevice::ReadOnly)) {
+    std::cerr << "An error was occurred when reading the file: "
+	      << qPrintable(file_name)
+	      << ", \""
+	      << GetErrorString(file.error())
+	      << "\"\n";
+
+    return lib;
+  }
+
+  QDataStream in(&file);
+  in >> *lib;
+  
+  uioword value;
+
+  while (!in.atEnd()) {
+    in >> value;
+    lib->GetObjectList() << (*base->ft_ReadObject(value))(in, base);
+  }
+
+  base->RevertObjects(lib->GetObjectList());
+  lib->GetCode() = lib->GetObjectList().at(0);
+
+  file.close();
+  return lib;
+}
+
+const char* KevesLibrary::GetErrorString(QFile::FileError error_code) {
+  Q_ASSERT(error_code >= 0 && error_code <=14);
+
+  const char* error_string[] = {
+    "No error occurred.",
+    "An error occurred when reading from the file.",
+    "An error occurred when writing to the file.",
+    "A fatal error occurred.",
+    "",
+    "The file could not be opened.",
+    "The operation was aborted.",
+    "A timeout occurred.",
+    "An unspecified error occurred.",
+    "The file could not be removed.",
+    "The file could not be renamed.",
+    "The position in the file could not be changed.",
+    "The file could not be resized.",
+    "The file could not be accessed.",
+    "No error occurred."
+  };
+
+  return error_string[error_code];
 }
 
 QDataStream& operator<<(QDataStream& out, const KevesLibrary& library) {

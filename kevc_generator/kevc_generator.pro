@@ -6,7 +6,7 @@ TEMPLATE = app
 TARGET = 
 DEPENDPATH += . ..
 INCLUDEPATH += . ..
-LIBS += -lgmpxx -lgmp
+LIBS += -lgmpxx -lgmp -L/usr/lib/keves/keves/base/
 QMAKE_CXXFLAGS += -std=c++11
 
 # Input
@@ -14,7 +14,6 @@ HEADERS += test_code.hpp \
            keves_base.hpp \
            keves_base-inl.hpp \
            keves_builtin_values.hpp \
-           keves_file_io.hpp \
            keves_gc.hpp \
            keves_iterator.hpp \
            keves_library.hpp \
@@ -45,7 +44,6 @@ SOURCES += main.cpp \
            test_code.cpp \
            keves_base.cpp \
            keves_builtin_values.cpp \
-           keves_file_io.cpp \
            keves_gc.cpp \
            keves_iterator.cpp \
            keves_library.cpp \
