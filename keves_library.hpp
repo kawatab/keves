@@ -68,9 +68,6 @@ private:
 
   
 class KevesLibrary {
-  friend QDataStream& operator<<(QDataStream& out, const KevesLibrary& library);
-  friend QDataStream& operator>>(QDataStream& in, KevesLibrary& library);
-
 public:
   KevesLibrary() = default;
   KevesLibrary(const KevesLibrary&) = delete;
@@ -81,31 +78,28 @@ public:
 
   void AddBind(const char* id, KevesValue kev);
   void AppendImportLib(const KevesImportBinds& import_lib);
+  void Display(KevesBase* base) const;
+  KevesValue FindBind(const char* id);
   const QList<QPair<QString, uioword> >* GetBindList() const;
   KevesValue& GetCode();
   KevesValue GetCode() const;
-  QList<Kev*>& GetObjectList();
-  const QList<Kev*>& GetObjectList() const;
-  KevesValue FindBind(const char* id);
-  void Display(KevesBase* base) const;
-  int GetNumberOfExportBinds() const;
-  int GetNumberOfInportBinds() const;
+  QList<QPair<QString, uioword> > IndexBinds(const QList<const Kev*>& object_list);
   bool Match(const QString& id1) const;
   bool Match(const QString& id1, const QString& id2) const;
   bool Match(const QString& id1, const QString& id2, const QString& id3) const;
   void SetID(const QString& id1);
   void SetID(const QString& id1, const QString& id2);
   void SetID(const QString& id1, const QString& id2, const QString& id3);
-  void SetObjectList(const QList<Kev*>& object_list);
   void SetVerNum(ver_num_t ver_num1);
   void SetVerNum(ver_num_t ver_num1, ver_num_t ver_num2);
   void SetVerNum(ver_num_t ver_num1, ver_num_t ver_num2, ver_num_t ver_num3);
-  bool WriteToFile(const QString& file_name, KevesBase* base, KevesValue value);
+  bool WriteToFile(const QString& file_name, KevesBase* base);
 
   static KevesLibrary* ReadFromFile(const QString& file_name, KevesBase* base);
 
 private:
-  int CountImportedBinds() const;
+  int CountImportBinds() const;
+  void SetExportBinds(const QList<Kev*>& object_list);
 
   static const char* GetErrorString(QFile::FileError error_code);
 
@@ -113,6 +107,6 @@ private:
   QList<ver_num_t> ver_num_;
   QList<QPair<QString, uioword> > bind_list_;
   QList<KevesImportBinds> import_libs_;
-  QList<Kev*> object_list_;
+protected:
   KevesValue code_;
 };

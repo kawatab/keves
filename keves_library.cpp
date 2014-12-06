@@ -25,7 +25,7 @@
 
 
 void KevesImportBinds::AddBind(const char* id) {
-  bind_list_.append(id);
+  bind_list_ << id;
 }
 
 const QStringList& KevesImportBinds::GetID() const {
@@ -89,8 +89,7 @@ void KevesImportBinds::Display() const {
 
   std::cout << "))";
     
-  for (auto bind : bind_list_)
-    std::cout << "  " << qPrintable(bind);
+  for (auto bind : bind_list_) std::cout << "  " << qPrintable(bind);
 
   std::cout << " (number of binds: " << CountBinds() << ')' <<  std::endl;
 }
@@ -98,10 +97,10 @@ void KevesImportBinds::Display() const {
 
 void KevesLibrary::AddBind(const char* id, KevesValue kev) {
   QPair<QString, uioword> bind(id, kev.toUIntPtr());
-  bind_list_.append(bind);
+  bind_list_ << bind;
 }
 
-int KevesLibrary::CountImportedBinds() const {
+int KevesLibrary::CountImportBinds() const {
   int cnt(0);
   for (auto lib : import_libs_) cnt += lib.CountBinds();
   return cnt;
@@ -119,18 +118,6 @@ KevesValue KevesLibrary::FindBind(const char* id) {
 const QList<QPair<QString, uioword> >* KevesLibrary::GetBindList() const {
   return &bind_list_;
 }
-
-/*
-int KevesLibrary::GetNumberOfExportBinds() const {
-  return bind_list.size();
-}
-
-int KevesLibrary::GetNumberOfImportBinds() const {
-  int sum(0);
-  for (auto lib : import_libs_) sum += lib.GetNumberOfExportBinds();
-  return sum;
-}
-*/
 
 bool KevesLibrary::Match(const QString& id1) const {
   return id_.size() == 1 && id_.at(0).compare(id1) == 0;
@@ -187,11 +174,7 @@ void KevesLibrary::SetVerNum(ver_num_t ver_num1, ver_num_t ver_num2,
 }
 
 void KevesLibrary::AppendImportLib(const KevesImportBinds& import_lib) {
-  import_libs_.append(import_lib);
-}
-
-void KevesLibrary::SetObjectList(const QList<Kev*>& object_list) {
-  object_list_ = object_list;
+  import_libs_ << import_lib;
 }
 
 KevesValue& KevesLibrary::GetCode() {
@@ -200,14 +183,6 @@ KevesValue& KevesLibrary::GetCode() {
 
 KevesValue KevesLibrary::GetCode() const {
   return code_;
-}
-
-QList<Kev*>& KevesLibrary::GetObjectList() {
-  return object_list_;
-}
-
-const QList<Kev*>& KevesLibrary::GetObjectList() const {
-  return object_list_;
 }
 
 void KevesLibrary::Display(KevesBase* base) const {
@@ -223,7 +198,7 @@ void KevesLibrary::Display(KevesBase* base) const {
 
   std::cout << "))";
 
-  std::cout << " (total number of imported binds: " << CountImportedBinds()
+  std::cout << " (total number of imported binds: " << CountImportBinds()
 	    << ')' << std::endl;
     
   for (auto bind : bind_list_) {
@@ -237,8 +212,7 @@ void KevesLibrary::Display(KevesBase* base) const {
   for (auto lib : import_libs_) lib.Display();
 }
 
-bool KevesLibrary::WriteToFile(const QString& file_name, KevesBase* base,
-			       KevesValue value) {
+bool KevesLibrary::WriteToFile(const QString& file_name, KevesBase* base) {
   QFile file(file_name);
 
   if (!file.open(QIODevice::WriteOnly)) {
@@ -251,31 +225,31 @@ bool KevesLibrary::WriteToFile(const QString& file_name, KevesBase* base,
     return false;
   }
 
+  QList<const Kev*> object_list;
+
+  for (auto bind : bind_list_)
+    base->AppendObjectList(&object_list,
+			   KevesValue::FromUioword<Kev>(bind.second));
+
   QDataStream out(&file);
+  out << id_ << ver_num_ << IndexBinds(object_list) << import_libs_;
 
-  out << *this;
-
-  if (!value.IsPtr()) {
-    file.close();
-    return false;
-  }
-  
-  QList<const Kev*> list;
-
-  for (auto bind : *this->GetBindList())
-    base->AppendObjectList(&list, KevesValue::FromUioword<Kev>(bind.second));
-
-  int bind_count(list.size());
-  // base->AppendObjectList(&list, value.ToPtr());
-  int total_count(list.size());
-  
-  for (int index(0); index < total_count; ++index) {
-    const Kev* temp(list.at(index));
-    (*base->ft_WriteObject(temp->type()))(list, out, temp);
-  }
+  for (auto object : object_list)
+    (*base->ft_WriteObject(object->type()))(object_list, out, object);
   
   file.close();
   return true;
+}
+
+QList<QPair<QString, uioword> > KevesLibrary::IndexBinds(const QList<const Kev*>& object_list) {
+  QList<QPair<QString, uioword> > indexed_list;
+
+  for (auto bind : bind_list_) {
+    int index(object_list.indexOf(KevesValue::FromUioword<Kev>(bind.second)));
+    indexed_list << QPair<QString, uioword>(bind.first, index);
+  }
+
+  return indexed_list;
 }
 
 KevesLibrary* KevesLibrary::ReadFromFile(const QString& file_name,
@@ -294,20 +268,28 @@ KevesLibrary* KevesLibrary::ReadFromFile(const QString& file_name,
   }
 
   QDataStream in(&file);
-  in >> *lib;
-  
+  in >> lib->id_ >> lib->ver_num_ >> lib->bind_list_ >> lib->import_libs_;
+  QList<Kev*> object_list;
   uioword value;
 
   while (!in.atEnd()) {
     in >> value;
-    lib->GetObjectList() << (*base->ft_ReadObject(value))(in, base);
+    object_list << (*base->ft_ReadObject(value))(in, base);
   }
 
-  base->RevertObjects(lib->GetObjectList());
-  lib->GetCode() = lib->GetObjectList().at(0);
+  base->RevertObjects(object_list);
+  lib->SetExportBinds(object_list);
+  lib->code_ = object_list.at(0);
 
   file.close();
   return lib;
+}
+
+void KevesLibrary::SetExportBinds(const QList<Kev*>& object_list) {
+  for (auto& bind : bind_list_) {
+    KevesValue kev(object_list.at(bind.second));
+    bind.second = kev.toUIntPtr();
+  }
 }
 
 const char* KevesLibrary::GetErrorString(QFile::FileError error_code) {
@@ -332,28 +314,6 @@ const char* KevesLibrary::GetErrorString(QFile::FileError error_code) {
   };
 
   return error_string[error_code];
-}
-
-QDataStream& operator<<(QDataStream& out, const KevesLibrary& library) {
-  QList<QString> name_list;
-  
-  for (auto bind : library.bind_list_)
-    name_list.append(bind.first);
-  
-  out << library.id_ << library.ver_num_ << name_list << library.import_libs_;
-  return out;
-}
-
-QDataStream& operator>>(QDataStream& in, KevesLibrary& library) {
-  QList<QString> name_list;
-  in >> library.id_ >> library.ver_num_ >> name_list >> library.import_libs_;
-
-  for (auto name : name_list) {
-    QPair<QString, uioword> bind(name, EMB_NULL);
-    library.bind_list_.append(bind);
-  }
-  
-  return in;
 }
 
 QDataStream& operator<<(QDataStream& out, const KevesImportBinds& import_binds) {

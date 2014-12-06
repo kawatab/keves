@@ -397,6 +397,7 @@ public:
   }
 
   kev_type type() const {
+    Q_ASSERT(IsPtr());
     return reinterpret_cast<const Kev*>(val_)->type();
   }
 

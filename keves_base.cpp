@@ -308,7 +308,7 @@ void KevesBase::PushToSharedList(MutableKev* kev) {
 }
 
 uioword KevesBase::IndexAddress(const QList<const Kev*>& table,
-				 KevesValue value) {
+				KevesValue value) {
   if (!value.IsPtr()) return value.toUIntPtr();
   
   int index(table.indexOf(value.ToPtr()));
@@ -324,7 +324,7 @@ void KevesBase::PushValue(QStack<const Kev*>* pending, KevesValue value) {
 void KevesBase::RevertObjects(const QList<Kev*>& object_list) {
   for (int i(0); i < object_list.size(); ++i) {
     MutableKevesValue kev(object_list.at(i));
-    (*ft_RevertObject_[kev.type()])(object_list, kev);
+    if (kev.IsPtr()) (*ft_RevertObject_[kev.type()])(object_list, kev);
   }   
 }
 

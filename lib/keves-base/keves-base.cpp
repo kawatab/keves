@@ -54,7 +54,7 @@ void LibKevesBase::Init(KevesBase* base) {
   AddBind("display", &proc_display_);
   AddBind("newline", &proc_newline_);
 
-  GetCode() = CodeKev::Make(base, 16);
+  code_ = CodeKev::Make(base, 16);
   KevesIterator iter(base->ToMutable(GetCode().ToPtr<CodeKev>())->begin());
   *iter++ = KevesInstruct(CMD_FRAME_R);
   *iter++ = KevesFixnum(5);
@@ -69,7 +69,7 @@ void LibKevesBase::Init(KevesBase* base) {
   *iter++ = FindBind("newline");
   *iter++ = KevesInstruct(CMD_APPLY);
   *iter++ = KevesInstruct(CMD_HALT);
-  Q_ASSERT(iter <= GetCode().ToPtr<CodeKev>()->end());
+  Q_ASSERT(iter <= code_.ToPtr<CodeKev>()->end());
 }
 
 void LibKevesBase::procDisplay(KevesVM* vm, const_KevesIterator pc) {
