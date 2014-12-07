@@ -22,6 +22,7 @@
 
 #include <iostream>
 #include <QLibrary>
+#include <QMutexLocker>
 #include "keves_library.hpp"
 #include "keves_vm.hpp"
 #include "kev/bignum.hpp"
@@ -56,22 +57,16 @@ KevesBase::KevesBase()
     default_result_field_(),
     thread_pool_(),
     library_list_(),
+    library_name_list_(),
     shared_list_(),
     ft_PushChildren_(),
     ft_RevertObject_(),
     ft_ReadObject_(),
     ft_WriteObject_() {
   InitCMDTable();
+  InitLibraryList();
   builtin_.Init(this);
   thread_pool_.setMaxThreadCount(4);
-
-  QLibrary keves_base("lib/keves-base/libkeves-base");
-
-  typedef KevesLibrary*(*FuncMakeLib)(KevesBase*);
-  auto make_lib = reinterpret_cast<FuncMakeLib>(keves_base.resolve("Make"));
-
-  if (make_lib) AddLibrary(make_lib(this));
-  else std::cerr << qPrintable(keves_base.errorString());
 
   SetFunctionTable<CodeKev>();
   SetFunctionTable<Bignum>();
@@ -239,6 +234,52 @@ void KevesBase::InitCMDTable() {
 #undef INIT_CHECK_SUM
 }
 
+void KevesBase::InitLibraryList() {
+  QFile library_list_file("conf/library.conf");
+
+  if (!library_list_file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+    std::cerr << "Not found `library.conf'\n";
+    return;
+  }
+  
+  QString temp, library_name, file_name;
+  int line_num(0);
+
+  while (!library_list_file.atEnd()) {
+    temp = library_list_file.readLine();
+    int pos(temp.indexOf('\t'));
+    int size(temp.length());
+
+    if (size == 0) continue;
+
+    if (pos < 0 || pos == size - 1) {
+      std::cerr << "Error: There is no value in line: " << line_num
+		<< ", library.conf.\n";
+      continue;
+    }
+
+    library_name = temp.left(pos).trimmed();
+    file_name = temp.mid(pos + 1).trimmed();
+
+    if (library_name.isEmpty()) {
+      std::cerr << "Error: There is no library name in line: " << line_num
+		<< ", library.conf.\n";
+      continue;
+    }
+
+    if (file_name.isEmpty()) {
+      std::cerr << "Error: There is no file name in line: " << line_num
+		<< ", library.conf.\n";
+      continue;
+    }
+
+    QPair<QStringList, QString> pair(library_name.split(' '), file_name);
+    library_name_list_ << pair;
+  }
+
+  library_list_file.close();
+}
+
 const StringKev* KevesBase::GetMesgText(const QString& key) const {
   return builtin_.GetMesgText(key);
 }
@@ -261,47 +302,55 @@ void KevesBase::AddLibrary(KevesLibrary* library) {
   library_list_.append(library);
 }
 
+bool KevesBase::Match(const QStringList& list1, const QStringList& list2) {
+  int size(list1.size());
+
+  if (list2.size() != size) return false;
+
+  for (int i(0); i < size; ++i)
+    if (list1.at(i).compare(list2.at(i)) != 0) return false;
+
+  return true;
+}
+
 KevesLibrary* KevesBase::GetLibrary(const QStringList& id) {
   Q_ASSERT(id.size() > 0);
+
+  QMutexLocker locker(&mutex_);
   
   for (auto lib : library_list_)
     if (lib->Match(id)) return lib;
 
-  return nullptr;
-}
+  for (auto pair : library_name_list_) {
+    if (Match(id, pair.first)) {
+      QString file_name("lib/keves-base/");
+      file_name += pair.second;
+      QLibrary lib_bin(file_name);
+      typedef KevesLibrary*(*FuncMakeLib)(KevesBase*);
+      auto make_lib = reinterpret_cast<FuncMakeLib>(lib_bin.resolve("Make"));
+      
+      if (!make_lib) {
+	std::cerr << "file name: " << qPrintable(file_name)
+		  << qPrintable(lib_bin.errorString());
+	return nullptr;
+      }
 
-KevesLibrary* KevesBase::GetLibrary(const QString& id1) {
-  for (auto lib : library_list_)
-    if (lib->Match(id1)) return lib;
+      KevesLibrary* library(make_lib(this));
+      library->SetID(pair.first);
+      AddLibrary(library);
+      return library;
+    }
+  }
+      
+  int size(id.size());
+  std::cerr << "Not found library: (";
 
-  std::cerr << "Not found library: ("
-	    << qPrintable(id1) << ')';
+  if (size > 0) {
+    std::cerr << qPrintable(id.at(0));
+    for (int i(1); i < size; ++i) std::cerr << ' ' << qPrintable(id.at(i));
+  }
 
-  return nullptr;
-}
-
-KevesLibrary* KevesBase::GetLibrary(const QString& id1, const QString& id2) {
-  for (auto lib : library_list_)
-    if (lib->Match(id1, id2)) return lib;
-
-  std::cerr << "Not found library: ("
-	    << qPrintable(id1) << ' '
-	    << qPrintable(id2) << ')';
-
-  return nullptr;
-}
-
-KevesLibrary* KevesBase::GetLibrary(const QString& id1,
-				    const QString& id2,
-				    const QString& id3) {
-  for (auto lib : library_list_)
-    if (lib->Match(id1, id2, id3)) return lib;
-
-  std::cerr << "Not found library: ("
-	    << qPrintable(id1) << ' '
-	    << qPrintable(id2) << ' '
-	    << qPrintable(id3) << ")\n";
-
+  std::cerr << ")\n";
   return nullptr;
 }
 

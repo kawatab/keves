@@ -122,36 +122,12 @@ const QList<QPair<QString, uioword> >* KevesLibrary::GetBindList() const {
 }
 
 bool KevesLibrary::Match(const QStringList& id) const {
-  int size(id.size());
-
-  if (id_.size() != size) return false;
-
-  for (int i(0); i < size; ++i)
-    if (id_.at(i).compare(id.at(i)) !=0) return false;
-  
-  return true;
+  return KevesBase::Match(id_, id);
 }
 
-bool KevesLibrary::Match(const QString& id1) const {
-  return id_.size() == 1 && id_.at(0).compare(id1) == 0;
-}
-
-bool KevesLibrary::Match(const QString& id1, const QString& id2) const {
-  std::cout << "id1: " << qPrintable(id_.at(0))
-	    << "id2: " << qPrintable(id_.at(1)) << std::endl;
-
-  return id_.size() == 2 &&
-    id_.at(0).compare(id1) == 0 &&
-    id_.at(1).compare(id2) == 0;
-}
-
-bool KevesLibrary::Match(const QString& id1,
-			 const QString& id2,
-			 const QString& id3) const {
-  return id_.size() == 2 &&
-    id_.at(0).compare(id1) == 0 &&
-    id_.at(1).compare(id2) == 0 &&
-    id_.at(2).compare(id3) == 0;
+void KevesLibrary::SetID(const QStringList& id) {
+  id_.clear();
+  for (auto str : id) id_ << str;
 }
 
 void KevesLibrary::SetID(const QString& id1) {

@@ -24,7 +24,6 @@
 #include <QTextCodec>
 #include <QTextEdit>
 #include <QTextStream>
-
 #include "keves_base.hpp"
 #include "keves_base-inl.hpp"
 #include "keves_builtin_values.hpp"
@@ -42,7 +41,7 @@
 void LibKevesBase::Init(KevesBase* base) {
   std::cout << "LibKevesBase::Init()" << std::endl;
 
-  SetID("keves", "base-bin");
+  // SetID("keves", "base-bin");
   SetVerNum(0, 1);
 					       
   sym_display_ = SymbolKev::Make(base, "display");

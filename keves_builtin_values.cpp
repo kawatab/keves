@@ -68,7 +68,7 @@ DEFINE_MESG_KEY(1stObjNotProcOrSyn);
 
 
 void KevesBuiltinValues::Init(KevesBase* base) {
-  InitMesgList("mesg_text.csv", base);
+  InitMesgList("conf/mesg_text.csv", base);
 
   sym_eval_ = SymbolKev::Make(base, "eval");
 

@@ -20,6 +20,7 @@
 #pragma once
 
 #include <QList>
+#include <QMutex>
 #include <QStack>
 #include <QThreadPool>
 #include "keves_builtin_values.hpp"
@@ -48,12 +49,6 @@ public:
 public:
   void AddLibrary(KevesLibrary* library);
   KevesLibrary* GetLibrary(const QStringList& id);
-  KevesLibrary* GetLibrary(const QString& id1);
-  KevesLibrary* GetLibrary(const QString& id1, const QString& id2);
-
-  KevesLibrary* GetLibrary(const QString& id1, const QString& id2,
-			 const QString& id3);
-
   const StringKev* GetMesgText(const QString& key) const;
   void RunThread();
 
@@ -78,8 +73,11 @@ public:
     return &instruct_table_;
   }
 
+  static bool Match(const QStringList& list1, const QStringList& list2);
+
 private:
   void InitCMDTable();
+  void InitLibraryList();
   void ToString_code(QString*, KevesValue, int) const;
   void ToString_element(QString*, KevesValue) const;
   void ToString_list(QString*, KevesValue, int) const;
@@ -173,9 +171,11 @@ private:
   KevesTextualOutputPort default_result_field_;
   QThreadPool thread_pool_;
   QList<KevesLibrary*> library_list_;
+  QList<QPair<QStringList, QString> > library_name_list_;
   KevesList<KevesNode<0> > shared_list_;
   void (*ft_PushChildren_[0177])(QStack<const Kev*>*, KevesValue);
   void (*ft_RevertObject_[0177])(const QList<const Kev*>&, MutableKevesValue);
   Kev* (*ft_ReadObject_[0177])(QDataStream&, KevesBase*);
   void (*ft_WriteObject_[0177])(const QList<const Kev*>&, QDataStream&, KevesValue);
+  QMutex mutex_;
 };

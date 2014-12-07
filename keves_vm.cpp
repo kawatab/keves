@@ -414,7 +414,9 @@ int KevesVM::Execute_helper(const QString& arg) {
   registers_.set_fp(&registers_);
 
   registers_.changeToBottomFrame();
-  KevesLibrary* lib_keves_base(base_->GetLibrary("keves", "base-bin"));
+  QStringList library_name;
+  library_name << "keves" << "base-bin";
+  KevesLibrary* lib_keves_base(base_->GetLibrary(library_name));
 
   if (!lib_keves_base) {
     std::cerr << "library is not found!!!\n";

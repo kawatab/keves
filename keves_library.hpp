@@ -83,9 +83,7 @@ public:
   const QList<QPair<QString, uioword> >* GetBindList() const;
   QList<QPair<QString, uioword> > IndexBinds(const QList<const Kev*>& object_list);
   bool Match(const QStringList& id) const;
-  bool Match(const QString& id1) const;
-  bool Match(const QString& id1, const QString& id2) const;
-  bool Match(const QString& id1, const QString& id2, const QString& id3) const;
+  void SetID(const QStringList& id);
   void SetID(const QString& id1);
   void SetID(const QString& id1, const QString& id2);
   void SetID(const QString& id1, const QString& id2, const QString& id3);
