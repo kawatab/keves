@@ -81,8 +81,6 @@ public:
   void Display(KevesBase* base) const;
   KevesValue FindBind(const QString& id);
   const QList<QPair<QString, uioword> >* GetBindList() const;
-  KevesValue& GetCode();
-  KevesValue GetCode() const;
   QList<QPair<QString, uioword> > IndexBinds(const QList<const Kev*>& object_list);
   bool Match(const QStringList& id) const;
   bool Match(const QString& id1) const;
@@ -109,6 +107,4 @@ private:
   QList<ver_num_t> ver_num_;
   QList<QPair<QString, uioword> > bind_list_;
   QList<KevesImportBinds> import_libs_;
-protected:
-  KevesValue code_;
 };

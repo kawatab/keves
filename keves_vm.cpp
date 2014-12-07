@@ -421,7 +421,6 @@ int KevesVM::Execute_helper(const QString& arg) {
     return 1;
   }
   
-  // KevesValue code(lib_keves_base->GetCode());
   KevesValue code(lib_keves_base->FindBind("my-code"));
 
   if (code == EMB_NULL) {

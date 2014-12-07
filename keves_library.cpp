@@ -79,7 +79,8 @@ int KevesImportBinds::CountBinds() const {
 
 void KevesImportBinds::Display() const {
   std::cout << "(";
-  for (auto name : id_) std::cout << qPrintable(name) << " (";
+  for (auto name : id_) std::cout << qPrintable(name) << " ";
+  std::cout << "(";
     
   if (ver_num_.size() > 0) {
     auto iter(ver_num_.begin());
@@ -189,17 +190,10 @@ void KevesLibrary::AppendImportLib(const KevesImportBinds& import_lib) {
   import_libs_ << import_lib;
 }
 
-KevesValue& KevesLibrary::GetCode() {
-  return code_;
-}
-
-KevesValue KevesLibrary::GetCode() const {
-  return code_;
-}
-
 void KevesLibrary::Display(KevesBase* base) const {
   std::cout << "(";
   for (auto name : id_) std::cout << qPrintable(name) << " ";
+  std::cout << "(";
 
   if (ver_num_.size() > 0) {
     auto iter(ver_num_.begin());
@@ -314,7 +308,7 @@ KevesLibrary* KevesLibrary::ReadFromFile(const QString& file_name,
 
   // Revert exporb binds
   lib->SetExportBinds(object_list);
-  lib->code_ = object_list.at(0);
+  // lib->code_ = object_list.at(0);
 
   file.close();
   return lib;

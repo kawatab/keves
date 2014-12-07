@@ -130,7 +130,6 @@ void TestCode::Code02::Read(KevesBase* base, const char* file_name) {
 
   lib->Display(base);
   
-  // KevesValue value(lib->GetCode());
   KevesValue value(lib->FindBind("my-code"));
   std::cout << qPrintable(base->ToString(value)) << std::endl;
 
