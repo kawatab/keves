@@ -414,7 +414,24 @@ int KevesVM::Execute_helper(const QString& arg) {
   registers_.set_fp(&registers_);
 
   registers_.changeToBottomFrame();
-  const_KevesIterator pc(base_->GetLibrary("keves", "base")->GetCode().ToPtr<CodeKev>()->begin());
+  KevesLibrary* lib_keves_base(base_->GetLibrary("keves", "base-bin"));
+
+  if (!lib_keves_base) {
+    std::cerr << "library is not found!!!\n";
+    return 1;
+  }
+  
+  // KevesValue code(lib_keves_base->GetCode());
+  KevesValue code(lib_keves_base->FindBind("my-code"));
+
+  if (code == EMB_NULL) {
+    std::cerr << "bind: my-code is not found!!!\n";
+    return 1;
+  } else if (code.IsCode()) {
+    std::cout << "find code" << std::endl;
+  }
+  
+  const_KevesIterator pc(code.ToPtr<CodeKev>()->begin());
   Q_ASSERT(pc->IsInstruct());
 
   // prepare environment frame

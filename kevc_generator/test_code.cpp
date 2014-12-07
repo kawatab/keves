@@ -114,7 +114,7 @@ void TestCode::Code02::Write(KevesBase* base, const char* file_name) {
   this_lib.AddBind("my-code", lambda);
 
   KevesImportBinds required_lib;
-  required_lib.SetID("rnrs", "io", "simple");
+  required_lib.SetID("keves", "base-bin");
   required_lib.SetVerNum(6);
   required_lib.AddBind("display");
   required_lib.AddBind("newline");
@@ -163,7 +163,7 @@ void TestCode::Code03::Write(KevesBase* base, const char* file_name) {
   this_lib.AddBind("my-code", fp);
 
   KevesImportBinds required_lib;
-  required_lib.SetID("rnrs", "io", "simple");
+  required_lib.SetID("keves", "base-bin");
   required_lib.SetVerNum(6);
   required_lib.AddBind("display");
   this_lib.AppendImportLib(required_lib);

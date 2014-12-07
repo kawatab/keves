@@ -261,6 +261,15 @@ void KevesBase::AddLibrary(KevesLibrary* library) {
   library_list_.append(library);
 }
 
+KevesLibrary* KevesBase::GetLibrary(const QStringList& id) {
+  Q_ASSERT(id.size() > 0);
+  
+  for (auto lib : library_list_)
+    if (lib->Match(id)) return lib;
+
+  return nullptr;
+}
+
 KevesLibrary* KevesBase::GetLibrary(const QString& id1) {
   for (auto lib : library_list_)
     if (lib->Match(id1)) return lib;
@@ -283,8 +292,8 @@ KevesLibrary* KevesBase::GetLibrary(const QString& id1, const QString& id2) {
 }
 
 KevesLibrary* KevesBase::GetLibrary(const QString& id1,
-				  const QString& id2,
-				  const QString& id3) {
+				    const QString& id2,
+				    const QString& id3) {
   for (auto lib : library_list_)
     if (lib->Match(id1, id2, id3)) return lib;
 
@@ -321,15 +330,15 @@ void KevesBase::PushValue(QStack<const Kev*>* pending, KevesValue value) {
   if (value.IsPtr()) pending->push(value.ToPtr());
 }
 
-void KevesBase::RevertObjects(const QList<Kev*>& object_list) {
-  for (int i(0); i < object_list.size(); ++i) {
+void KevesBase::RevertObjects(const QList<const Kev*>& object_list, int start_pos) {
+  for (int i(start_pos); i < object_list.size(); ++i) {
     MutableKevesValue kev(object_list.at(i));
     if (kev.IsPtr()) (*ft_RevertObject_[kev.type()])(object_list, kev);
   }   
 }
 
-void KevesBase::RevertValue(const QList<Kev*>& object_list,
-				KevesValue* value) {
+void KevesBase::RevertValue(const QList<const Kev*>& object_list,
+			    KevesValue* value) {
   if (IsIndex(*value)) *value = object_list.at(value->toUIntPtr() >> 2);
 }
 

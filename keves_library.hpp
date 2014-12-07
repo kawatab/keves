@@ -79,11 +79,12 @@ public:
   void AddBind(const char* id, KevesValue kev);
   void AppendImportLib(const KevesImportBinds& import_lib);
   void Display(KevesBase* base) const;
-  KevesValue FindBind(const char* id);
+  KevesValue FindBind(const QString& id);
   const QList<QPair<QString, uioword> >* GetBindList() const;
   KevesValue& GetCode();
   KevesValue GetCode() const;
   QList<QPair<QString, uioword> > IndexBinds(const QList<const Kev*>& object_list);
+  bool Match(const QStringList& id) const;
   bool Match(const QString& id1) const;
   bool Match(const QString& id1, const QString& id2) const;
   bool Match(const QString& id1, const QString& id2, const QString& id3) const;
@@ -99,7 +100,8 @@ public:
 
 private:
   int CountImportBinds() const;
-  void SetExportBinds(const QList<Kev*>& object_list);
+  int GetImportBinds(KevesBase* base, QList<const Kev*>* object_list);
+  void SetExportBinds(const QList<const Kev*>& object_list);
 
   static const char* GetErrorString(QFile::FileError error_code);
 

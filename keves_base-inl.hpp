@@ -35,10 +35,10 @@ void KevesBase::PushArray(QStack<const Kev*>* pending, KEV* kev) {
 }
 
 template<class KEV>
-void KevesBase::RevertValue(const QList<Kev*>& object_list, KEV** kev) {
-  KevesValue value(*kev);
+void KevesBase::RevertValue(const QList<const Kev*>& object_list, KEV** kev) {
+  MutableKevesValue value(*kev);
   if (IsIndex(value))
-    *kev = static_cast<KEV*>(object_list.at(value.toUIntPtr() >> 2));
+    *kev = static_cast<KEV*>(const_cast<Kev*>(object_list.at(value.toUIntPtr() >> 2)));
 }
 
 template<class KEV>
@@ -54,7 +54,7 @@ void KevesBase::ReadArray(QDataStream& in, KEV* kev) {
 }
 
 template<class KEV>
-void KevesBase::RevertArray(const QList<Kev*>& object_list, KEV* kev) {
+void KevesBase::RevertArray(const QList<const Kev*>& object_list, KEV* kev) {
   KevesValue* iter(kev->array());
   const KevesValue* end(iter + kev->size());
     
@@ -81,7 +81,7 @@ void KevesBase::SetFunctionTable() {
     = KEV::template ReadObject<KevesBase, QDataStream, KevesBase>;
 
   ft_RevertObject_[KEV::TYPE]
-    = KEV::template RevertObject<KevesBase, QList<Kev*> >;
+    = KEV::template RevertObject<KevesBase, QList<const Kev*> >;
 
   ft_WriteObject_[KEV::TYPE]
     = KEV::template WriteObject<KevesBase, QList<const Kev*>, QDataStream>;

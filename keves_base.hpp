@@ -47,6 +47,7 @@ public:
   ////////////////////////////////////////////////////////////////
 public:
   void AddLibrary(KevesLibrary* library);
+  KevesLibrary* GetLibrary(const QStringList& id);
   KevesLibrary* GetLibrary(const QString& id1);
   KevesLibrary* GetLibrary(const QString& id1, const QString& id2);
 
@@ -100,14 +101,14 @@ public:
   static void ReadArray(QDataStream& in, KEV* kev);
 
   template<class KEV>
-  static void RevertArray(const QList<Kev*>& object_list, KEV* kev);
+  static void RevertArray(const QList<const Kev*>& object_list, KEV* kev);
   
-  void RevertObjects(const QList<Kev*>& object_list);
+  void RevertObjects(const QList<const Kev*>& object_list, int start_pos);
 
   template<class KEV>
-  static void RevertValue(const QList<Kev*>& object_list, KEV** kev);
+  static void RevertValue(const QList<const Kev*>& object_list, KEV** kev);
   
-  static void RevertValue(const QList<Kev*>& object_list, KevesValue* value);
+  static void RevertValue(const QList<const Kev*>& object_list, KevesValue* value);
 
   template<class KEV>
   static void PushArray(QStack<const Kev*>* pending, KEV* kev);
@@ -174,7 +175,7 @@ private:
   QList<KevesLibrary*> library_list_;
   KevesList<KevesNode<0> > shared_list_;
   void (*ft_PushChildren_[0177])(QStack<const Kev*>*, KevesValue);
-  void (*ft_RevertObject_[0177])(const QList<Kev*>&, MutableKevesValue);
+  void (*ft_RevertObject_[0177])(const QList<const Kev*>&, MutableKevesValue);
   Kev* (*ft_ReadObject_[0177])(QDataStream&, KevesBase*);
   void (*ft_WriteObject_[0177])(const QList<const Kev*>&, QDataStream&, KevesValue);
 };
