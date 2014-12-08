@@ -55,11 +55,6 @@
 #include "value/instruct.hpp"
 
 
-/*
-KevesVM::KevesVM(QObject *parent)
-  : QObject(parent) {}
-*/
-
 KevesVM* KevesVM::Make(KevesBase* base) {
   return Make(base, base->default_result_field());
 }

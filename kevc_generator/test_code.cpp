@@ -112,15 +112,8 @@ void TestCode::Code02::Write(KevesBase* base, const char* file_name) {
   KevesLibrary this_lib;
   this_lib.SetID("main");
   this_lib.AddBind("my-code", lambda);
-
-  KevesImportBinds required_lib;
-  required_lib.SetID("keves", "base-bin");
-  required_lib.SetVerNum(6);
-  required_lib.AddBind("display");
-  required_lib.AddBind("newline");
-  this_lib.AppendImportLib(required_lib);
-
-  this_lib.WriteToFile(file_name, base);
+  QList<KevesImportBinds> import_libs;
+  this_lib.WriteToFile(base, file_name, import_libs);
 }
 
 void TestCode::Code02::Read(KevesBase* base, const char* file_name) {
@@ -160,19 +153,71 @@ void TestCode::Code03::Write(KevesBase* base, const char* file_name) {
   KevesLibrary this_lib;
   this_lib.SetID("main");
   this_lib.AddBind("my-code", fp);
-
-  KevesImportBinds required_lib;
-  required_lib.SetID("keves", "base-bin");
-  required_lib.SetVerNum(6);
-  required_lib.AddBind("display");
-  this_lib.AppendImportLib(required_lib);
-
-  this_lib.WriteToFile(file_name, base);
+  QList<KevesImportBinds> import_libs;
+  this_lib.WriteToFile(base, file_name, import_libs);
 }
 
 void TestCode::Code03::Read(KevesBase* base, const char* file_name) {
   std::cout << file_name << ":" << std::endl;
   KevesLibrary* lib(KevesLibrary::ReadFromFile(file_name, base));
   lib->Display(base);
+  delete lib;
+}
+
+void TestCode::KevesBaseCode::Write(KevesBase* base, const char* file_name) {
+  // Library Header
+  QStringList id_keves_base;
+  id_keves_base << "keves" << "base";
+  KevesLibrary this_lib;
+  this_lib.SetID(id_keves_base);
+
+  // import binds
+  QStringList id_keves_base_bin;
+  id_keves_base_bin << "keves" << "base-bin";
+  QList<ver_num_t> ver_keves_base_bin;
+  ver_keves_base_bin << 6;
+  
+  KevesImportBinds required_lib(base, id_keves_base_bin, ver_keves_base_bin);
+  KevesValue proc_display(required_lib.FindBind("display"));
+  KevesValue proc_newline(required_lib.FindBind("newline"));
+
+  QList<KevesImportBinds> import_libs;
+  import_libs << required_lib;
+ 
+  // values
+  CodeKev* code(CodeKev::Make(base, 16));
+  {
+    KevesIterator iter(code->begin());
+    *iter++ = KevesInstruct(CMD_FRAME_R);
+    *iter++ = KevesFixnum(5);
+    *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+    *iter++ = proc_display;
+    *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+    *iter++ = KevesFixnum(5);
+    *iter++ = KevesInstruct(CMD_APPLY);
+    *iter++ = KevesInstruct(CMD_FRAME_R);
+    *iter++ = KevesFixnum(3);
+    *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+    *iter++ = proc_newline;
+    *iter++ = KevesInstruct(CMD_APPLY);
+    *iter++ = KevesInstruct(CMD_HALT);
+    Q_ASSERT(iter <= code->end());
+  }
+
+  this_lib.AddBind("my-code", code);
+
+  this_lib.WriteToFile(base, file_name, import_libs);
+}
+
+void TestCode::KevesBaseCode::Read(KevesBase* base, const char* file_name) {
+  std::cout << file_name << ":" << std::endl;
+  
+  KevesLibrary* lib(KevesLibrary::ReadFromFile(file_name, base));
+
+  lib->Display(base);
+  
+  KevesValue value(lib->FindBind("my-code"));
+  std::cout << qPrintable(base->ToString(value)) << std::endl;
+
   delete lib;
 }
