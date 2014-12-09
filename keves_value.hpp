@@ -23,6 +23,8 @@
 
 typedef qint64 ioword;
 typedef quint64 uioword;
+typedef qint32 ver_num_t;
+
 
 class ArgumentFrameKev;
 class LocalVarFrameKev;

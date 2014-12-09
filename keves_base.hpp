@@ -48,7 +48,10 @@ public:
   ////////////////////////////////////////////////////////////////
 public:
   void AddLibrary(KevesLibrary* library);
-  KevesLibrary* GetLibrary(const QStringList& id);
+
+  KevesLibrary* GetLibrary(const QStringList& id,
+			   const QList<ver_num_t>& ver_num);
+
   const StringKev* GetMesgText(const QString& key) const;
   void RunThread();
 

@@ -26,31 +26,29 @@
 #include <QStringList>
 #include "keves_value.hpp"
 
-typedef qint32 ver_num_t;
-
 
 class KevesBase;
 class KevesLibrary;
 
 
-class KevesImportBinds {
+class KevesImportLibrary {
   friend QDataStream& operator<<(QDataStream& out,
-				 const KevesImportBinds& library);
+				 const KevesImportLibrary& library);
 
   friend QDataStream& operator>>(QDataStream& in,
-				 KevesImportBinds& library);
+				 KevesImportLibrary& library);
 
 public:
-  KevesImportBinds() = default;
-  KevesImportBinds(const KevesImportBinds&) = default;
-  // KevesImportBinds(const KevesImportBinds&&) = default; // Qt4.8 not support C+11
-  KevesImportBinds& operator=(const KevesImportBinds&) = default;
-  // KevesImportBinds& operator=(const KevesImportBinds&&) = delete; // Qt4.8 not support C+11
-  ~KevesImportBinds() = default;
+  KevesImportLibrary() = default;
+  KevesImportLibrary(const KevesImportLibrary&) = default;
+  // KevesImportLibrary(const KevesImportLibrary&&) = default; // Qt4.8 not support C+11
+  KevesImportLibrary& operator=(const KevesImportLibrary&) = default;
+  // KevesImportLibrary& operator=(const KevesImportLibrary&&) = delete; // Qt4.8 not support C+11
+  ~KevesImportLibrary() = default;
 
-  KevesImportBinds(KevesBase* base,
-		   const QStringList& id,
-		   const QList<ver_num_t> ver_num);
+  KevesImportLibrary(KevesBase* base,
+		     const QStringList& id,
+		     const QList<ver_num_t> ver_num);
 
   void AddBind(const char* id);
   int CountBinds() const;
@@ -60,12 +58,7 @@ public:
   const QStringList& GetID() const;
   const QList<ver_num_t>& GetVerNum() const;
   void LoadLibrary(KevesBase* base);
-  void SetID(const QString& id1);
-  void SetID(const QString& id1, const QString& id2);
-  void SetID(const QString& id1, const QString& id2, const QString& id3);
-  void SetVerNum(ver_num_t ver_num1);
-  void SetVerNum(ver_num_t ver_num1, ver_num_t ver_num2);
-  void SetVerNum(ver_num_t ver_num1, ver_num_t ver_num2, ver_num_t ver_num3);
+  void SetID(const QStringList& id, const QList<ver_num_t>& ver_num);
     
 private:
   KevesLibrary* library_;
@@ -75,6 +68,28 @@ private:
 };
 
   
+class KevesImportLibraryList{
+public:
+  KevesImportLibraryList() = delete;
+  KevesImportLibraryList(const KevesImportLibraryList&) = delete;
+  KevesImportLibraryList(const KevesImportLibraryList&&) = delete;
+  KevesImportLibraryList& operator=(const KevesImportLibraryList&) = delete;
+  KevesImportLibraryList& operator=(const KevesImportLibraryList&&) = delete;
+  ~KevesImportLibraryList() = default;
+
+  KevesImportLibraryList(KevesBase* base);
+
+  KevesValue FindBind(const char* id);
+  const QList<KevesImportLibrary>& GetList() const;
+  void SetLibrary(const QStringList& id, const QList<ver_num_t>& ver_num);
+
+private:
+  KevesBase* base_;
+  QList<KevesImportLibrary> import_libs_;
+  int count_;
+};
+
+
 class KevesLibrary {
 public:
   KevesLibrary() = default;
@@ -84,30 +99,26 @@ public:
   KevesLibrary& operator=(const KevesLibrary&&) = delete;
   ~KevesLibrary() = default;
 
+  KevesLibrary(const QStringList& id, const QList<ver_num_t>& ver_num);
+  
   void AddBind(const char* id, KevesValue kev);
   void Display(KevesBase* base) const;
   KevesValue FindBind(const QString& id);
   const QList<QPair<QString, uioword> >* GetBindList() const;
   QList<QPair<QString, uioword> > IndexBinds(const QList<const Kev*>& object_list);
   bool Match(const QStringList& id) const;
-  void SetID(const QStringList& id);
-  void SetID(const QString& id1);
-  void SetID(const QString& id1, const QString& id2);
-  void SetID(const QString& id1, const QString& id2, const QString& id3);
-  void SetVerNum(ver_num_t ver_num1);
-  void SetVerNum(ver_num_t ver_num1, ver_num_t ver_num2);
-  void SetVerNum(ver_num_t ver_num1, ver_num_t ver_num2, ver_num_t ver_num3);
+  void SetID(const QStringList& id, const QList<ver_num_t>& ver_num);
 
   bool WriteToFile(KevesBase* base,
 		   const QString& file_name,
-		   const QList<KevesImportBinds>& import_libs);
+		   const KevesImportLibraryList& import_binds);
 
   static KevesLibrary* ReadFromFile(const QString& file_name, KevesBase* base);
 
 private:
   int GetImportBinds(KevesBase* base,
 		     QList<const Kev*>* object_list,
-		     const QList<KevesImportBinds>& import_libs);
+		     const QList<KevesImportLibrary>& import_libs);
 
   void SetExportBinds(const QList<const Kev*>& object_list);
 

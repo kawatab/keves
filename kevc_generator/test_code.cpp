@@ -109,10 +109,12 @@ void TestCode::Code02::Write(KevesBase* base, const char* file_name) {
   FreeVarFrameKev* clsr(FreeVarFrameKev::Make(base, 3, nullptr));
   LambdaKev* lambda(LambdaKev::Make(base, clsr, code, 2));
 
-  KevesLibrary this_lib;
-  this_lib.SetID("main");
+  QStringList id;
+  QList<ver_num_t> ver_num; // empty list
+  id << "main";
+  KevesLibrary this_lib(id, ver_num);
   this_lib.AddBind("my-code", lambda);
-  QList<KevesImportBinds> import_libs;
+  KevesImportLibraryList import_libs(base); // empty list
   this_lib.WriteToFile(base, file_name, import_libs);
 }
 
@@ -150,10 +152,12 @@ void TestCode::Code03::Write(KevesBase* base, const char* file_name) {
   fp->setClosure(clsr2);
   fp->set_sfp(nullptr);
 
-  KevesLibrary this_lib;
-  this_lib.SetID("main");
+  QStringList id;
+  QList<ver_num_t> ver_num;
+  id << "main";
+  KevesLibrary this_lib(id, ver_num);
   this_lib.AddBind("my-code", fp);
-  QList<KevesImportBinds> import_libs;
+  KevesImportLibraryList import_libs(base);
   this_lib.WriteToFile(base, file_name, import_libs);
 }
 
@@ -166,23 +170,21 @@ void TestCode::Code03::Read(KevesBase* base, const char* file_name) {
 
 void TestCode::KevesBaseCode::Write(KevesBase* base, const char* file_name) {
   // Library Header
-  QStringList id_keves_base;
-  id_keves_base << "keves" << "base";
-  KevesLibrary this_lib;
-  this_lib.SetID(id_keves_base);
+  QStringList id;
+  QList<ver_num_t> ver_num;
+  id << "keves" << "base";
+  ver_num << 0 << 1;
+  KevesLibrary this_lib(id, ver_num);
 
   // import binds
   QStringList id_keves_base_bin;
   id_keves_base_bin << "keves" << "base-bin";
   QList<ver_num_t> ver_keves_base_bin;
   ver_keves_base_bin << 6;
-  
-  KevesImportBinds required_lib(base, id_keves_base_bin, ver_keves_base_bin);
-  KevesValue proc_display(required_lib.FindBind("display"));
-  KevesValue proc_newline(required_lib.FindBind("newline"));
-
-  QList<KevesImportBinds> import_libs;
-  import_libs << required_lib;
+  KevesImportLibraryList import_libs(base);
+  import_libs.SetLibrary(id_keves_base_bin, ver_keves_base_bin);
+  KevesValue proc_display(import_libs.FindBind("display"));
+  KevesValue proc_newline(import_libs.FindBind("newline"));
  
   // values
   CodeKev* code(CodeKev::Make(base, 16));
@@ -204,6 +206,7 @@ void TestCode::KevesBaseCode::Write(KevesBase* base, const char* file_name) {
     Q_ASSERT(iter <= code->end());
   }
 
+  // export binds
   this_lib.AddBind("my-code", code);
 
   this_lib.WriteToFile(base, file_name, import_libs);

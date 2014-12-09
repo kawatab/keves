@@ -25,10 +25,10 @@
 #include "keves_base-inl.hpp"
 
 
-KevesImportBinds::KevesImportBinds(KevesBase* base,
-				   const QStringList& id,
-				   const QList<ver_num_t> ver_num)
-  : library_(base->GetLibrary(id)),
+KevesImportLibrary::KevesImportLibrary(KevesBase* base,
+				       const QStringList& id,
+				       const QList<ver_num_t> ver_num)
+  : library_(base->GetLibrary(id, ver_num)),
     id_(),
     ver_num_(),
     bind_list_() {
@@ -38,68 +38,42 @@ KevesImportBinds::KevesImportBinds(KevesBase* base,
   for (auto num : ver_num) ver_num_ << num;
 }
 
-void KevesImportBinds::LoadLibrary(KevesBase* base) {
-  library_ = base->GetLibrary(id_);
+void KevesImportLibrary::LoadLibrary(KevesBase* base) {
+  library_ = base->GetLibrary(id_, ver_num_);
 }
 
-void KevesImportBinds::AddBind(const char* id) {
+void KevesImportLibrary::AddBind(const char* id) {
   bind_list_ << id;
 }
 
-KevesValue KevesImportBinds::FindBind(const char* id) {
+KevesValue KevesImportLibrary::FindBind(const char* id) {
   bind_list_ << id;
   return library_->FindBind(id);
 }
   
-const QStringList& KevesImportBinds::GetID() const {
+const QStringList& KevesImportLibrary::GetID() const {
   return id_;
 }
 
-const QList<ver_num_t>& KevesImportBinds::GetVerNum() const {
+const QList<ver_num_t>& KevesImportLibrary::GetVerNum() const {
   return ver_num_;
 }
 
-const QStringList& KevesImportBinds::GetBindList() const {
+const QStringList& KevesImportLibrary::GetBindList() const {
   return bind_list_;
 }
 
-void KevesImportBinds::SetID(const QString& id1) {
-  id_.clear();
-  id_ << id1;
+void KevesImportLibrary::SetID(const QStringList& id,
+			       const QList<ver_num_t>& ver_num) {
+  for (auto str : id) id_ << str;
+  for (auto num : ver_num) ver_num_ << num;
 }
 
-void KevesImportBinds::SetID(const QString& id1, const QString& id2) {
-  id_.clear();
-  id_ << id1 << id2;
-}
-
-void KevesImportBinds::SetID(const QString& id1, const QString& id2,
-			     const QString& id3) {
-  id_.clear();
-  id_ << id1 << id2 << id3;
-}
-
-void KevesImportBinds::SetVerNum(ver_num_t ver_num1) {
-  ver_num_.clear();
-  ver_num_ << ver_num1;
-}
-
-void KevesImportBinds::SetVerNum(ver_num_t ver_num1, ver_num_t ver_num2) {
-  ver_num_.clear();
-  ver_num_ << ver_num1 << ver_num2;
-}
-
-void KevesImportBinds::SetVerNum(ver_num_t ver_num1, ver_num_t ver_num2,
-				 ver_num_t ver_num3) {
-  ver_num_.clear();
-  ver_num_ << ver_num1 << ver_num2 << ver_num3;
-}
-
-int KevesImportBinds::CountBinds() const {
+int KevesImportLibrary::CountBinds() const {
   return bind_list_.size();
 }
 
-void KevesImportBinds::Display() const {
+void KevesImportLibrary::Display() const {
   std::cout << "(";
   for (auto name : id_) std::cout << qPrintable(name) << " ";
   std::cout << "(";
@@ -118,6 +92,45 @@ void KevesImportBinds::Display() const {
   std::cout << " (number of binds: " << CountBinds() << ')' <<  std::endl;
 }
 
+
+KevesImportLibraryList::KevesImportLibraryList(KevesBase* base)
+  : base_(base),
+    import_libs_(),
+    count_(-1) {}
+
+const QList<KevesImportLibrary>& KevesImportLibraryList::GetList() const {
+  return import_libs_;
+}
+
+void KevesImportLibraryList::SetLibrary(const QStringList& id,
+					const QList<ver_num_t>& ver_num) {
+  count_ = 0;
+
+  for (auto lib : import_libs_) {
+    if (KevesBase::Match(lib.GetID(), id)) return;
+    ++count_;
+  }
+
+  KevesImportLibrary lib(base_, id, ver_num);
+  import_libs_ << lib;
+}
+
+KevesValue KevesImportLibraryList::FindBind(const char* id) {
+  return import_libs_[count_].FindBind(id);
+}
+
+KevesLibrary::KevesLibrary(const QStringList& id,
+			   const QList<ver_num_t>& ver_num)
+  : id_(), ver_num_(), bind_list_() {
+  SetID(id, ver_num);
+}
+
+void KevesLibrary::SetID(const QStringList& id,
+			 const QList<ver_num_t>& ver_num) {
+  id_.clear();
+  for (auto str : id) id_ << str;
+  for (auto num : ver_num) ver_num_ << num;
+}
 
 void KevesLibrary::AddBind(const char* id, KevesValue kev) {
   QPair<QString, uioword> bind(id, kev.toUIntPtr());
@@ -139,43 +152,6 @@ const QList<QPair<QString, uioword> >* KevesLibrary::GetBindList() const {
 
 bool KevesLibrary::Match(const QStringList& id) const {
   return KevesBase::Match(id_, id);
-}
-
-void KevesLibrary::SetID(const QStringList& id) {
-  id_.clear();
-  for (auto str : id) id_ << str;
-}
-
-void KevesLibrary::SetID(const QString& id1) {
-  id_.clear();
-  id_ << id1;
-}
-
-void KevesLibrary::SetID(const QString& id1, const QString& id2) {
-  id_.clear();
-  id_ << id1 << id2;
-}
-
-void KevesLibrary::SetID(const QString& id1, const QString& id2,
-			const QString& id3) {
-  id_.clear();
-  id_ << id1 << id2 << id3;
-}
-
-void KevesLibrary::SetVerNum(ver_num_t ver_num1) {
-  ver_num_.clear();
-  ver_num_ << ver_num1;
-}
-
-void KevesLibrary::SetVerNum(ver_num_t ver_num1, ver_num_t ver_num2) {
-  ver_num_.clear();
-  ver_num_ << ver_num1 << ver_num2;
-}
-
-void KevesLibrary::SetVerNum(ver_num_t ver_num1, ver_num_t ver_num2,
-			     ver_num_t ver_num3) {
-  ver_num_.clear();
-  ver_num_ << ver_num1 << ver_num2 << ver_num3;
 }
 
 void KevesLibrary::Display(KevesBase* base) const {
@@ -203,7 +179,7 @@ void KevesLibrary::Display(KevesBase* base) const {
 
 bool KevesLibrary::WriteToFile(KevesBase* base,
 			       const QString& file_name,
-			       const QList<KevesImportBinds>& import_libs) {
+			       const KevesImportLibraryList& import_libs) {
   QFile file(file_name);
 
   if (!file.open(QIODevice::WriteOnly)) {
@@ -219,7 +195,9 @@ bool KevesLibrary::WriteToFile(KevesBase* base,
   QList<const Kev*> object_list;
 
   // Get import binds to object_list
-  int import_bind_count(GetImportBinds(base, &object_list, import_libs));
+  int import_bind_count(GetImportBinds(base,
+				       &object_list,
+				       import_libs.GetList()));
 
   if (import_bind_count < 0) return false;
 
@@ -233,7 +211,7 @@ bool KevesLibrary::WriteToFile(KevesBase* base,
 
   // Write header of library
   QDataStream out(&file);
-  out << id_ << ver_num_ << IndexBinds(object_list) << import_libs;
+  out << id_ << ver_num_ << IndexBinds(object_list) << import_libs.GetList();
 
   // write objects
   for (int i(import_bind_count); i < total_bind_count; ++i) {
@@ -272,7 +250,7 @@ KevesLibrary* KevesLibrary::ReadFromFile(const QString& file_name,
   }
 
   // Read header of library
-  QList<KevesImportBinds> import_libs;
+  QList<KevesImportLibrary> import_libs;
   QDataStream in(&file);
   in >> lib->id_ >> lib->ver_num_ >> lib->bind_list_ >> import_libs;
 
@@ -302,9 +280,10 @@ KevesLibrary* KevesLibrary::ReadFromFile(const QString& file_name,
 
 int KevesLibrary::GetImportBinds(KevesBase* base,
 				 QList<const Kev*>* object_list,
-				 const QList<KevesImportBinds>& import_libs) {
+				 const QList<KevesImportLibrary>& import_libs) {
   for (auto import_lib : import_libs) {
-    KevesLibrary* lib(base->GetLibrary(import_lib.GetID()));
+    KevesLibrary* lib(base->GetLibrary(import_lib.GetID(),
+				       import_lib.GetVerNum()));
 
     if (lib) {
       std::cout << "Find Library!!!!!!" << std::endl;
@@ -359,12 +338,13 @@ const char* KevesLibrary::GetErrorString(QFile::FileError error_code) {
   return error_string[error_code];
 }
 
-QDataStream& operator<<(QDataStream& out, const KevesImportBinds& import_binds) {
+QDataStream& operator<<(QDataStream& out,
+			const KevesImportLibrary& import_binds) {
   out << import_binds.id_ << import_binds.ver_num_ << import_binds.bind_list_;
   return out;
 }
 
-QDataStream& operator>>(QDataStream& in, KevesImportBinds& import_binds) {
+QDataStream& operator>>(QDataStream& in, KevesImportLibrary& import_binds) {
   in >> import_binds.id_ >> import_binds.ver_num_ >> import_binds.bind_list_;
   return in;
 }

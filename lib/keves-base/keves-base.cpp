@@ -42,7 +42,7 @@ void LibKevesBase::Init(KevesBase* base) {
   std::cout << "LibKevesBase::Init()" << std::endl;
 
   // SetID("keves", "base-bin");
-  SetVerNum(0, 1);
+  // SetVerNum(0, 1);
 					       
   sym_display_ = SymbolKev::Make(base, "display");
   sym_newline_ = SymbolKev::Make(base, "newline");

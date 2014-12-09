@@ -313,7 +313,8 @@ bool KevesBase::Match(const QStringList& list1, const QStringList& list2) {
   return true;
 }
 
-KevesLibrary* KevesBase::GetLibrary(const QStringList& id) {
+KevesLibrary* KevesBase::GetLibrary(const QStringList& id,
+				    const QList<ver_num_t>& ver_num) {
   Q_ASSERT(id.size() > 0);
 
   QMutexLocker locker(&mutex_);
@@ -323,7 +324,7 @@ KevesLibrary* KevesBase::GetLibrary(const QStringList& id) {
 
   for (auto pair : library_name_list_) {
     if (Match(id, pair.first)) {
-      QString file_name("lib/keves-base/");
+      QString file_name("lib/");
       file_name += pair.second;
       QLibrary lib_bin(file_name);
       typedef KevesLibrary*(*FuncMakeLib)(KevesBase*);
@@ -336,7 +337,7 @@ KevesLibrary* KevesBase::GetLibrary(const QStringList& id) {
       }
 
       KevesLibrary* library(make_lib(this));
-      library->SetID(pair.first);
+      library->SetID(pair.first, ver_num);
       AddLibrary(library);
       return library;
     }
