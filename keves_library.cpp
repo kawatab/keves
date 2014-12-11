@@ -38,8 +38,12 @@ KevesImportLibrary::KevesImportLibrary(KevesBase* base,
   for (auto num : ver_num) ver_num_ << num;
 }
 
-void KevesImportLibrary::LoadLibrary(KevesBase* base) {
-  library_ = base->GetLibrary(id_, ver_num_);
+bool KevesImportLibrary::LoadLibrary(KevesBase* base) {
+  return (library_ = base->GetLibrary(id_, ver_num_));
+}
+
+bool KevesImportLibrary::IsAvailable() const {
+  return library_;
 }
 
 void KevesImportLibrary::AddBind(const char* id) {
@@ -59,6 +63,10 @@ const QList<ver_num_t>& KevesImportLibrary::GetVerNum() const {
   return ver_num_;
 }
 
+QString KevesImportLibrary::GetFullName() const {
+  return KevesLibrary::MakeFullName(id_, ver_num_);
+}
+
 const QStringList& KevesImportLibrary::GetBindList() const {
   return bind_list_;
 }
@@ -73,20 +81,8 @@ int KevesImportLibrary::CountBinds() const {
   return bind_list_.size();
 }
 
-void KevesImportLibrary::Display() const {
-  std::cout << "(";
-  for (auto name : id_) std::cout << qPrintable(name) << " ";
-  std::cout << "(";
-    
-  if (ver_num_.size() > 0) {
-    auto iter(ver_num_.begin());
-    auto end_iter(ver_num_.end());
-    std::cout << *iter++;
-    while (iter != end_iter) std::cout << " " << *iter++;
-  }
-
-  std::cout << "))";
-    
+void KevesImportLibrary::DisplayProperty() const {
+  std::cout << qPrintable(GetFullName()) << std::endl;
   for (auto bind : bind_list_) std::cout << "  " << qPrintable(bind);
 
   std::cout << " (number of binds: " << CountBinds() << ')' <<  std::endl;
@@ -102,17 +98,24 @@ const QList<KevesImportLibrary>& KevesImportLibraryList::GetList() const {
   return import_libs_;
 }
 
-void KevesImportLibraryList::SetLibrary(const QStringList& id,
+bool KevesImportLibraryList::SetLibrary(const QStringList& id,
 					const QList<ver_num_t>& ver_num) {
   count_ = 0;
 
   for (auto lib : import_libs_) {
-    if (KevesBase::Match(lib.GetID(), id)) return;
+    if (KevesBase::Match(lib.GetID(), id)) return true;
     ++count_;
   }
 
   KevesImportLibrary lib(base_, id, ver_num);
+
+  if (!lib.IsAvailable()) {
+    KevesLibrary::ErrorOfMissingLibrary(lib.GetFullName());
+    return false;
+  }
+
   import_libs_ << lib;
+  return true;
 }
 
 KevesValue KevesImportLibraryList::FindBind(const char* id) {
@@ -154,19 +157,29 @@ bool KevesLibrary::Match(const QStringList& id) const {
   return KevesBase::Match(id_, id);
 }
 
-void KevesLibrary::Display(KevesBase* base) const {
-  std::cout << "(";
-  for (auto name : id_) std::cout << qPrintable(name) << " ";
-  std::cout << "(";
-
-  if (ver_num_.size() > 0) {
-    auto iter(ver_num_.begin());
-    auto end_iter(ver_num_.end());
-    std::cout << *iter++;
-    while (iter != end_iter) std::cout << " " << *iter++;
+QString KevesLibrary::MakeFullName(const QStringList& id,
+				   const QList<ver_num_t>& ver_num) {
+  QString full_name("(");
+  for (auto name : id) full_name.append(name).append(" ");
+  full_name.append("(");
+    
+  if (ver_num.size() > 0) {
+    auto iter(ver_num.begin());
+    auto end_iter(ver_num.end());
+    full_name.append(*iter++);
+    while (iter != end_iter) full_name.append(" ").append(*iter++);
   }
 
-  std::cout << "))";
+  full_name.append("))");
+  return full_name;
+}
+
+QString KevesLibrary::GetFullName() const {
+  return MakeFullName(id_, ver_num_);
+}
+
+void KevesLibrary::DisplayProperty(KevesBase* base) const {
+  std::cout << qPrintable(GetFullName()) << std::endl;
 
   for (auto bind : bind_list_) {
     std::cout << "  " << qPrintable(bind.first) << ": "
@@ -183,12 +196,7 @@ bool KevesLibrary::WriteToFile(KevesBase* base,
   QFile file(file_name);
 
   if (!file.open(QIODevice::WriteOnly)) {
-    std::cerr << "An error was occurred when writing the file: "
-	      << qPrintable(file_name)
-	      << ", \""
-	      << GetErrorString(file.error())
-	      << "\"\n";
-
+    ErrorOfFailedToSave(file);
     return false;
   }
 
@@ -223,6 +231,12 @@ bool KevesLibrary::WriteToFile(KevesBase* base,
   return true;
 }
 
+void KevesLibrary::ErrorOfFailedToSave(const QFile& file) const {
+  std::cerr << "An error was occurred when writing the file: "
+	    << qPrintable(file.fileName())
+	    << ", \"" << GetErrorMessage(file.error()) << "\"\n";
+}
+
 QList<QPair<QString, uioword> > KevesLibrary::IndexBinds(const QList<const Kev*>& object_list) {
   QList<QPair<QString, uioword> > indexed_list;
 
@@ -239,14 +253,14 @@ KevesLibrary* KevesLibrary::ReadFromFile(const QString& file_name,
   QFile file(file_name);
   KevesLibrary* lib(new KevesLibrary());
 
+  if (!file.exists()) {
+    ErrorOfMissingLibraryFile(file_name);
+    return nullptr;
+  }
+  
   if (!file.open(QIODevice::ReadOnly)) {
-    std::cerr << "An error was occurred when reading the file: "
-	      << qPrintable(file_name)
-	      << ", \""
-	      << GetErrorString(file.error())
-	      << "\"\n";
-
-    return lib;
+    ErrorOfFailedToOpen(file);
+    return nullptr;
   }
 
   // Read header of library
@@ -256,10 +270,17 @@ KevesLibrary* KevesLibrary::ReadFromFile(const QString& file_name,
 
   // Get import binds
   QList<const Kev*> object_list;
-  for (auto import_lib : import_libs) import_lib.LoadLibrary(base);
+
+  for (auto import_lib : import_libs) {
+    if(!import_lib.LoadLibrary(base)) {
+      ErrorOfMissingLibrary(import_lib.GetFullName());
+      return nullptr;
+    }
+  }
+
   int import_bind_count(lib->GetImportBinds(base, &object_list, import_libs));
 
-  if (import_bind_count < 0) return new KevesLibrary();
+  if (import_bind_count < 0) return nullptr;
 
   // Read objects
   uioword value;
@@ -278,6 +299,26 @@ KevesLibrary* KevesLibrary::ReadFromFile(const QString& file_name,
   return lib;
 }
 
+void KevesLibrary::ErrorOfMissingLibrary(const QString& name) {
+  std::cerr << "Not found library: " << qPrintable(name) << "\n";
+}
+
+void KevesLibrary::ErrorOfMissingLibrary(const QStringList& id,
+					 const QList<ver_num_t>& ver_num) {
+  ErrorOfMissingLibrary(MakeFullName(id, ver_num));
+}
+
+void KevesLibrary::ErrorOfMissingLibraryFile(const QString& file_name) {
+  std::cerr << "Library: " << qPrintable(file_name) <<  "was not found!!!\n";
+}
+
+
+void KevesLibrary::ErrorOfFailedToOpen(const QFile& file) {
+  std::cerr << "An error was occurred when reading the file: "
+	    << qPrintable(file.fileName())
+	    << ", \"" << GetErrorMessage(file.error()) << "\"\n";
+}
+
 int KevesLibrary::GetImportBinds(KevesBase* base,
 				 QList<const Kev*>* object_list,
 				 const QList<KevesImportLibrary>& import_libs) {
@@ -285,26 +326,33 @@ int KevesLibrary::GetImportBinds(KevesBase* base,
     KevesLibrary* lib(base->GetLibrary(import_lib.GetID(),
 				       import_lib.GetVerNum()));
 
-    if (lib) {
-      std::cout << "Find Library!!!!!!" << std::endl;
-
-      for (auto bind : import_lib.GetBindList()) {
-	KevesValue value(lib->FindBind(bind));
-
-	if (value == EMB_UNDEF) {
-	  std::cerr << "Bind: " << qPrintable(bind)
-		    << " was not found!!!" << std::endl;
-
-	  return -1; // Failed
-	}
-	
-	std::cout << "Find Bind: " << qPrintable(bind) << std::endl;
-	*object_list << value.ToPtr();
+    if (!lib) {
+      ErrorOfMissingLibrary(import_lib.GetFullName());
+      return -1; // Failed
+    }
+    
+    for (auto bind : import_lib.GetBindList()) {
+      KevesValue value(lib->FindBind(bind));
+      
+      if (value == EMB_UNDEF) {
+	ErrorOfMissingBind(import_lib, bind);
+	return -1; // Failed
       }
+      
+      std::cout << "Find Bind: " << qPrintable(bind) << std::endl;
+      *object_list << value.ToPtr();
     }
   }
 
   return object_list->size();
+}
+
+void KevesLibrary::ErrorOfMissingBind(const KevesImportLibrary& import_lib,
+				      const QString& bind) const {
+  std::cerr << "Bind: " << qPrintable(bind)
+	    << " was not found in "
+	    << qPrintable(import_lib.GetFullName())
+	    << "!!!\n";
 }
 
 void KevesLibrary::SetExportBinds(const QList<const Kev*>& object_list) {
@@ -314,7 +362,7 @@ void KevesLibrary::SetExportBinds(const QList<const Kev*>& object_list) {
   }
 }
 
-const char* KevesLibrary::GetErrorString(QFile::FileError error_code) {
+const char* KevesLibrary::GetErrorMessage(QFile::FileError error_code) {
   Q_ASSERT(error_code >= 0 && error_code <=14);
 
   const char* error_string[] = {

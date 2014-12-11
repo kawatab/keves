@@ -123,7 +123,7 @@ void TestCode::Code02::Read(KevesBase* base, const char* file_name) {
   
   KevesLibrary* lib(KevesLibrary::ReadFromFile(file_name, base));
 
-  lib->Display(base);
+  lib->DisplayProperty(base);
   
   KevesValue value(lib->FindBind("my-code"));
   std::cout << qPrintable(base->ToString(value)) << std::endl;
@@ -164,7 +164,7 @@ void TestCode::Code03::Write(KevesBase* base, const char* file_name) {
 void TestCode::Code03::Read(KevesBase* base, const char* file_name) {
   std::cout << file_name << ":" << std::endl;
   KevesLibrary* lib(KevesLibrary::ReadFromFile(file_name, base));
-  lib->Display(base);
+  lib->DisplayProperty(base);
   delete lib;
 }
 
@@ -182,7 +182,12 @@ void TestCode::KevesBaseCode::Write(KevesBase* base, const char* file_name) {
   QList<ver_num_t> ver_keves_base_bin;
   ver_keves_base_bin << 6;
   KevesImportLibraryList import_libs(base);
-  import_libs.SetLibrary(id_keves_base_bin, ver_keves_base_bin);
+
+  if (!import_libs.SetLibrary(id_keves_base_bin, ver_keves_base_bin)) {
+    std::cerr << "Import is failed\n";
+    return;
+  }
+
   KevesValue proc_display(import_libs.FindBind("display"));
   KevesValue proc_newline(import_libs.FindBind("newline"));
  
@@ -217,7 +222,7 @@ void TestCode::KevesBaseCode::Read(KevesBase* base, const char* file_name) {
   
   KevesLibrary* lib(KevesLibrary::ReadFromFile(file_name, base));
 
-  lib->Display(base);
+  lib->DisplayProperty(base);
   
   KevesValue value(lib->FindBind("my-code"));
   std::cout << qPrintable(base->ToString(value)) << std::endl;

@@ -23,7 +23,6 @@
 #include <unistd.h>
 #include "keves_base.hpp"
 #include "keves_builtin_values.hpp"
-// #include "keves_file_io.hpp"
 #include "keves_library.hpp"
 #include "keves_stack.hpp"
 #include "keves_textual_port.hpp"
@@ -409,13 +408,22 @@ int KevesVM::Execute_helper(const QString& arg) {
   registers_.set_fp(&registers_);
 
   registers_.changeToBottomFrame();
+  QStringList library_name0;
+  library_name0 << "keves" << "base";
   QStringList library_name;
   QList<ver_num_t> ver_num;
   library_name << "keves" << "base-bin";
   KevesLibrary* lib_keves_base(base_->GetLibrary(library_name, ver_num));
 
   if (!lib_keves_base) {
-    std::cerr << "library is not found!!!\n";
+    KevesLibrary::ErrorOfMissingLibrary(library_name, ver_num);
+    return 1;
+  }
+  
+  KevesLibrary* lib_keves_base0(base_->GetLibrary(library_name0, ver_num));
+
+  if (!lib_keves_base0) {
+    KevesLibrary::ErrorOfMissingLibrary(library_name0, ver_num);
     return 1;
   }
   
