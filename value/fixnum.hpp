@@ -22,8 +22,6 @@
 #include <limits>
 #include "keves_value.hpp"
 
-typedef qint32 fx_int;
-typedef qint64 fx_long;
 
 class KevesFixnum {
 public:

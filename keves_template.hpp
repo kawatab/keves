@@ -204,7 +204,7 @@ namespace Function {
 	  return KevesVM::RaiseAssertCondition(vm, pc);
 	}
 	
-	result = COMPOSE::func(&vm->gc_, result, current);
+	result = COMPOSE::func(vm->gc(), result, current);
 	
 	if (registers->argn() < 3)
 	  break;
@@ -259,7 +259,7 @@ namespace Function {
 	return KevesVM::RaiseAssertCondition(vm, pc);
       }
       
-      result = COMPOSE::func(&vm->gc_, result, current);
+      result = COMPOSE::func(vm->gc(), result, current);
 
       if (registers->argn() < 3) {
 	vm->acc_ = result;
@@ -466,7 +466,7 @@ namespace Arithmatic {
 
       if (KevesFixnum::isInRange(result)) {
 	registers->popArgument();
-	vm->acc_ = KevesFixnum(result);
+	vm->acc_ = KevesFixnum(static_cast<fx_int>(result));
 	vm->gr1_ = registers->lastArgument();
 	return func1<OPERATOR1, OPERATOR2, FIXNUM, RATIONAL>(vm, pc);
       }
@@ -553,7 +553,7 @@ namespace Arithmatic {
     
     if (current.IsFixnum()) {
       KevesFixnum num1(current);
-      RationalNumberKev result(OPERATOR2::func(&vm->gc_, *num2, num1));
+      RationalNumberKev result(OPERATOR2::func(vm->gc(), *num2, num1));
       registers->popArgument();
       
       return KevesVM::ContinueRationalNumberKev(vm, pc, &result,
@@ -563,7 +563,7 @@ namespace Arithmatic {
 
     if (current.Is<RationalNumberKev>()) {
       const RationalNumberKev* num1(current);
-      RationalNumberKev result(OPERATOR2::func(&vm->gc_, *num1, *num2));
+      RationalNumberKev result(OPERATOR2::func(vm->gc(), *num1, *num2));
       registers->popArgument();
       
       return KevesVM::ContinueRationalNumberKev(vm, pc, &result,
@@ -582,7 +582,7 @@ namespace Arithmatic {
 
     if (current.Is<ExactComplexNumberKev>()) {
       const ExactComplexNumberKev* num1(current);
-      ExactComplexNumberKev result(OPERATOR2::func(&vm->gc_, *num1, *num2));
+      ExactComplexNumberKev result(OPERATOR2::func(vm->gc(), *num1, *num2));
       return KevesVM::ContinueExactComplexNumberKev(vm, pc, &result,
 						    func1<OPERATOR1, OPERATOR2, FIXNUM, RATIONAL>,
 						    func2<OPERATOR1, OPERATOR2, FIXNUM, RATIONAL>,
@@ -735,7 +735,7 @@ namespace Arithmatic {
 
     if (current.IsFixnum()) {
       KevesFixnum num1(current);
-      ExactComplexNumberKev result(OPERATOR2::func(&vm->gc_, *num2, num1));
+      ExactComplexNumberKev result(OPERATOR2::func(vm->gc(), *num2, num1));
       return KevesVM::ContinueExactComplexNumberKev(vm, pc, &result,
 						    func1<OPERATOR1, OPERATOR2, FIXNUM, RATIONAL>,
 						    func2<OPERATOR1, OPERATOR2, FIXNUM, RATIONAL>,
@@ -744,7 +744,7 @@ namespace Arithmatic {
 
     if (current.Is<RationalNumberKev>()) {
       const RationalNumberKev* num1(current);
-      ExactComplexNumberKev result(OPERATOR2::func(&vm->gc_, *num2, *num1));
+      ExactComplexNumberKev result(OPERATOR2::func(vm->gc(), *num2, *num1));
       return KevesVM::ContinueExactComplexNumberKev(vm, pc, &result,
 						    func1<OPERATOR1, OPERATOR2, FIXNUM, RATIONAL>,
 						    func2<OPERATOR1, OPERATOR2, FIXNUM, RATIONAL>,
@@ -762,7 +762,7 @@ namespace Arithmatic {
 
     if (current.Is<ExactComplexNumberKev>()) {
       const ExactComplexNumberKev* num1(current);
-      ExactComplexNumberKev result(OPERATOR2::func(&vm->gc_, *num2, *num1));
+      ExactComplexNumberKev result(OPERATOR2::func(vm->gc(), *num2, *num1));
       return KevesVM::ContinueExactComplexNumberKev(vm, pc, &result,
 						    func1<OPERATOR1, OPERATOR2, FIXNUM, RATIONAL>,
 						    func2<OPERATOR1, OPERATOR2, FIXNUM, RATIONAL>,

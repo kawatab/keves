@@ -24,6 +24,8 @@
 typedef qint64 ioword;
 typedef quint64 uioword;
 typedef qint32 ver_num_t;
+typedef qint32 fx_int;
+typedef qint64 fx_long;
 
 
 class ArgumentFrameKev;

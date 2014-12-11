@@ -193,6 +193,20 @@ void TestCode::KevesBaseCode::Write(KevesBase* base, const char* file_name) {
   KevesValue proc_display(import_libs.FindBind("display"));
   KevesValue proc_newline(import_libs.FindBind("newline"));
  
+  // from (rnrs base)
+  QStringList id_rnrs_base_bin;
+  id_rnrs_base_bin << "rnrs" << "base-bin";
+  QList<ver_num_t> ver_rnrs_base_bin;
+  ver_rnrs_base_bin << 6;
+
+  if (!import_libs.SetLibrary(id_rnrs_base_bin, ver_rnrs_base_bin)) {
+    std::cerr << "Aborted writing the file: " << file_name << ".\n";
+    return;
+  }
+
+  KevesValue proc_car(import_libs.FindBind("car"));
+  KevesValue proc_cdr(import_libs.FindBind("cdr"));
+ 
   // from (rnrs unicode)
   QStringList id_rnrs_unicode_bin;
   id_rnrs_unicode_bin << "rnrs" << "unicode-bin";
@@ -208,20 +222,26 @@ void TestCode::KevesBaseCode::Write(KevesBase* base, const char* file_name) {
   KevesValue proc_char_downcase(import_libs.FindBind("char-downcase"));
  
   // values
+  PairKev* pair(PairKev::Make(base, KevesChar('a'), KevesChar('B')));
+
   CodeKev* code(CodeKev::Make(base, 32));
   {
     KevesIterator iter(code->begin());
     *iter++ = KevesInstruct(CMD_FRAME_R);
-    *iter++ = KevesFixnum(10); // jump01
+    *iter++ = KevesFixnum(14); // jump01
     *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
     *iter++ = proc_display;
     *iter++ = KevesInstruct(CMD_FRAME_R);
-    *iter++ = KevesFixnum(5); // jump03
+    *iter++ = KevesFixnum(9); // jump03
     *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
-    *iter++ = proc_char_upcase;
+    *iter++ = proc_char_downcase;
+    *iter++ = KevesInstruct(CMD_FRAME_R);
+    *iter++ = KevesFixnum(5); // jump04
     *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
-    *iter++ = KevesChar('a');
-    *iter++ = KevesInstruct(CMD_APPLY);
+    *iter++ = proc_cdr;
+    *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+    *iter++ = pair;
+    *iter++ = KevesInstruct(CMD_APPLY); // jump4
     *iter++ = KevesInstruct(CMD_APPLY); // jump3
     *iter++ = KevesInstruct(CMD_FRAME_R); // jump01
     *iter++ = KevesFixnum(3); // jump02

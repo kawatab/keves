@@ -79,21 +79,7 @@ public:
   SymbolKev* sym_string_foldcase_;
   CPSKev proc_string_foldcase_;
 
-  // static LibRnrsUnicode* make(KevesVM*);
-  // static KevesValue makeLexicalCondition(KevesIterator*, KevesValue, KevesValue, KevesValue);
-
 private:
-  /*
-  PairKev pair_for_name1_;
-  PairKev pair_for_name2_;
-
-  KevesValue table_[SIZE_OF_PROC_TABLE];
-  EnvironmentKev environment_base_;
-  KevesBuiltInValues* builtin_;
-  char builtin_code_array_[SIZE_OF_BUILTIN_CODE];
-  CodeKev* builtin_code_;
-  */
-
   struct CharUpcase {
     static void func(KevesVM*, const_KevesIterator);
   };

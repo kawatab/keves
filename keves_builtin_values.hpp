@@ -45,6 +45,9 @@ public:
   static const char mesg_Req0[];
   static const char mesg_Req1Got0[];
   static const char mesg_Req1GotMore[];
+  static const char mesg_Req1Or2Got0[];
+  static const char mesg_Req1Or2GotMore[];
+  static const char mesg_Req1OrMoreGot0[];
   static const char mesg_Req2Got0[];
   static const char mesg_Req2Got1[];
   static const char mesg_Req2GotMore[];
@@ -59,6 +62,8 @@ public:
   static const char mesg_ReqLessGotMore[];
   static const char mesg_ReqNum[];
   static const char mesg_ReqRealNum[];
+  static const char mesg_ReqRealNumAs1st[];
+  static const char mesg_ReqRealNumAs2nd[];
   static const char mesg_ReqIntNum[];
   static const char mesg_ReqIntNumAs1st[];
   static const char mesg_ReqIntNumAs2nd[];
@@ -70,7 +75,17 @@ public:
   static const char mesg_ReqStrAs1st[];
   static const char mesg_ReqSym[];
   static const char mesg_ReqPair[];
+  static const char mesg_ReqListAsLast[];
+  static const char mesg_ReqProperList[];
+  static const char mesg_ReqVector[];
+  static const char mesg_ReqVectorAs1st[];
+  static const char mesg_ReqProc[];
+  static const char mesg_ReqProcAs1st[];
+  static const char mesg_ReqProcAs2nd[];
+  static const char mesg_ReqProcAs3rd[];
   static const char mesg_1stObjNotProcOrSyn[];
+  static const char mesg_OutOfRange[];
+  static const char mesg_Div0[];
 
   const StringKev* GetMesgText(const QString& key) const;
 
@@ -103,6 +118,14 @@ public:
     return code_POP_RETURN_;
   }
 
+  const_KevesIterator code_SET_DYNAMIC_WIND() const {
+    return code_SET_DYNAMIC_WIND_;
+  }
+
+  const_KevesIterator code_APPLY_MULT_APPLY() const {
+    return code_APPLY_MULT_APPLY_;
+  }
+
 private:
   void InitMesgList(const QString& file_name, KevesBase* base);
 
@@ -115,4 +138,6 @@ private:
   const_KevesIterator code_REVERT_DYNAMIC_WIND_and_APPLY_;
   const_KevesIterator code_POP_APPLY_;
   const_KevesIterator code_POP_RETURN_;
+  const_KevesIterator code_SET_DYNAMIC_WIND_;
+  const_KevesIterator code_APPLY_MULT_APPLY_;
 };

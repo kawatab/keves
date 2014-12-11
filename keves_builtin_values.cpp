@@ -37,6 +37,9 @@
 DEFINE_MESG_KEY(Req0);
 DEFINE_MESG_KEY(Req1Got0);
 DEFINE_MESG_KEY(Req1GotMore);
+DEFINE_MESG_KEY(Req1Or2Got0);
+DEFINE_MESG_KEY(Req1Or2GotMore);
+DEFINE_MESG_KEY(Req1OrMoreGot0);
 DEFINE_MESG_KEY(Req2Got0);
 DEFINE_MESG_KEY(Req2Got1);
 DEFINE_MESG_KEY(Req2GotMore);
@@ -51,6 +54,8 @@ DEFINE_MESG_KEY(ReqMoreGotLess);
 DEFINE_MESG_KEY(ReqLessGotMore);
 DEFINE_MESG_KEY(ReqNum);
 DEFINE_MESG_KEY(ReqRealNum);
+DEFINE_MESG_KEY(ReqRealNumAs1st);
+DEFINE_MESG_KEY(ReqRealNumAs2nd);
 DEFINE_MESG_KEY(ReqIntNum);
 DEFINE_MESG_KEY(ReqIntNumAs1st);
 DEFINE_MESG_KEY(ReqIntNumAs2nd);
@@ -62,7 +67,17 @@ DEFINE_MESG_KEY(ReqStr);
 DEFINE_MESG_KEY(ReqStrAs1st);
 DEFINE_MESG_KEY(ReqSym);
 DEFINE_MESG_KEY(ReqPair);
+DEFINE_MESG_KEY(ReqListAsLast);
+DEFINE_MESG_KEY(ReqProperList);
+DEFINE_MESG_KEY(ReqVector);
+DEFINE_MESG_KEY(ReqVectorAs1st);
+DEFINE_MESG_KEY(ReqProc);
+DEFINE_MESG_KEY(ReqProcAs1st);
+DEFINE_MESG_KEY(ReqProcAs2nd);
+DEFINE_MESG_KEY(ReqProcAs3rd);
 DEFINE_MESG_KEY(1stObjNotProcOrSyn);
+DEFINE_MESG_KEY(OutOfRange);
+DEFINE_MESG_KEY(Div0);
 
 #undef DEFINE_MESG_KEY
 
@@ -72,7 +87,7 @@ void KevesBuiltinValues::Init(KevesBase* base) {
 
   sym_eval_ = SymbolKev::Make(base, "eval");
 
-  builtin_code_ = CodeKev::Make(base, 8);
+  builtin_code_ = CodeKev::Make(base, 11);
   {
     KevesIterator iter(builtin_code_->begin());
     code_HALT_ = iter;
@@ -89,6 +104,11 @@ void KevesBuiltinValues::Init(KevesBase* base) {
     *iter++ = KevesInstruct(CMD_APPLY);
     code_REMOVE_DYNAMIC_WIND_ = iter;
     *iter++ = KevesInstruct(CMD_REMOVE_DYNAMIC_WIND);
+    code_SET_DYNAMIC_WIND_ = iter;
+    *iter++ = KevesInstruct(CMD_SET_DYNAMIC_WIND);
+    code_APPLY_MULT_APPLY_ = iter;
+    *iter++ = KevesInstruct(CMD_APPLY_MULT);
+    *iter++ = KevesInstruct(CMD_APPLY);
     Q_ASSERT(iter <= builtin_code_->end());
   }
 }

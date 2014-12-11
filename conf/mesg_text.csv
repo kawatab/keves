@@ -1,6 +1,9 @@
 Req0	Expected no arguments, but got somthing.
 Req1Got0	Expected an argument, but got nothing.
 Req1GotMore	Expected an argument, but got more.
+Req1Or2Got0	Expected 1 or 2 arguments, but got nothing.
+Req1Or2GotMore	Expected 1 or 2 arguments, but got more.
+Req1OrMoreGot0	Expected 1 or more arguments, but got nothing.
 Req2Got0	Expected 2 arguments, but got nothing.
 Req2Got1	Expected 2 arguments, but got 1.
 Req2GotMore	Expected 2 arguments, but got more.
@@ -14,6 +17,8 @@ ReqNotGet3Args	Expected 3 arguments, but not got 3.
 ReqMoreGotLess	Expected more arguments, but got less
 ReqLessGotMore	Expected less arguments, but got more
 ReqNum	Expected numbers, but got others.
+ReqNumAs1st	Expected number as 1st argument, but got other.
+ReqNumAs2nd	Expected number as 2nd argument, but got other.
 ReqRealNum	Expected real numbers, but got others.
 ReqIntNum	Expected an integer number, but got others.
 ReqIntNumAs1st	Expected an integer number as 1st argument, but got other.
@@ -26,4 +31,14 @@ ReqStr	Expected a string, but got other.
 ReqStrAs1st	Expected a string as 1st argument, but got other.
 ReqSym	Expected a symbol, but got other.
 ReqPair	Expected a pair, but got other.
+ReqListAsLast	Expected a list as last, but got other.
+ReqProperList	Expected a proper list, but got other.
+ReqVector	Expected a vector, but got other.
+ReqVectorAs1st	Expected a vector as 1st argument, but got other.
+ReqProc	Expected a procedure, but got other.
+ReqProcAs1st	Expected a procedure as 1st argument, but got other.
+ReqProcAs2nd	Expected a procedure as 2nd argument, but got other.
+ReqProcAs3rd	Expected a procedure as 3rd argument, but got other.
 1stObjNotProcOrSyn	Expected procedure or Syntax as 1st obj, but got other.
+OutOfRange	Out of range.
+Div0	Divide by 0.

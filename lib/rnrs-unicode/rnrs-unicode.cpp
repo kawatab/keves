@@ -42,7 +42,7 @@
 void LibRnrsUnicode::Init(KevesBase* base) {
   std::cout << "LibRnrsUnicode::Init()" << std::endl;
 
-  // SetID("rnrs", "unicode-base");
+  // SetID("rnrs", "unicode-bin");
   // SetVerNum(6);
 					       
   sym_char_alphabetic_q_ = SymbolKev::Make(base, "char-alphabetic?");
