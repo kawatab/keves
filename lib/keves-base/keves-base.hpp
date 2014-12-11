@@ -43,9 +43,12 @@ public:
   SymbolKev* sym_newline_;
   CPSKev proc_newline_;
 
+  /*
   static KevesValue makeLexicalCondition(KevesIterator*,
 					 KevesValue, KevesValue, KevesValue);
+  */
 
+private:
   static void procDisplay(KevesVM*, const_KevesIterator);
 
   struct Newline {

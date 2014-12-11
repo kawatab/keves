@@ -177,11 +177,13 @@ void TestCode::KevesBaseCode::Write(KevesBase* base, const char* file_name) {
   KevesLibrary this_lib(id, ver_num);
 
   // import binds
+  KevesImportLibraryList import_libs(base);
+
+  // from (keves base-bin)
   QStringList id_keves_base_bin;
   id_keves_base_bin << "keves" << "base-bin";
   QList<ver_num_t> ver_keves_base_bin;
   ver_keves_base_bin << 6;
-  KevesImportLibraryList import_libs(base);
 
   if (!import_libs.SetLibrary(id_keves_base_bin, ver_keves_base_bin)) {
     std::cerr << "Import is failed\n";
@@ -191,23 +193,42 @@ void TestCode::KevesBaseCode::Write(KevesBase* base, const char* file_name) {
   KevesValue proc_display(import_libs.FindBind("display"));
   KevesValue proc_newline(import_libs.FindBind("newline"));
  
+  // from (rnrs unicode)
+  QStringList id_rnrs_unicode_bin;
+  id_rnrs_unicode_bin << "rnrs" << "unicode-bin";
+  QList<ver_num_t> ver_rnrs_unicode_bin;
+  ver_rnrs_unicode_bin << 6;
+
+  if (!import_libs.SetLibrary(id_rnrs_unicode_bin, ver_rnrs_unicode_bin)) {
+    std::cerr << "Aborted writing the file: " << file_name << ".\n";
+    return;
+  }
+
+  KevesValue proc_char_upcase(import_libs.FindBind("char-upcase"));
+  KevesValue proc_char_downcase(import_libs.FindBind("char-downcase"));
+ 
   // values
-  CodeKev* code(CodeKev::Make(base, 16));
+  CodeKev* code(CodeKev::Make(base, 32));
   {
     KevesIterator iter(code->begin());
     *iter++ = KevesInstruct(CMD_FRAME_R);
-    *iter++ = KevesFixnum(5);
+    *iter++ = KevesFixnum(10); // jump01
     *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
     *iter++ = proc_display;
-    *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
-    *iter++ = KevesFixnum(5);
-    *iter++ = KevesInstruct(CMD_APPLY);
     *iter++ = KevesInstruct(CMD_FRAME_R);
-    *iter++ = KevesFixnum(3);
+    *iter++ = KevesFixnum(5); // jump03
+    *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+    *iter++ = proc_char_upcase;
+    *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+    *iter++ = KevesChar('a');
+    *iter++ = KevesInstruct(CMD_APPLY);
+    *iter++ = KevesInstruct(CMD_APPLY); // jump3
+    *iter++ = KevesInstruct(CMD_FRAME_R); // jump01
+    *iter++ = KevesFixnum(3); // jump02
     *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
     *iter++ = proc_newline;
     *iter++ = KevesInstruct(CMD_APPLY);
-    *iter++ = KevesInstruct(CMD_HALT);
+    *iter++ = KevesInstruct(CMD_HALT); // jump02
     Q_ASSERT(iter <= code->end());
   }
 

@@ -427,7 +427,7 @@ int KevesVM::Execute_helper(const QString& arg) {
     return 1;
   }
   
-  KevesValue code(lib_keves_base->FindBind("my-code"));
+  KevesValue code(lib_keves_base0->FindBind("my-code"));
 
   if (code == EMB_NULL) {
     std::cerr << "bind: my-code is not found!!!\n";

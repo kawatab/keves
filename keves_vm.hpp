@@ -63,6 +63,10 @@ public:
     return base_;
   }
   
+  KevesGC* gc() {
+    return &gc_;
+  }
+  
   KevesTextualOutputPort* result_field() {
     return result_field_;
   }

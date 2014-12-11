@@ -32,8 +32,6 @@ KevesImportLibrary::KevesImportLibrary(KevesBase* base,
     id_(),
     ver_num_(),
     bind_list_() {
-  Q_ASSERT(library_);
-
   for (auto str : id) id_ << str;
   for (auto num : ver_num) ver_num_ << num;
 }
@@ -166,8 +164,10 @@ QString KevesLibrary::MakeFullName(const QStringList& id,
   if (ver_num.size() > 0) {
     auto iter(ver_num.begin());
     auto end_iter(ver_num.end());
-    full_name.append(*iter++);
-    while (iter != end_iter) full_name.append(" ").append(*iter++);
+    full_name.append(QString::number(*iter++));
+
+    while (iter != end_iter)
+      full_name.append(" ").append(QString::number(*iter++));
   }
 
   full_name.append("))");
