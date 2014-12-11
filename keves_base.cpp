@@ -62,7 +62,8 @@ KevesBase::KevesBase()
     ft_PushChildren_(),
     ft_RevertObject_(),
     ft_ReadObject_(),
-    ft_WriteObject_() {
+    ft_WriteObject_(),
+    mutex_(QMutex::Recursive) {
   InitCMDTable();
   InitLibraryList();
   builtin_.Init(this);
@@ -322,6 +323,11 @@ KevesLibrary* KevesBase::GetLibrary(const QStringList& id,
   for (auto lib : library_list_)
     if (lib->Match(id)) return lib;
 
+  return LoadLibrary(id, ver_num);
+}
+
+KevesLibrary* KevesBase::LoadLibrary(const QStringList& id,
+				     const QList<ver_num_t>& ver_num) {
   for (auto pair : library_name_list_) {
     if (Match(id, pair.first)) {
       QString file_name("lib/");
@@ -332,7 +338,9 @@ KevesLibrary* KevesBase::GetLibrary(const QStringList& id,
       
       if (!make_lib) {
 	std::cerr << "file name: " << qPrintable(file_name)
-		  << qPrintable(lib_bin.errorString());
+		  << qPrintable(lib_bin.errorString())
+		  << "\n";
+
 	return nullptr;
       }
 
@@ -343,16 +351,22 @@ KevesLibrary* KevesBase::GetLibrary(const QStringList& id,
     }
   }
       
-  int size(id.size());
-  std::cerr << "Not found library: (";
+  return LoadCompiledLibrary(id, ver_num);
+}
+KevesLibrary* KevesBase::LoadCompiledLibrary(const QStringList& id,
+					     const QList<ver_num_t>& ver_num) {
+  QString file_name("lib");
+  for (auto str : id) file_name += QString('/') + str;
+  file_name += ".kevc";
+  
+  QFile file(file_name);
 
-  if (size > 0) {
-    std::cerr << qPrintable(id.at(0));
-    for (int i(1); i < size; ++i) std::cerr << ' ' << qPrintable(id.at(i));
-  }
+  if (!file.exists()) return nullptr;
 
-  std::cerr << ")\n";
-  return nullptr;
+  std::cout << "find library: " << qPrintable(file_name) << std::endl;
+  KevesLibrary* library(KevesLibrary::ReadFromFile(file_name, this));
+  AddLibrary(library);
+  return library;
 }
 
 void* KevesBase::Alloc(size_t alloc_size) {

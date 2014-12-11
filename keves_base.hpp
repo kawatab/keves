@@ -30,7 +30,6 @@
 
 
 class KevesLibrary;
-class KevesVM;
 class QString;
 
 
@@ -81,6 +80,13 @@ public:
 private:
   void InitCMDTable();
   void InitLibraryList();
+
+  KevesLibrary* LoadLibrary(const QStringList& id,
+			    const QList<ver_num_t>& ver_num);
+
+  KevesLibrary* LoadCompiledLibrary(const QStringList& id,
+				    const QList<ver_num_t>& ver_num);
+
   void ToString_code(QString*, KevesValue, int) const;
   void ToString_element(QString*, KevesValue) const;
   void ToString_list(QString*, KevesValue, int) const;
@@ -179,6 +185,9 @@ private:
   void (*ft_PushChildren_[0177])(QStack<const Kev*>*, KevesValue);
   void (*ft_RevertObject_[0177])(const QList<const Kev*>&, MutableKevesValue);
   Kev* (*ft_ReadObject_[0177])(QDataStream&, KevesBase*);
-  void (*ft_WriteObject_[0177])(const QList<const Kev*>&, QDataStream&, KevesValue);
+
+  void (*ft_WriteObject_[0177])(const QList<const Kev*>&, QDataStream&,
+				KevesValue);
+
   QMutex mutex_;
 };
