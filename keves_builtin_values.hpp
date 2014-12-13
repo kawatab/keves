@@ -21,6 +21,7 @@
 
 #include <QHash>
 #include "keves_iterator.hpp"
+#include "kev/record.hpp"
 
 
 class CodeKev;
@@ -32,7 +33,7 @@ class SymbolKev;
 
 class KevesBuiltinValues {
 public:
-  KevesBuiltinValues() = default;
+  KevesBuiltinValues();
   KevesBuiltinValues(const KevesBuiltinValues&) = delete;
   KevesBuiltinValues(const KevesBuiltinValues&&) = delete;
   KevesBuiltinValues& operator=(const KevesBuiltinValues&) = delete;
@@ -126,6 +127,31 @@ public:
     return code_APPLY_MULT_APPLY_;
   }
 
+  const RecordKev* amp_assert() const {
+    return &amp_assert_;
+  }
+  
+  const RecordKev* amp_lexical() const {
+    return &amp_lexical_;
+  }
+  
+  const RecordKev* amp_irritants() const {
+    return &amp_irritants_;
+  }
+  
+  const RecordKev* amp_message() const {
+    return &amp_message_;
+  }
+  
+  const RecordKev* amp_syntax() const {
+    return &amp_syntax_;
+  }
+  
+  const RecordKev* amp_who() const {
+    return &amp_who_;
+  }
+  
+
 private:
   void InitMesgList(const QString& file_name, KevesBase* base);
 
@@ -140,4 +166,11 @@ private:
   const_KevesIterator code_POP_RETURN_;
   const_KevesIterator code_SET_DYNAMIC_WIND_;
   const_KevesIterator code_APPLY_MULT_APPLY_;
+
+  RecordKev amp_assert_;
+  RecordKev amp_lexical_;
+  RecordKev amp_irritants_;
+  RecordKev amp_message_;
+  RecordKev amp_syntax_;
+  RecordKev amp_who_;
 };

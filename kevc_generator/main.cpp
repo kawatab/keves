@@ -18,6 +18,8 @@
 
 
 #include <iostream>
+#include "code_rnrs-unicode.hpp"
+#include "code_rnrs-base.hpp"
 #include "keves_base.hpp"
 #include "test_code.hpp"
 
@@ -33,7 +35,14 @@ int main() {
   TestCode::Code03::Write(&base, "test03.kevc");
   TestCode::Code03::Read(&base, "test03.kevc");
 
+  Code_RnrsUnicode::Write(&base, "lib/rnrs/unicode.kevc");
+  Code_RnrsUnicode::Read(&base, "lib/rnrs/unicode.kevc");
+
+  Code_RnrsBase::Write(&base, "lib/rnrs/base.kevc");
+  Code_RnrsBase::Read(&base, "lib/rnrs/base.kevc");
+
   TestCode::KevesBaseCode::Write(&base, "lib/keves/base.kevc");
   TestCode::KevesBaseCode::Read(&base, "lib/keves/base.kevc");
+
   return 0;
 }

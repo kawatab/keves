@@ -53,6 +53,13 @@ void LibKevesBase::Init(KevesBase* base) {
   AddBind("display", &proc_display_);
   AddBind("newline", &proc_newline_);
 
+  AddBind("&syntax", base->builtin()->amp_syntax());
+  AddBind("&lexical", base->builtin()->amp_lexical());
+  AddBind("&assert", base->builtin()->amp_assert());
+  AddBind("&irritants", base->builtin()->amp_irritants());
+  AddBind("&who", base->builtin()->amp_who());
+  AddBind("&message", base->builtin()->amp_message());
+
   CodeKev* code(CodeKev::Make(base, 16));
   KevesIterator iter(code->begin());
   *iter++ = KevesInstruct(CMD_FRAME_R);

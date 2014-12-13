@@ -339,7 +339,6 @@ int KevesLibrary::GetImportBinds(KevesBase* base,
 	return -1; // Failed
       }
       
-      std::cout << "Find Bind: " << qPrintable(bind) << std::endl;
       *object_list << value.ToPtr();
     }
   }

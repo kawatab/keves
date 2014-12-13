@@ -82,6 +82,25 @@ DEFINE_MESG_KEY(Div0);
 #undef DEFINE_MESG_KEY
 
 
+KevesBuiltinValues::KevesBuiltinValues()
+  : mesg_text_(),
+    sym_eval_(),
+    builtin_code_(),
+    code_APPLY_(),
+    code_HALT_(),
+    code_REMOVE_DYNAMIC_WIND_(),
+    code_REVERT_DYNAMIC_WIND_and_APPLY_(),
+    code_POP_APPLY_(),
+    code_POP_RETURN_(),
+    code_SET_DYNAMIC_WIND_(),
+    code_APPLY_MULT_APPLY_(),
+    amp_assert_("&assert"),
+    amp_lexical_("&lexical"),
+    amp_irritants_("&irritants"),
+    amp_message_("&message"),
+    amp_syntax_("&syntax"),
+    amp_who_("&who") {}
+
 void KevesBuiltinValues::Init(KevesBase* base) {
   InitMesgList("conf/mesg_text.csv", base);
 

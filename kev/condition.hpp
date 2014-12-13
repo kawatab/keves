@@ -39,30 +39,6 @@ public:
 
   explicit SimpleConditionKev(const RecordKev*, KevesValue);
   
-  ////////////////////////////////////////////////////////////
-  ////////////////////////////////////////////////////////////
-  //////// Section For GC begin !!! //////////////////////////
-
-  static constexpr size_t alloc_size(const MutableKev*) {
-    return sizeof(SimpleConditionKev);
-  }
-
-  template<class T>
-  static MutableKev* CopyTo(T* zone, MutableKev* kev) {
-    return FixedLengthKev<SimpleConditionKev>::From(kev)->CopyTo(zone);
-  }
-
-  template<class T>
-  static quintptr* CopyContents(T* zone, MutableKev* kev) {
-    FixedLengthKev<SimpleConditionKev>* condition(FixedLengthKev<SimpleConditionKev>::From(kev));
-    condition->value_ = zone->Copy(condition->value_);
-    return condition->border();
-  }
-
-  //////// Section For GC end !!! ////////////////////////////
-  ////////////////////////////////////////////////////////////
-  ////////////////////////////////////////////////////////////
-
   void CopyFrom(const SimpleConditionKev&);
   void CopyFrom(SimpleConditionKev&&);
 
@@ -84,6 +60,65 @@ protected:
 
 private:
   KevesValue value_;
+
+
+  ////////////////////////////////////////////////////////////
+  // Section For GC !!!                                     //
+  ////////////////////////////////////////////////////////////
+
+public:
+  static constexpr size_t alloc_size(const MutableKev*) {
+    return sizeof(SimpleConditionKev);
+  }
+
+  template<class T>
+  static MutableKev* CopyTo(T* zone, MutableKev* kev) {
+    return FixedLengthKev<SimpleConditionKev>::From(kev)->CopyTo(zone);
+  }
+
+  template<class T>
+  static quintptr* CopyContents(T* zone, MutableKev* kev) {
+    FixedLengthKev<SimpleConditionKev>* condition(FixedLengthKev<SimpleConditionKev>::From(kev));
+    condition->value_ = zone->Copy(condition->value_);
+    return condition->border();
+  }
+
+  ////////////////////////////////////////////////////////////
+  // Section For serialize !!!                              //
+  ////////////////////////////////////////////////////////////
+
+public:
+  template<class IO, class STACK>
+  static void PushChildren(STACK* pending, KevesValue value) {
+    const SimpleConditionKev* condition(value);
+    IO::PushValue(pending, condition->record_type_);
+    IO::PushValue(pending, condition->value_);
+  }
+
+  template<class IO, class LIST, class STREAM>
+  static void WriteObject(const LIST& list, STREAM& out, KevesValue value) {
+    const SimpleConditionKev* condition(value);
+
+    out << static_cast<uioword>(condition->type())
+	<< IO::IndexAddress(list, condition->record_type_)
+	<< IO::IndexAddress(list, condition->value_);
+  }
+
+  template<class IO, class STREAM, class GC>
+  static Kev* ReadObject(STREAM& in, GC* gc) {
+    uioword record_type, value;
+    in >> record_type >> value;
+    return Make(gc,
+		KevesValue::template FromUioword<RecordKev>(record_type),
+		KevesValue::template FromUioword<Kev>(value));
+  }
+  
+  template<class IO, class LIST>
+  static void RevertObject(const LIST& object_list, MutableKevesValue value) {
+    SimpleConditionKev* condition(value);
+    IO::RevertValue(object_list, &condition->record_type_);
+    IO::RevertValue(object_list, &condition->value_);
+  }
 };
 
 
@@ -100,10 +135,25 @@ public:
 
   CompoundConditionKev(const VectorKev*);
 
-  ////////////////////////////////////////////////////////////
-  ////////////////////////////////////////////////////////////
-  //////// Section For GC begin !!! //////////////////////////
+  void CopyFrom(const CompoundConditionKev&);
+  void CopyFrom(CompoundConditionKev&&);
 
+  const VectorKev* values() const {
+    return values_;
+  }
+
+  template<class ZONE>
+  static CompoundConditionKev* Make(ZONE* zone, VectorKev*);
+
+protected:
+  const VectorKev* values_;
+
+
+  ////////////////////////////////////////////////////////////
+  // Section For GC !!!                                     //
+  ////////////////////////////////////////////////////////////
+
+public:
   static constexpr size_t alloc_size(const MutableKev*) {
     return sizeof(CompoundConditionKev);
   }
@@ -121,20 +171,35 @@ public:
     return condition->border();
   }
 
-  //////// Section For GC end !!! ////////////////////////////
   ////////////////////////////////////////////////////////////
+  // Section For serialize !!!                              //
   ////////////////////////////////////////////////////////////
 
-  void CopyFrom(const CompoundConditionKev&);
-  void CopyFrom(CompoundConditionKev&&);
-
-  const VectorKev* values() const {
-    return values_;
+public:
+  template<class IO, class STACK>
+  static void PushChildren(STACK* pending, KevesValue value) {
+    const CompoundConditionKev* condition(value);
+    IO::PushValue(pending, condition->values_);
   }
 
-  template<class ZONE>
-  static CompoundConditionKev* Make(ZONE* zone, VectorKev*);
+  template<class IO, class LIST, class STREAM>
+  static void WriteObject(const LIST& list, STREAM& out, KevesValue value) {
+    const CompoundConditionKev* condition(value);
 
-protected:
-  const VectorKev* values_;
+    out << static_cast<uioword>(condition->type())
+	<< IO::IndexAddress(list, condition->values_);
+  }
+
+  template<class IO, class STREAM, class GC>
+  static Kev* ReadObject(STREAM& in, GC* gc) {
+    uioword values;
+    in >> values;
+    return Make(gc, KevesValue::template FromUioword<VectorKev>(values));
+  }
+  
+  template<class IO, class LIST>
+  static void RevertObject(const LIST& object_list, MutableKevesValue value) {
+    CompoundConditionKev* condition(value);
+    IO::RevertValue(object_list, &condition->values_);
+  }
 };

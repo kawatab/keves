@@ -30,6 +30,7 @@
 
 
 class KevesLibrary;
+class KevesImportLibraryList;
 class QString;
 
 
@@ -52,6 +53,12 @@ public:
 			   const QList<ver_num_t>& ver_num);
 
   const StringKev* GetMesgText(const QString& key) const;
+
+  KevesValue MakeAssertCondition(KevesImportLibraryList* libs,
+				 KevesValue a,
+				 KevesValue b,
+				 KevesValue c);
+
   void RunThread();
 
   template<class KEV>

@@ -20,35 +20,5 @@
 #include "kev/record.hpp"
 
 
-RecordKev::RecordKev(const QString& a) : MutableKev(TYPE), name_(a) {
-}
-
-RecordKev* RecordKev::AMP_LEXICAL() {
-  static RecordKev recordKev(QString("&lexical"));
-  return &recordKev;
-}
-
-RecordKev* RecordKev::AMP_SYNTAX() {
-  static RecordKev recordKev(QString("&syntax"));
-  return &recordKev;
-}
-
-RecordKev* RecordKev::AMP_ASSERT() {
-  static RecordKev recordKev(QString("&assert"));
-  return &recordKev;
-}
-
-RecordKev* RecordKev::AMP_IRRITANTS() {
-  static RecordKev recordKev(QString("&irritants"));
-  return &recordKev;
-}
-
-RecordKev* RecordKev::AMP_WHO() {
-  static RecordKev recordKev(QString("&who"));
-  return &recordKev;
-}
-
-RecordKev* RecordKev::AMP_MESSAGE() {
-  static RecordKev recordKev(QString("&message"));
-  return &recordKev;
-}
+RecordKev::RecordKev(const char* a)
+  : MutableKev(TYPE), name_(a) {}

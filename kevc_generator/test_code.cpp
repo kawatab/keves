@@ -194,12 +194,12 @@ void TestCode::KevesBaseCode::Write(KevesBase* base, const char* file_name) {
   KevesValue proc_newline(import_libs.FindBind("newline"));
  
   // from (rnrs base)
-  QStringList id_rnrs_base_bin;
-  id_rnrs_base_bin << "rnrs" << "base-bin";
-  QList<ver_num_t> ver_rnrs_base_bin;
-  ver_rnrs_base_bin << 6;
+  QStringList id_rnrs_base;
+  id_rnrs_base << "rnrs" << "base";
+  QList<ver_num_t> ver_rnrs_base;
+  ver_rnrs_base << 6;
 
-  if (!import_libs.SetLibrary(id_rnrs_base_bin, ver_rnrs_base_bin)) {
+  if (!import_libs.SetLibrary(id_rnrs_base, ver_rnrs_base)) {
     std::cerr << "Aborted writing the file: " << file_name << ".\n";
     return;
   }
@@ -208,12 +208,12 @@ void TestCode::KevesBaseCode::Write(KevesBase* base, const char* file_name) {
   KevesValue proc_cdr(import_libs.FindBind("cdr"));
  
   // from (rnrs unicode)
-  QStringList id_rnrs_unicode_bin;
-  id_rnrs_unicode_bin << "rnrs" << "unicode-bin";
-  QList<ver_num_t> ver_rnrs_unicode_bin;
-  ver_rnrs_unicode_bin << 6;
+  QStringList id_rnrs_unicode;
+  id_rnrs_unicode << "rnrs" << "unicode";
+  QList<ver_num_t> ver_rnrs_unicode;
+  ver_rnrs_unicode << 6;
 
-  if (!import_libs.SetLibrary(id_rnrs_unicode_bin, ver_rnrs_unicode_bin)) {
+  if (!import_libs.SetLibrary(id_rnrs_unicode, ver_rnrs_unicode)) {
     std::cerr << "Aborted writing the file: " << file_name << ".\n";
     return;
   }

@@ -221,10 +221,10 @@ public:
   static void cmd_CAR0(KevesVM*, const_KevesIterator);
   static void cmd_CDR(KevesVM*, const_KevesIterator);
   static void cmd_CDR0(KevesVM*, const_KevesIterator);
-  static void cmd_TEST_PAIR(KevesVM*, const_KevesIterator);
-  static void cmd_TEST_PAIR0(KevesVM*, const_KevesIterator);
-  static void cmd_TEST_NULL(KevesVM*, const_KevesIterator);
-  static void cmd_TEST_NULL0(KevesVM*, const_KevesIterator);
+  static void cmd_TEST_PAIR_R(KevesVM*, const_KevesIterator);
+  static void cmd_TEST_PAIR0_R(KevesVM*, const_KevesIterator);
+  static void cmd_TEST_NULL_R(KevesVM*, const_KevesIterator);
+  static void cmd_TEST_NULL0_R(KevesVM*, const_KevesIterator);
 
   // for call/cc
   static void cmd_UNWIND_CONTINUATION(KevesVM*, const_KevesIterator);

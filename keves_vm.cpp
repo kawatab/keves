@@ -410,15 +410,15 @@ int KevesVM::Execute_helper(const QString& arg) {
   registers_.changeToBottomFrame();
   QStringList library_name0;
   library_name0 << "keves" << "base";
-  QStringList library_name;
+  // QStringList library_name;
   QList<ver_num_t> ver_num;
-  library_name << "keves" << "base-bin";
-  KevesLibrary* lib_keves_base(base_->GetLibrary(library_name, ver_num));
+  // library_name << "keves" << "base-bin";
+  // KevesLibrary* lib_keves_base(base_->GetLibrary(library_name, ver_num));
 
-  if (!lib_keves_base) {
-    KevesLibrary::ErrorOfMissingLibrary(library_name, ver_num);
-    return 1;
-  }
+  // if (!lib_keves_base) {
+  // KevesLibrary::ErrorOfMissingLibrary(library_name, ver_num);
+  // return 1;
+  // }
   
   KevesLibrary* lib_keves_base0(base_->GetLibrary(library_name0, ver_num));
 
@@ -1209,12 +1209,14 @@ void KevesVM::cmd_CDR0(KevesVM* vm, const_KevesIterator pc) {
   return cmd_NOP(vm, pc);
 }
       
-void KevesVM::cmd_TEST_PAIR(KevesVM* vm, const_KevesIterator pc) {
-  return (vm->acc_.IsPair() ? cmd_SKIP : cmd_JUMP)(vm, pc);
+void KevesVM::cmd_TEST_PAIR_R(KevesVM* vm, const_KevesIterator pc) {
+  return (vm->acc_.IsPair() ?
+          cmd_SKIP(vm, pc) : cmd_NOP(vm, pc + KevesFixnum(*pc) + 1));
 }
 
-void KevesVM::cmd_TEST_PAIR0(KevesVM* vm, const_KevesIterator pc) {
-  return (vm->registers_.lastArgument().IsPair() ? cmd_SKIP : cmd_JUMP)(vm, pc);
+void KevesVM::cmd_TEST_PAIR0_R(KevesVM* vm, const_KevesIterator pc) {
+  return (vm->registers_.lastArgument().IsPair() ?
+          cmd_SKIP(vm, pc) : cmd_NOP(vm, pc + KevesFixnum(*pc) + 1));
 }
       
 void KevesVM::RaiseAssertReqRealNum(KevesVM* vm, const_KevesIterator pc) {
@@ -1224,11 +1226,11 @@ void KevesVM::RaiseAssertReqRealNum(KevesVM* vm, const_KevesIterator pc) {
   return RaiseAssertCondition(vm, pc);
 }
 
-void KevesVM::cmd_TEST_NULL(KevesVM* vm, const_KevesIterator pc) {
+void KevesVM::cmd_TEST_NULL_R(KevesVM* vm, const_KevesIterator pc) {
   return (vm->acc_ == EMB_NULL ? cmd_SKIP : cmd_JUMP)(vm, pc);
 }
 
-void KevesVM::cmd_TEST_NULL0(KevesVM* vm, const_KevesIterator pc) {
+void KevesVM::cmd_TEST_NULL0_R(KevesVM* vm, const_KevesIterator pc) {
   return (vm->registers_.lastArgument() == EMB_NULL ?
 	  cmd_SKIP : cmd_JUMP)(vm, pc);
 }
@@ -1372,10 +1374,10 @@ void KevesVM::MakeLexicalException(KevesVM* vm, const_KevesIterator pc) {
 
   vm->CheckStack(&values, &MakeLexicalException, pc);
 
-  SimpleConditionKev violation(RecordKev::AMP_LEXICAL(), EMB_NULL);
-  SimpleConditionKev who(RecordKev::AMP_WHO(), vm->acc_);
-  SimpleConditionKev message(RecordKev::AMP_MESSAGE(), vm->gr1_);
-  SimpleConditionKev irritants(RecordKev::AMP_IRRITANTS(), vm->gr2_);
+  SimpleConditionKev violation(vm->base_->builtin()->amp_lexical(), EMB_NULL);
+  SimpleConditionKev who(vm->base_->builtin()->amp_who(), vm->acc_);
+  SimpleConditionKev message(vm->base_->builtin()->amp_message(), vm->gr1_);
+  SimpleConditionKev irritants(vm->base_->builtin()->amp_irritants(), vm->gr2_);
   CompoundConditionKev condition(&values);
   KevesIterator iter(values.begin());
   *iter++ = &violation;
@@ -1392,10 +1394,10 @@ void KevesVM::RaiseAssertCondition(KevesVM* vm, const_KevesIterator pc) {
 
   vm->CheckStack(&values, &RaiseAssertCondition, pc);
 
-  SimpleConditionKev violation(RecordKev::AMP_ASSERT(), EMB_NULL);
-  SimpleConditionKev who(RecordKev::AMP_WHO(), vm->acc_);
-  SimpleConditionKev message(RecordKev::AMP_MESSAGE(), vm->gr1_);
-  SimpleConditionKev irritants(RecordKev::AMP_IRRITANTS(), vm->gr2_);
+  SimpleConditionKev violation(vm->base_->builtin()->amp_lexical(), EMB_NULL);
+  SimpleConditionKev who(vm->base_->builtin()->amp_who(), vm->acc_);
+  SimpleConditionKev message(vm->base_->builtin()->amp_message(), vm->gr1_);
+  SimpleConditionKev irritants(vm->base_->builtin()->amp_irritants(), vm->gr2_);
   CompoundConditionKev condition(&values);
   KevesIterator iter(values.begin());
   *iter++ = &violation;

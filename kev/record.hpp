@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <iostream>
 #include <QString>
 #include "keves_value.hpp"
 
@@ -34,12 +35,24 @@ public:
   RecordKev& operator=(RecordKev&&) = delete;
   ~RecordKev() = default;
 
-  explicit RecordKev(const QString&);
+  explicit RecordKev(const char* name);
+
+  const char* name() const {
+    return name_;
+  }
+
+  template<class ZONE>
+  const RecordKev* Make(ZONE zone, const char* name);
+
+private:
+  const char* name_;
+
 
   ////////////////////////////////////////////////////////////
+  // Section For GC !!!                                     //
   ////////////////////////////////////////////////////////////
-  //////// Section For GC begin !!! //////////////////////////
 
+public:
   static constexpr size_t alloc_size(const MutableKev*) {
     return sizeof(RecordKev);
   }
@@ -54,21 +67,34 @@ public:
     return FixedLengthKev<RecordKev>::From(kev)->border();
   }
 
-  //////// Section For GC end !!! ////////////////////////////
+
   ////////////////////////////////////////////////////////////
+  // Section For serialize !!!                              //
   ////////////////////////////////////////////////////////////
 
-  const QString& name() const {
-    return name_;
+public:
+  template<class IO, class STACK>
+  static void PushChildren(STACK* /*pending*/, KevesValue /*value*/) {
+    std::cerr << "RecordKev cannot be serialize!!!\n";
+    Q_ASSERT(0);
   }
 
-  static RecordKev* AMP_SYNTAX(); // &syntax
-  static RecordKev* AMP_LEXICAL(); // &lexical
-  static RecordKev* AMP_ASSERT(); // &assert
-  static RecordKev* AMP_IRRITANTS(); // &irritants
-  static RecordKev* AMP_WHO(); // &who
-  static RecordKev* AMP_MESSAGE(); // &message
+  template<class IO, class LIST, class STREAM>
+  static void WriteObject(const LIST& /*list*/, STREAM& /*out*/, KevesValue /*value*/) {
+    std::cerr << "RecordKev cannot be serialize!!!\n";
+    Q_ASSERT(0);
+  }
 
-private:
-  const QString name_;
+  template<class IO, class STREAM, class GC>
+  static Kev* ReadObject(STREAM& /*in*/, GC* /*gc*/) {
+    std::cerr << "RecordKev cannot be serialize!!!\n";
+    Q_ASSERT(0);
+    return nullptr;
+  }
+  
+  template<class IO, class LIST>
+  static void RevertObject(const LIST& /*object_list*/, MutableKevesValue /*value*/) {
+    std::cerr << "RecordKev cannot be serialize!!!\n";
+    Q_ASSERT(0);
+  }
 };

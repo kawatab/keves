@@ -29,6 +29,8 @@
 #include "kev/bignum-inl.hpp"
 #include "kev/code.hpp"
 #include "kev/code-inl.hpp"
+#include "kev/condition.hpp"
+#include "kev/condition-inl.hpp"
 #include "kev/frame.hpp"
 #include "kev/frame-inl.hpp"
 #include "kev/number.hpp"
@@ -37,6 +39,7 @@
 #include "kev/pair-inl.hpp"
 #include "kev/procedure.hpp"
 #include "kev/procedure-inl.hpp"
+#include "kev/record.hpp"
 #include "kev/reference.hpp"
 #include "kev/reference-inl.hpp"
 #include "kev/string.hpp"
@@ -81,6 +84,9 @@ KevesBase::KevesBase()
   SetFunctionTable<VectorKev>();
   SetFunctionTable<WindKev>();
   SetFunctionTable<ReferenceKev>();
+  SetFunctionTable<RecordKev>();
+  SetFunctionTable<SimpleConditionKev>();
+  SetFunctionTable<CompoundConditionKev>();
   SetFunctionTable<LambdaKev>();
   SetFunctionTable<ArgumentFrameKev>();
   SetFunctionTable<LocalVarFrameKev>();
@@ -196,10 +202,10 @@ void KevesBase::InitCMDTable() {
   SET_FUNCTION_TO_TABLE(CAR0);
   SET_FUNCTION_TO_TABLE(CDR);
   SET_FUNCTION_TO_TABLE(CDR0);
-  SET_FUNCTION_TO_TABLE(TEST_PAIR);
-  SET_FUNCTION_TO_TABLE(TEST_PAIR0);
-  SET_FUNCTION_TO_TABLE(TEST_NULL);
-  SET_FUNCTION_TO_TABLE(TEST_NULL0);
+  SET_FUNCTION_TO_TABLE(TEST_PAIR_R);
+  SET_FUNCTION_TO_TABLE(TEST_PAIR0_R);
+  SET_FUNCTION_TO_TABLE(TEST_NULL_R);
+  SET_FUNCTION_TO_TABLE(TEST_NULL0_R);
 
   // for call/cc
   SET_FUNCTION_TO_TABLE(UNWIND_CONTINUATION);
@@ -673,4 +679,17 @@ void KevesBase::ToString_element(QString* str, KevesValue value) const {
   } else {
     str->append("Unknown");
   }
+}
+
+KevesValue KevesBase::MakeAssertCondition(KevesImportLibraryList* libs,
+					  KevesValue a,
+					  KevesValue b,
+					  KevesValue c) {
+  VectorKev* values(VectorKev::Make(this, 4));
+  KevesIterator iter(values->begin());
+  *iter++ = SimpleConditionKev::Make(this, libs->FindBind("&assert"), EMB_NULL);
+  *iter++ = SimpleConditionKev::Make(this, libs->FindBind("&who"), a);
+  *iter++ = SimpleConditionKev::Make(this, libs->FindBind("&message"), b);
+  *iter++ = SimpleConditionKev::Make(this, libs->FindBind("&irritants"), c);
+  return CompoundConditionKev::Make(this, values);
 }

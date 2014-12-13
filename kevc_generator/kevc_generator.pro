@@ -10,7 +10,9 @@ LIBS += -lgmpxx -lgmp -L/usr/lib/keves/keves/base/
 QMAKE_CXXFLAGS += -std=c++11
 
 # Input
-HEADERS += test_code.hpp \
+HEADERS += code_rnrs-base.hpp \
+           code_rnrs-unicode.hpp \
+           test_code.hpp \
            keves_base.hpp \
            keves_base-inl.hpp \
            keves_builtin_values.hpp \
@@ -41,6 +43,8 @@ HEADERS += test_code.hpp \
 
 
 SOURCES += main.cpp \
+           code_rnrs-base.cpp \
+           code_rnrs-unicode.cpp \
            test_code.cpp \
            keves_base.cpp \
            keves_builtin_values.cpp \
