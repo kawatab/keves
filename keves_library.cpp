@@ -48,7 +48,7 @@ void KevesImportLibrary::AddBind(const char* id) {
   bind_list_ << id;
 }
 
-KevesValue KevesImportLibrary::FindBind(const char* id) {
+KevesValue KevesImportLibrary::NominateBind(const char* id) {
   bind_list_ << id;
   return library_->FindBind(id);
 }
@@ -116,8 +116,8 @@ bool KevesImportLibraryList::SetLibrary(const QStringList& id,
   return true;
 }
 
-KevesValue KevesImportLibraryList::FindBind(const char* id) {
-  return import_libs_[count_].FindBind(id);
+KevesValue KevesImportLibraryList::NominateBind(const char* id) {
+  return import_libs_[count_].NominateBind(id);
 }
 
 KevesLibrary::KevesLibrary(const QStringList& id,
@@ -138,12 +138,13 @@ void KevesLibrary::AddBind(const char* id, KevesValue kev) {
   bind_list_ << bind;
 }
 
-KevesValue KevesLibrary::FindBind(const QString& id) {
+KevesValue KevesLibrary::FindBind(const QString& id) const {
   for (auto bind : bind_list_) {
     if (bind.first.compare(id) == 0)
       return KevesValue::FromUioword<Kev>(bind.second);
   }
 
+  std::cerr << "Not found bound: " << qPrintable(id) << '\n';
   return EMB_UNDEF;
 }
 
@@ -192,7 +193,7 @@ void KevesLibrary::DisplayProperty(KevesBase* base) const {
 
 bool KevesLibrary::WriteToFile(KevesBase* base,
 			       const QString& file_name,
-			       const KevesImportLibraryList& import_libs) {
+			       const KevesImportLibraryList& import_libs) const {
   QFile file(file_name);
 
   if (!file.open(QIODevice::WriteOnly)) {
@@ -237,7 +238,7 @@ void KevesLibrary::ErrorOfFailedToSave(const QFile& file) const {
 	    << ", \"" << GetErrorMessage(file.error()) << "\"\n";
 }
 
-QList<QPair<QString, uioword> > KevesLibrary::IndexBinds(const QList<const Kev*>& object_list) {
+QList<QPair<QString, uioword> > KevesLibrary::IndexBinds(const QList<const Kev*>& object_list) const {
   QList<QPair<QString, uioword> > indexed_list;
 
   for (auto bind : bind_list_) {
@@ -321,7 +322,7 @@ void KevesLibrary::ErrorOfFailedToOpen(const QFile& file) {
 
 int KevesLibrary::GetImportBinds(KevesBase* base,
 				 QList<const Kev*>* object_list,
-				 const QList<KevesImportLibrary>& import_libs) {
+				 const QList<KevesImportLibrary>& import_libs) const {
   for (auto import_lib : import_libs) {
     KevesLibrary* lib(base->GetLibrary(import_lib.GetID(),
 				       import_lib.GetVerNum()));

@@ -46,7 +46,7 @@ public:
     return record_type_;
   }
 
-  const QString& getFieldName() const;
+  QString getFieldName() const;
 
   KevesValue value() const {
     return value_;

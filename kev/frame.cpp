@@ -125,6 +125,7 @@ void StackFrameKev::makeEnvFrame(KevesGC* gc, int frame_size) {
   LocalVarFrameKev* env_frame(LocalVarFrameKev::Make(gc, frame_size));
   this->clearEnvFrame();
   this->extendEnvFrame(env_frame);
+  this->envn_ = frame_size;
 }
 
 void StackFrameKev::assignFreeVar(int index, KevesValue kev) {

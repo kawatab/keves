@@ -39,7 +39,7 @@ void SimpleConditionKev::CopyFrom(SimpleConditionKev&& other) {
   this->value_ = other.value_;
 }
 
-const QString& SimpleConditionKev::getFieldName() const {
+QString SimpleConditionKev::getFieldName() const {
   return record_type_->name();
 }
 

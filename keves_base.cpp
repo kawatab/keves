@@ -681,15 +681,14 @@ void KevesBase::ToString_element(QString* str, KevesValue value) const {
   }
 }
 
-KevesValue KevesBase::MakeAssertCondition(KevesImportLibraryList* libs,
-					  KevesValue a,
+KevesValue KevesBase::MakeAssertCondition(KevesValue a,
 					  KevesValue b,
 					  KevesValue c) {
   VectorKev* values(VectorKev::Make(this, 4));
   KevesIterator iter(values->begin());
-  *iter++ = SimpleConditionKev::Make(this, libs->FindBind("&assert"), EMB_NULL);
-  *iter++ = SimpleConditionKev::Make(this, libs->FindBind("&who"), a);
-  *iter++ = SimpleConditionKev::Make(this, libs->FindBind("&message"), b);
-  *iter++ = SimpleConditionKev::Make(this, libs->FindBind("&irritants"), c);
+  *iter++ = SimpleConditionKev::Make(this, builtin()->amp_assert(), EMB_NULL);
+  *iter++ = SimpleConditionKev::Make(this, builtin()->amp_who(), a);
+  *iter++ = SimpleConditionKev::Make(this, builtin()->amp_message(), b);
+  *iter++ = SimpleConditionKev::Make(this, builtin()->amp_irritants(), c);
   return CompoundConditionKev::Make(this, values);
 }

@@ -53,7 +53,7 @@ public:
   void AddBind(const char* id);
   int CountBinds() const;
   void DisplayProperty() const;
-  KevesValue FindBind(const char* id);
+  KevesValue NominateBind(const char* id);
   const QStringList& GetBindList() const;
   QString GetFullName() const;
   const QStringList& GetID() const;
@@ -70,7 +70,7 @@ private:
 };
 
   
-class KevesImportLibraryList{
+class KevesImportLibraryList {
 public:
   KevesImportLibraryList() = delete;
   KevesImportLibraryList(const KevesImportLibraryList&) = delete;
@@ -81,7 +81,7 @@ public:
 
   KevesImportLibraryList(KevesBase* base);
 
-  KevesValue FindBind(const char* id);
+  KevesValue NominateBind(const char* id);
   const QList<KevesImportLibrary>& GetList() const;
   bool SetLibrary(const QStringList& id, const QList<ver_num_t>& ver_num);
 
@@ -105,16 +105,16 @@ public:
   
   void AddBind(const char* id, KevesValue kev);
   void DisplayProperty(KevesBase* base) const;
-  KevesValue FindBind(const QString& id);
+  KevesValue FindBind(const QString& id) const;
   const QList<QPair<QString, uioword> >* GetBindList() const;
   QString GetFullName() const;
-  QList<QPair<QString, uioword> > IndexBinds(const QList<const Kev*>& object_list);
+  QList<QPair<QString, uioword> > IndexBinds(const QList<const Kev*>& object_list) const;
   bool Match(const QStringList& id) const;
   void SetID(const QStringList& id, const QList<ver_num_t>& ver_num);
 
   bool WriteToFile(KevesBase* base,
 		   const QString& file_name,
-		   const KevesImportLibraryList& import_binds);
+		   const KevesImportLibraryList& import_binds) const;
 
   static void ErrorOfMissingLibrary(const QString& name);
 
@@ -129,7 +129,7 @@ public:
 private:
   int GetImportBinds(KevesBase* base,
 		     QList<const Kev*>* object_list,
-		     const QList<KevesImportLibrary>& import_libs);
+		     const QList<KevesImportLibrary>& import_libs) const;
 
   void ErrorOfFailedToSave(const QFile& file) const;
 
