@@ -985,14 +985,16 @@ void KevesVM::cmd_POP(KevesVM* vm, const_KevesIterator pc) {
   return cmd_NOP(vm, pc);
 }
 
-void KevesVM::cmd_TEST_QEV_EQUAL(KevesVM* vm, const_KevesIterator pc) {
+void KevesVM::cmd_TEST_QEV_EQUAL_R(KevesVM* vm, const_KevesIterator pc) {
   StackFrameKev* registers(&vm->registers_);
-  return (vm->acc_ == registers->lastArgument() ? cmd_SKIP : cmd_JUMP)(vm, pc);
+
+  return vm->acc_ == registers->lastArgument() ?
+    cmd_SKIP(vm, pc) : cmd_NOP(vm, pc + KevesFixnum(*pc) + 1);
 }
 
-void KevesVM::cmd_TEST_NUMBER(KevesVM* vm, const_KevesIterator pc) {
-  vm->gr1_ = vm->acc_;
-  return TestNumber(vm, pc);
+void KevesVM::cmd_TEST_NUMBER_R(KevesVM* vm, const_KevesIterator pc) {
+  return vm->acc_.IsNumber() ?
+    cmd_SKIP(vm, pc) : cmd_NOP(vm, pc + KevesFixnum(*pc) + 1);
 }
 
 void KevesVM::cmd_TEST_NUMBER0(KevesVM* vm, const_KevesIterator pc) {
@@ -1004,6 +1006,7 @@ void KevesVM::cmd_TEST_NUMBER0(KevesVM* vm, const_KevesIterator pc) {
 void KevesVM::cmd_TEST_NUMBER0_R(KevesVM* vm, const_KevesIterator pc) {
   StackFrameKev* registers(&vm->registers_);
   KevesValue arg0(registers->lastArgument());
+
   return arg0.IsNumber() ?
     cmd_SKIP(vm, pc) : cmd_NOP(vm, pc + KevesFixnum(*pc) + 1);
 }
@@ -1012,26 +1015,25 @@ void KevesVM::TestNumber(KevesVM* vm, const_KevesIterator pc) {
   return (vm->gr1_.IsNumber() ? cmd_SKIP : cmd_JUMP)(vm, pc);
 }
 
-void KevesVM::cmd_TEST_NUMBER_EQUAL(KevesVM* vm, const_KevesIterator pc) {
+void KevesVM::cmd_TEST_NUMBER_EQUAL_R(KevesVM* vm, const_KevesIterator pc) {
   StackFrameKev* registers(&vm->registers_);
   KevesValue arg0(registers->lastArgument());
 
   if (arg0.IsFixnum()) {
     if (vm->acc_.IsFixnum()) {
-      return (KevesFixnum(arg0) == KevesFixnum(vm->acc_) ?
-	      cmd_SKIP : cmd_JUMP)(vm, pc);
+      return KevesFixnum(arg0) == KevesFixnum(vm->acc_) ?
+	cmd_SKIP(vm, pc) : cmd_NOP(vm, pc + KevesFixnum(*pc) + 1);
     }
 
     if (vm->acc_.Is<RationalNumberKev>()) {
       const RationalNumberKev* er_acc(vm->acc_);
       KevesValue int_acc(er_acc->toKevesFixnum());
 
-      return ((int_acc.IsFixnum() &&
-	       KevesFixnum(arg0) == KevesFixnum(int_acc)) ?
-	      cmd_SKIP : cmd_JUMP)(vm, pc);
+      return (int_acc.IsFixnum() && KevesFixnum(arg0) == KevesFixnum(int_acc)) ?
+	cmd_SKIP(vm, pc) : cmd_NOP(vm, pc + KevesFixnum(*pc) + 1);
     }
     
-    return cmd_JUMP(vm, pc);
+    return cmd_NOP(vm, pc + KevesFixnum(*pc) + 1);
   }
 
   if (arg0.Is<RationalNumberKev>()) {
@@ -1040,16 +1042,18 @@ void KevesVM::cmd_TEST_NUMBER_EQUAL(KevesVM* vm, const_KevesIterator pc) {
     if (vm->acc_.IsFixnum()) {
       KevesValue int_arg0(er_arg0->toKevesFixnum());
       
-      return ((int_arg0.IsFixnum() && int_arg0 == KevesFixnum(vm->acc_)) ?
-	      cmd_SKIP : cmd_JUMP)(vm, pc);
+      return (int_arg0.IsFixnum() && int_arg0 == KevesFixnum(vm->acc_)) ?
+	cmd_SKIP(vm, pc) : cmd_NOP(vm, pc + KevesFixnum(*pc) + 1);
     }
 
     if (vm->acc_.Is<RationalNumberKev>()) {
       const RationalNumberKev* er_acc(vm->acc_);
-      return (er_arg0->isEqualTo(*er_acc) ? cmd_SKIP : cmd_JUMP)(vm, pc);
+
+      return er_arg0->isEqualTo(*er_acc) ?
+	cmd_SKIP(vm, pc) : cmd_NOP(vm, pc + KevesFixnum(*pc) + 1);
     }
     
-    return cmd_JUMP(vm, pc);
+    return cmd_NOP(vm, pc + KevesFixnum(*pc) + 1);
   }
 
   if (arg0.Is<FlonumKev>()) {
@@ -1057,10 +1061,12 @@ void KevesVM::cmd_TEST_NUMBER_EQUAL(KevesVM* vm, const_KevesIterator pc) {
 
     if (vm->acc_.Is<FlonumKev>()) {
       const FlonumKev* ir_acc(vm->acc_);
-      return (ir_arg0->isEqualTo(*ir_acc) ? cmd_SKIP : cmd_JUMP)(vm, pc);
+
+      return ir_arg0->isEqualTo(*ir_acc) ?
+	cmd_SKIP(vm, pc) : cmd_NOP(vm, pc + KevesFixnum(*pc) + 1);
     }
     
-    return cmd_JUMP(vm, pc);
+    return cmd_NOP(vm, pc + KevesFixnum(*pc) + 1);
   }
 
   if (arg0.Is<ExactComplexNumberKev>() &&
@@ -1068,34 +1074,40 @@ void KevesVM::cmd_TEST_NUMBER_EQUAL(KevesVM* vm, const_KevesIterator pc) {
     const ExactComplexNumberKev* ir_arg0(arg0);
     const ExactComplexNumberKev* ec_acc(vm->acc_);
     
-    return ((ir_arg0->real().isEqualTo(ec_acc->real()) &&
+    return (ir_arg0->real().isEqualTo(ec_acc->real()) &&
 	     ir_arg0->imag().isEqualTo(ec_acc->imag())) ?
-	    cmd_SKIP : cmd_JUMP)(vm, pc);
+      cmd_SKIP(vm, pc) : cmd_NOP(vm, pc + KevesFixnum(*pc) + 1);
   }
 
   if (arg0.Is<InexactComplexNumberKev>() &&
 	     vm->acc_.Is<InexactComplexNumberKev>()) {
     const InexactComplexNumberKev* ir_arg0(arg0);
     const InexactComplexNumberKev* ic_acc(vm->acc_);
-    return (ir_arg0->isEqualTo(*ic_acc) ? cmd_SKIP : cmd_JUMP)(vm, pc);
+    return ir_arg0->isEqualTo(*ic_acc) ?
+      cmd_SKIP(vm, pc) : cmd_NOP(vm, pc + KevesFixnum(*pc) + 1);
   }
   
-  return cmd_JUMP(vm, pc);
+  return cmd_NOP(vm, pc + KevesFixnum(*pc) + 1);
 }
 
-void KevesVM::cmd_TEST_CHAR(KevesVM* vm, const_KevesIterator pc) {
-  return (vm->acc_.IsChar() ? cmd_SKIP : cmd_JUMP)(vm, pc);
+void KevesVM::cmd_TEST_CHAR_R(KevesVM* vm, const_KevesIterator pc) {
+  return vm->acc_.IsChar() ?
+    cmd_SKIP(vm, pc) : cmd_NOP(vm, pc + KevesFixnum(*pc) + 1);
 }
 
-void KevesVM::cmd_TEST_CHAR0(KevesVM* vm, const_KevesIterator pc) {
+void KevesVM::cmd_TEST_CHAR0_R(KevesVM* vm, const_KevesIterator pc) {
   StackFrameKev* registers(&vm->registers_);
-  return (registers->lastArgument().IsChar() ? cmd_SKIP : cmd_JUMP)(vm, pc);
+
+  return registers->lastArgument().IsChar() ?
+    cmd_SKIP(vm, pc) : cmd_NOP(vm, pc + KevesFixnum(*pc) + 1);
 }
 
-void KevesVM::cmd_TEST_CHAR_EQUAL(KevesVM* vm, const_KevesIterator pc) {
+void KevesVM::cmd_TEST_CHAR_EQUAL_R(KevesVM* vm, const_KevesIterator pc) {
   StackFrameKev* registers(&vm->registers_);
   KevesValue arg0(registers->lastArgument());
-  return (KevesChar(vm->acc_) == KevesChar(arg0) ? cmd_SKIP : cmd_JUMP)(vm, pc);
+
+  return KevesChar(vm->acc_) == KevesChar(arg0) ?
+    cmd_SKIP(vm, pc) : cmd_NOP(vm, pc + KevesFixnum(*pc) + 1);
 }
 
 void KevesVM::cmd_TEST_SYMBOL(KevesVM* vm, const_KevesIterator pc) {
@@ -1108,17 +1120,19 @@ void KevesVM::cmd_TEST_SYMBOL0(KevesVM* vm, const_KevesIterator pc) {
   return (arg0.Is<SymbolKev>() ? cmd_SKIP : cmd_JUMP)(vm, pc);
 }
 
-void KevesVM::cmd_TEST_SYMBOL_EQUAL(KevesVM* vm, const_KevesIterator pc) {
+void KevesVM::cmd_TEST_SYMBOL_EQUAL_R(KevesVM* vm, const_KevesIterator pc) {
   StackFrameKev* registers(&vm->registers_);
   KevesValue last(registers->lastArgument());
 
   if (vm->acc_.IsSymbol() && last.IsSymbol()) {
     const SymbolKev* sym1(vm->acc_);
     const SymbolKev* sym2(last);
-    return sym1->Equals(*sym2) ? cmd_NOP(vm, pc + 2) : cmd_JUMP(vm, pc);
+
+    return sym1->Equals(*sym2) ?
+      cmd_NOP(vm, pc + 2) : cmd_NOP(vm, pc + KevesFixnum(*pc) + 1);
   }
 
-  return cmd_JUMP(vm, pc + 1);
+  return cmd_NOP(vm, pc + KevesFixnum(*pc) + 2);
 }
 
 void KevesVM::cmd_STRING_CLONE(KevesVM* vm, const_KevesIterator pc) {
@@ -1145,30 +1159,32 @@ void KevesVM::cmd_STRING_APPEND(KevesVM* vm, const_KevesIterator pc) {
   return cmd_NOP(vm, pc);
 }
 
-void KevesVM::cmd_TEST_STRING(KevesVM* vm, const_KevesIterator pc) {
+void KevesVM::cmd_TEST_STRING_R(KevesVM* vm, const_KevesIterator pc) {
   return ((vm->acc_.IsPtr() && vm->acc_.type() == STRING) ?
-	  cmd_SKIP : cmd_JUMP)(vm, pc);
+          cmd_SKIP(vm, pc) : cmd_NOP(vm, pc + KevesFixnum(*pc) + 1));
 }
 
-void KevesVM::cmd_TEST_STRING0(KevesVM* vm, const_KevesIterator pc) {
+void KevesVM::cmd_TEST_STRING0_R(KevesVM* vm, const_KevesIterator pc) {
   StackFrameKev* registers(&vm->registers_);
   KevesValue arg0(registers->lastArgument());
 
   return ((arg0.IsPtr() && arg0.type() == STRING) ?
-	  cmd_SKIP : cmd_JUMP)(vm, pc);
+          cmd_SKIP(vm, pc) : cmd_NOP(vm, pc + KevesFixnum(*pc) + 1));
 }
 
-void KevesVM::cmd_TEST_STRING_EQUAL(KevesVM* vm, const_KevesIterator pc) {
+void KevesVM::cmd_TEST_STRING_EQUAL_R(KevesVM* vm, const_KevesIterator pc) {
   StackFrameKev* registers(&vm->registers_);
   KevesValue last(registers->lastArgument());
 
   if (vm->acc_.IsString() && last.IsString()) {
     const StringKev* str1(vm->acc_);
     const StringKev* str2(last);
-    return str1->Equals(*str2) ? cmd_NOP(vm, pc + 2) : cmd_JUMP(vm, pc);
+
+    return str1->Equals(*str2) ?
+      cmd_NOP(vm, pc + 2) : cmd_NOP(vm, pc + KevesFixnum(*pc) + 1);
   }
 
-  return cmd_JUMP(vm, pc + 1);
+  return cmd_NOP(vm, pc + KevesFixnum(*pc) + 2);
 }
 
 void KevesVM::cmd_CONS(KevesVM* vm, const_KevesIterator pc) {

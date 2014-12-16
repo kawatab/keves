@@ -6,19 +6,20 @@ TEMPLATE = lib
 TARGET =
 DEPENDPATH += . ../..
 INCLUDEPATH += . ../..
-# LIBS += -lgmpxx -lgmp
 QMAKE_CXXFLAGS += -std=c++11
 
 # Input
 HEADERS += keves-base.hpp \
            keves_base.hpp \
            keves_builtin_values.hpp \
+           keves_gc.hpp \
            keves_library.hpp \
            keves_template.hpp \
            keves_textual_port.hpp \
            keves_vm.hpp \
            kev/code.hpp \
            kev/code-inl.hpp \
+           kev/frame.hpp \
            kev/procedure.hpp \
            kev/procedure-inl.hpp \
            kev/string.hpp \
@@ -29,11 +30,13 @@ HEADERS += keves-base.hpp \
 SOURCES += keves-base.cpp \
            keves_base.cpp \
            keves_builtin_values.cpp \
+           keves_gc.cpp \
            keves_library.cpp \
            keves_template.cpp \
            keves_textual_port.cpp \
            keves_vm.cpp \
            kev/code.cpp \
+           kev/frame.cpp \
            kev/procedure.cpp \
            kev/string.cpp \
            kev/symbol.cpp

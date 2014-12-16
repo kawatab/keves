@@ -188,31 +188,31 @@ public:
   static void cmd_PUSH_CONSTANT(KevesVM*, const_KevesIterator);
   static void cmd_POP(KevesVM*, const_KevesIterator);
 
-  static void cmd_TEST_QEV_EQUAL(KevesVM*, const_KevesIterator);
+  static void cmd_TEST_QEV_EQUAL_R(KevesVM*, const_KevesIterator);
 
   // for numbers
-  static void cmd_TEST_NUMBER(KevesVM*, const_KevesIterator);
+  static void cmd_TEST_NUMBER_R(KevesVM*, const_KevesIterator);
   static void cmd_TEST_NUMBER0(KevesVM*, const_KevesIterator);
   static void cmd_TEST_NUMBER0_R(KevesVM*, const_KevesIterator);
 
-  static void cmd_TEST_NUMBER_EQUAL(KevesVM*, const_KevesIterator);
+  static void cmd_TEST_NUMBER_EQUAL_R(KevesVM*, const_KevesIterator);
 
   // for char
-  static void cmd_TEST_CHAR(KevesVM*, const_KevesIterator);
-  static void cmd_TEST_CHAR0(KevesVM*, const_KevesIterator);
-  static void cmd_TEST_CHAR_EQUAL(KevesVM*, const_KevesIterator);
+  static void cmd_TEST_CHAR_R(KevesVM*, const_KevesIterator);
+  static void cmd_TEST_CHAR0_R(KevesVM*, const_KevesIterator);
+  static void cmd_TEST_CHAR_EQUAL_R(KevesVM*, const_KevesIterator);
 
   // for symbols
   static void cmd_TEST_SYMBOL(KevesVM*, const_KevesIterator);
   static void cmd_TEST_SYMBOL0(KevesVM*, const_KevesIterator);
-  static void cmd_TEST_SYMBOL_EQUAL(KevesVM*, const_KevesIterator);
+  static void cmd_TEST_SYMBOL_EQUAL_R(KevesVM*, const_KevesIterator);
 
   // for strings
   static void cmd_STRING_CLONE(KevesVM*, const_KevesIterator);
   static void cmd_STRING_APPEND(KevesVM*, const_KevesIterator);
-  static void cmd_TEST_STRING(KevesVM*, const_KevesIterator);
-  static void cmd_TEST_STRING0(KevesVM*, const_KevesIterator);
-  static void cmd_TEST_STRING_EQUAL(KevesVM*, const_KevesIterator);
+  static void cmd_TEST_STRING_R(KevesVM*, const_KevesIterator);
+  static void cmd_TEST_STRING0_R(KevesVM*, const_KevesIterator);
+  static void cmd_TEST_STRING_EQUAL_R(KevesVM*, const_KevesIterator);
 
   // for pairs
   static void cmd_CONS(KevesVM*, const_KevesIterator);

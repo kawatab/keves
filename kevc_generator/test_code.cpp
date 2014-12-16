@@ -207,6 +207,9 @@ void TestCode::KevesBaseCode::Write(KevesBase* base, const char* file_name) {
   KevesValue proc_car(import_libs.NominateBind("car"));
   KevesValue proc_cadr(import_libs.NominateBind("cadr"));
   KevesValue proc_append(import_libs.NominateBind("append"));
+  KevesValue proc_eqv_q(import_libs.NominateBind("eqv?"));
+  KevesValue proc_eq_q(import_libs.NominateBind("eq?"));
+  KevesValue proc_string_append(import_libs.NominateBind("string-append"));
   KevesValue proc_list(import_libs.NominateBind("list"));
  
   // from (rnrs unicode)
@@ -224,10 +227,13 @@ void TestCode::KevesBaseCode::Write(KevesBase* base, const char* file_name) {
   KevesValue proc_char_downcase(import_libs.NominateBind("char-downcase"));
  
   // values
-  PairKev* list1(PairKev::Make(base, KevesChar('B'), EMB_NULL));
-  PairKev* list2(PairKev::Make(base, KevesChar('a'), list1));
+  KevesValue list1(PairKev::Make(base, KevesChar('B'), EMB_NULL));
+  KevesValue list2(PairKev::Make(base, KevesChar('a'), list1));
+  KevesValue str1(StringKev::Make(base, "ABC"));
+  KevesValue str2(StringKev::Make(base, "def"));
+  KevesValue str3(StringKev::Make(base, "xyz"));
 
-  CodeKev* code(CodeKev::Make(base, 48));
+  CodeKev* code(CodeKev::Make(base, 106));
   {
     KevesIterator iter(code->begin());
     {
@@ -295,6 +301,90 @@ void TestCode::KevesBaseCode::Write(KevesBase* base, const char* file_name) {
       *iter++ = proc_newline;
       *iter++ = KevesInstruct(CMD_APPLY);
     }
+
+    {
+      *iter++ = KevesInstruct(CMD_FRAME_R);
+      *iter++ = KevesFixnum(14);
+      *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+      *iter++ = proc_display;
+      {
+	*iter++ = KevesInstruct(CMD_FRAME_R);
+	*iter++ = KevesFixnum(9);
+	*iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+	*iter++ = proc_string_append;
+	*iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+	*iter++ = str1;
+	*iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+	*iter++ = str2;
+	*iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+	*iter++ = str3;
+	*iter++ = KevesInstruct(CMD_APPLY);
+      }
+      *iter++ = KevesInstruct(CMD_APPLY);
+    }
+
+    {
+      *iter++ = KevesInstruct(CMD_FRAME_R);
+      *iter++ = KevesFixnum(3);
+      *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+      *iter++ = proc_newline;
+      *iter++ = KevesInstruct(CMD_APPLY);
+    }
+
+    {
+      *iter++ = KevesInstruct(CMD_FRAME_R);
+      *iter++ = KevesFixnum(12);
+      *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+      *iter++ = proc_display;
+      {
+	*iter++ = KevesInstruct(CMD_FRAME_R);
+	*iter++ = KevesFixnum(7);
+	*iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+	*iter++ = proc_eqv_q;
+	*iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+	*iter++ = str1;
+	*iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+	*iter++ = str2;
+	*iter++ = KevesInstruct(CMD_APPLY);
+      }
+      *iter++ = KevesInstruct(CMD_APPLY);
+    }
+
+    {
+      *iter++ = KevesInstruct(CMD_FRAME_R);
+      *iter++ = KevesFixnum(3);
+      *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+      *iter++ = proc_newline;
+      *iter++ = KevesInstruct(CMD_APPLY);
+    }
+
+    {
+      *iter++ = KevesInstruct(CMD_FRAME_R);
+      *iter++ = KevesFixnum(12);
+      *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+      *iter++ = proc_display;
+      {
+	*iter++ = KevesInstruct(CMD_FRAME_R);
+	*iter++ = KevesFixnum(7);
+	*iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+	*iter++ = proc_eq_q;
+	*iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+	*iter++ = str1;
+	*iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+	*iter++ = str1;
+	*iter++ = KevesInstruct(CMD_APPLY);
+      }
+      *iter++ = KevesInstruct(CMD_APPLY);
+    }
+
+    {
+      *iter++ = KevesInstruct(CMD_FRAME_R);
+      *iter++ = KevesFixnum(3);
+      *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+      *iter++ = proc_newline;
+      *iter++ = KevesInstruct(CMD_APPLY);
+    }
+
     *iter++ = KevesInstruct(CMD_HALT); // jump02
 
     Q_ASSERT(iter <= code->end());
