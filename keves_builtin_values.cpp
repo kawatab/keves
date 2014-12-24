@@ -101,12 +101,12 @@ KevesBuiltinValues::KevesBuiltinValues()
     amp_syntax_("&syntax"),
     amp_who_("&who") {}
 
-void KevesBuiltinValues::Init(KevesBase* base) {
-  InitMesgList("conf/mesg_text.csv", base);
+void KevesBuiltinValues::init(KevesBase* base) {
+  initMesgList("conf/mesg_text.csv", base);
 
-  sym_eval_ = SymbolKev::Make(base, "eval");
+  sym_eval_ = SymbolKev::make(base, "eval");
 
-  builtin_code_ = CodeKev::Make(base, 11);
+  builtin_code_ = CodeKev::make(base, 11);
   {
     KevesIterator iter(builtin_code_->begin());
     code_HALT_ = iter;
@@ -132,7 +132,7 @@ void KevesBuiltinValues::Init(KevesBase* base) {
   }
 }
 
-void KevesBuiltinValues::InitMesgList(const QString& file_name, KevesBase* base) {
+void KevesBuiltinValues::initMesgList(const QString& file_name, KevesBase* base) {
   QFile mesg_file(file_name);
 
   if (!mesg_file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -172,12 +172,12 @@ void KevesBuiltinValues::InitMesgList(const QString& file_name, KevesBase* base)
       continue;
     }
 
-    mesg_text_.insert(key, StringKev::Make(base, value));
+    mesg_text_.insert(key, StringKev::make(base, value));
   }
 
   mesg_file.close();
 }
 
-const StringKev* KevesBuiltinValues::GetMesgText(const QString& key) const {
+const StringKev* KevesBuiltinValues::getMesgText(const QString& key) const {
   return mesg_text_.value(key);
 }

@@ -24,17 +24,17 @@ class KevesBase;
 
 namespace TestCode {
   namespace KevesBaseCode {
-    void Write(KevesBase* base, const char* file_name);
-    void Read(KevesBase* base, const char* file_name);
+    void write(KevesBase* base, const char* file_name);
+    void read(KevesBase* base, const char* file_name);
   };
 
   namespace Code02 {
-    void Write(KevesBase* base, const char* file_name);
-    void Read(KevesBase* base, const char* file_name);
+    void write(KevesBase* base, const char* file_name);
+    void read(KevesBase* base, const char* file_name);
   };
 
   namespace Code03 {
-    void Write(KevesBase* base, const char* file_name);
-    void Read(KevesBase* base, const char* file_name);
+    void write(KevesBase* base, const char* file_name);
+    void read(KevesBase* base, const char* file_name);
   };
 };

@@ -49,14 +49,14 @@ public:
   }
 
   template<class T>
-  static MutableKev* CopyTo(T* zone, MutableKev* kev) {
-    return FixedLengthKev<EnvironmentKev>::From(kev)->CopyTo(zone);
+  static MutableKev* copyTo(T* zone, MutableKev* kev) {
+    return FixedLengthKev<EnvironmentKev>::from(kev)->copyTo(zone);
   }
 
   template<class T>
-  static quintptr* CopyContents(T* zone, MutableKev* kev) {
-    FixedLengthKev<EnvironmentKev>* env(FixedLengthKev<EnvironmentKev>::From(kev));
-    env->values_ = zone->Copy(env->values_);
+  static quintptr* copyContents(T* zone, MutableKev* kev) {
+    FixedLengthKev<EnvironmentKev>* env(FixedLengthKev<EnvironmentKev>::from(kev));
+    env->values_ = zone->copy(env->values_);
     return env->border();
   }
 
@@ -67,18 +67,18 @@ public:
   void append(const SymbolKev*, KevesValue, PairKev*, PairKev*);
   KevesValue at(int) const;
   void clear();
-  void CopyFrom(const EnvironmentKev&);
-  void CopyFrom(EnvironmentKev&&);
+  void copyFrom(const EnvironmentKev&);
+  void copyFrom(EnvironmentKev&&);
   KevesValue find(const SymbolKev*) const;
   KevesValue find(const char*) const;
-  bool IsEmpty() const;
+  bool isEmpty() const;
   void set_values(const PairKev*);
   int size() const;
   const KevesValue* table() const;
   KevesValue values() const;
 
   template<class ZONE>
-  static EnvironmentKev* Make(ZONE* zone, KevesValue, const KevesValue*);
+  static EnvironmentKev* make(ZONE* zone, KevesValue, const KevesValue*);
 
 private:
   KevesValue values_;

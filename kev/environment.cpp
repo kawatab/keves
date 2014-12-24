@@ -34,12 +34,12 @@ EnvironmentKev::EnvironmentKev(KevesValue values, const KevesValue* table)
   : MutableKev(TYPE), values_(values), table_(table) {
 }
 
-void EnvironmentKev::CopyFrom(const EnvironmentKev& other) {
+void EnvironmentKev::copyFrom(const EnvironmentKev& other) {
   this->values_ = other.values_;
   this->table_ = other.table_;
 }
 
-void EnvironmentKev::CopyFrom(EnvironmentKev&& other) {
+void EnvironmentKev::copyFrom(EnvironmentKev&& other) {
   this->values_ = other.values_;
   this->table_ = other.table_;
 }
@@ -58,8 +58,8 @@ void EnvironmentKev::append(KevesIterator* iter, const SymbolKev* symbol, KevesV
 */
 
 void EnvironmentKev::append(const SymbolKev* id, KevesValue val, PairKev* pair1, PairKev* pair2) {
-  pair1->Set(pair2, values_);
-  pair2->Set(id, val);
+  pair1->set(pair2, values_);
+  pair2->set(id, val);
   values_ = pair1;
 }
 
@@ -78,13 +78,13 @@ KevesValue EnvironmentKev::at(int idx) const {
 KevesValue EnvironmentKev::find(const SymbolKev* symbol) const {
   KevesValue list(values_);
   while (list != EMB_NULL) {
-    const PairKev* temp(list.ToPtr<PairKev>()->car());
+    const PairKev* temp(list.toPtr<PairKev>()->car());
     const SymbolKev* name(temp->car());
 
-    if (name->Equals(*symbol))
+    if (name->equals(*symbol))
       return temp->cdr();
     
-    list = list.ToPtr<PairKev>()->cdr();
+    list = list.toPtr<PairKev>()->cdr();
   }
   return EMB_FALSE;
 }
@@ -93,19 +93,19 @@ KevesValue EnvironmentKev::find(const char* symbol) const {
   KevesValue list(values_);
 
   while (list != EMB_NULL) {
-    const PairKev* temp(list.ToPtr<PairKev>()->car());
+    const PairKev* temp(list.toPtr<PairKev>()->car());
     const SymbolKev* name(temp->car());
 
-    if (name->Equals(symbol))
+    if (name->equals(symbol))
       return temp->cdr();
 
-    list = list.ToPtr<PairKev>()->cdr();
+    list = list.toPtr<PairKev>()->cdr();
   }
 
   return EMB_FALSE;
 }
 
-bool EnvironmentKev::IsEmpty() const {
+bool EnvironmentKev::isEmpty() const {
   return values_ == EMB_NULL;
 }
 
@@ -114,7 +114,7 @@ int EnvironmentKev::size() const {
   int count(0);
 
   while (list != EMB_NULL) {
-    list = list.ToPtr<PairKev>()->cdr();
+    list = list.toPtr<PairKev>()->cdr();
     ++count;
   }
 

@@ -36,7 +36,7 @@ public:
   LibRnrsUnicode& operator=(LibRnrsUnicode&&) = delete;
   ~LibRnrsUnicode() = default;
 
-  void Init(KevesBase* base);
+  void init(KevesBase* base);
 
   SymbolKev* sym_char_upcase_;
   CPSKev proc_char_upcase_;

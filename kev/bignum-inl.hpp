@@ -24,7 +24,7 @@
 template<class ZONE>
 Bignum* Bignum::makeFromLength(ZONE* zone, int len) {
   auto ctor = [len](void *ptr) { return new(ptr) Bignum(len); };
-  return zone->Make(ctor, alloc_size(len));
+  return zone->make(ctor, alloc_size(len));
 }
 
 template<class ZONE>
@@ -62,5 +62,5 @@ Bignum* Bignum::makeFromMPZ(ZONE* zone, const mpz_class& num) {
     return result;
   };
 
-  return zone->Make(ctor, alloc_size(len));
+  return zone->make(ctor, alloc_size(len));
 }

@@ -12,6 +12,7 @@ QMAKE_CXXFLAGS += -std=c++11
 # Input
 HEADERS += code_rnrs-base.hpp \
            code_rnrs-unicode.hpp \
+           code_rnrs-exceptions.hpp \
            test_code.hpp \
            keves_base.hpp \
            keves_base-inl.hpp \
@@ -45,6 +46,7 @@ HEADERS += code_rnrs-base.hpp \
 SOURCES += main.cpp \
            code_rnrs-base.cpp \
            code_rnrs-unicode.cpp \
+           code_rnrs-exceptions.cpp \
            test_code.cpp \
            keves_base.cpp \
            keves_builtin_values.cpp \

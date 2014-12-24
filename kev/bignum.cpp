@@ -54,7 +54,7 @@ const bg_uint* Bignum::end() const {
   return array() + len_;
 }
 
-void Bignum::CopyArray(const Bignum* org) {
+void Bignum::copyArray(const Bignum* org) {
   const quintptr* org_begin(reinterpret_cast<const quintptr*>(org + 1));
   const quintptr* org_end(org_begin + (sizeof(bg_uint) * len_ + sizeof(quintptr) - 1) / sizeof(quintptr));
   quintptr* this_begin(reinterpret_cast<quintptr*>(this + 1));
@@ -156,12 +156,12 @@ QString Bignum::toQString() const {
 
 Bignum* Bignum::makeFromInt(KevesGC* gc, bg_uint n) {
   auto ctor = [n](void* ptr) { return new(ptr) BignumInt(n); };
-  return gc->Make(ctor, sizeof(BignumInt));
+  return gc->make(ctor, sizeof(BignumInt));
 }
 
 Bignum* Bignum::makeFromLong(KevesGC* gc, bg_ulong n) {
   auto ctor = [n](void* ptr) { return new(ptr) BignumLong(n); };
-  return gc->Make(ctor, sizeof(BignumLong));
+  return gc->make(ctor, sizeof(BignumLong));
 }
 
 int Bignum::calculateLength(bg_uint a, int b) {
@@ -225,7 +225,7 @@ Bignum* Bignum::ldexp(KevesGC* gc, bg_ulong significand, int exponent) {
   return bignum;
 }
 
-void Bignum::CopyFrom(const Bignum& org) {
+void Bignum::copyFrom(const Bignum& org) {
   this->len_ = org.len_;
   std::copy(org.begin(), org.end(), this->begin());
 }

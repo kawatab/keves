@@ -21,7 +21,7 @@
 
 
 template<class ZONE>
-VectorKev* VectorKev::Make(ZONE* zone, int size) {
+VectorKev* VectorKev::make(ZONE* zone, int size) {
   auto ctor = [size](void* ptr) { return new(ptr) VectorKev(size); };
-  return zone->Make(ctor, alloc_size(size));
+  return zone->make(ctor, alloc_size(size));
 }

@@ -72,14 +72,14 @@ public:
   }
 
   template<class ZONE>
-  static MutableKev* CopyTo(ZONE* zone, MutableKev* kev) {
-    return FixedLengthKev<CPSKev>::From(kev)->CopyTo(zone);
+  static MutableKev* copyTo(ZONE* zone, MutableKev* kev) {
+    return FixedLengthKev<CPSKev>::from(kev)->copyTo(zone);
   }
 
   template<class ZONE>
-  static quintptr* CopyContents(ZONE* zone, MutableKev* kev) {
-    FixedLengthKev<CPSKev>* cps(FixedLengthKev<CPSKev>::From(kev));
-    cps->who_ = zone->Copy(cps->who_);
+  static quintptr* copyContents(ZONE* zone, MutableKev* kev) {
+    FixedLengthKev<CPSKev>* cps(FixedLengthKev<CPSKev>::from(kev));
+    cps->who_ = zone->copy(cps->who_);
     return cps->border();
   }
 
@@ -88,25 +88,25 @@ public:
   ////////////////////////////////////////////////////////////
 
   template<class /*BASE*/, class STACK>
-  static void PushChildren(STACK* /*pending*/, KevesValue /*value*/) {
+  static void pushChildren(STACK* /*pending*/, KevesValue /*value*/) {
     std::cerr << "Cannot write ContinuationKev\n";
   }
 
   template<class /*BASE*/, class LIST, class STREAM>
-  static void WriteObject(const LIST& /*list*/,
+  static void writeObject(const LIST& /*list*/,
 			  STREAM& /*out*/,
 			  KevesValue /*value*/) {
     std::cerr << "Cannot write ContinuationKev\n";
   }
 
   template<class /*BASE*/, class STREAM, class GC>
-  static Kev* ReadObject(STREAM& /*in*/, GC* /*gc*/) {
+  static Kev* readObject(STREAM& /*in*/, GC* /*gc*/) {
     std::cerr << "Cannot read ContinuationKev\n";
     return nullptr;
   }
   
   template<class /*BASE*/, class LIST>
-  static void RevertObject(const LIST& /*object_list*/,
+  static void revertObject(const LIST& /*object_list*/,
 			   MutableKevesValue /*kev*/) {
     std::cerr << "Cannot read ContinuationKev\n";
   }
@@ -125,13 +125,13 @@ public:
   ~LambdaKev() = default;
 
   LambdaKev(CodeKev* code, int index);
-  LambdaKev(const FreeVarFrameKev* free_vars, CodeKev* code, int index);
+  LambdaKev(const LocalVarFrameKev* free_vars, CodeKev* code, int index);
 
-  LambdaKev(const FreeVarFrameKev* free_vars,
+  LambdaKev(const LocalVarFrameKev* free_vars,
 	    CodeKev* code,
 	    const_KevesIterator pc);
 
-  const FreeVarFrameKev* free_vars() const {
+  const LocalVarFrameKev* free_vars() const {
     return free_vars_;
   }
 
@@ -147,17 +147,17 @@ public:
     return code_->begin() + index_;
   }
   
-  void set(FreeVarFrameKev* free_vars, CodeKev* code, int index) {
+  void set(LocalVarFrameKev* free_vars, CodeKev* code, int index) {
     this->free_vars_ = free_vars;
     this->code_ = code;
     this->index_ = index;
   }
   
   template<class ZONE>
-  static LambdaKev* Make(ZONE* zone, FreeVarFrameKev* free_vars, CodeKev* code, int index);
+  static LambdaKev* make(ZONE* zone, LocalVarFrameKev* free_vars, CodeKev* code, int index);
   
 private:
-  const FreeVarFrameKev* free_vars_;
+  const LocalVarFrameKev* free_vars_;
   CodeKev* code_;
   int index_;
 
@@ -172,16 +172,16 @@ public:
   }
 
   template<class ZONE>
-  static MutableKev* CopyTo(ZONE* zone, MutableKev* kev) {
-    return FixedLengthKev<LambdaKev>::From(kev)->CopyTo(zone);
+  static MutableKev* copyTo(ZONE* zone, MutableKev* kev) {
+    return FixedLengthKev<LambdaKev>::from(kev)->copyTo(zone);
   }
   
   template<class ZONE>
-  static quintptr* CopyContents(ZONE* zone, MutableKev* kev) {
-    FixedLengthKev<LambdaKev>* lambda(FixedLengthKev<LambdaKev>::From(kev));
-    VariableLengthKev<FreeVarFrameKev>* free_vars(VariableLengthKev<FreeVarFrameKev>::From(lambda->free_vars_));
-    lambda->free_vars_ = zone->Copy(free_vars);
-    VariableLengthKev<CodeKev>* code(VariableLengthKev<CodeKev>::From(lambda->code_));
+  static quintptr* copyContents(ZONE* zone, MutableKev* kev) {
+    FixedLengthKev<LambdaKev>* lambda(FixedLengthKev<LambdaKev>::from(kev));
+    VariableLengthKev<LocalVarFrameKev>* free_vars(VariableLengthKev<LocalVarFrameKev>::from(lambda->free_vars_));
+    lambda->free_vars_ = zone->copy(free_vars);
+    VariableLengthKev<CodeKev>* code(VariableLengthKev<CodeKev>::from(lambda->code_));
     return lambda->border();
   }
 
@@ -191,38 +191,38 @@ public:
 
 public:
   template<class BASE, class STACK>
-  static void PushChildren(STACK* pending, KevesValue value) {
+  static void pushChildren(STACK* pending, KevesValue value) {
     const LambdaKev* lambda(value);
-    BASE::PushValue(pending, lambda->free_vars_);
-    BASE::PushValue(pending, lambda->code_);
+    BASE::pushValue(pending, lambda->free_vars_);
+    BASE::pushValue(pending, lambda->code_);
   }
 
   template<class BASE, class LIST, class STREAM>
-  static void WriteObject(const LIST& list, STREAM& out, KevesValue value) {
+  static void writeObject(const LIST& list, STREAM& out, KevesValue value) {
     const LambdaKev* lambda(value);
 
     out << static_cast<uioword>(lambda->type())
-	<< BASE::IndexAddress(list, lambda->free_vars_)
-	<< BASE::IndexAddress(list, lambda->code_)
+	<< BASE::indexAddress(list, lambda->free_vars_)
+	<< BASE::indexAddress(list, lambda->code_)
 	<< static_cast<ioword>(lambda->index_);
   }
 
   template<class /*BASE*/, class STREAM, class GC>
-  static Kev* ReadObject(STREAM& in, GC* gc) {
+  static Kev* readObject(STREAM& in, GC* gc) {
     uioword free_vars, code;
     ioword index;
     in >> free_vars >> code >> index;
-    return Make(gc,
-		KevesValue::template FromUioword<FreeVarFrameKev>(free_vars),
-		KevesValue::template FromUioword<CodeKev>(code),
+    return make(gc,
+		KevesValue::template fromUioword<LocalVarFrameKev>(free_vars),
+		KevesValue::template fromUioword<CodeKev>(code),
 		index);
   }
   
   template<class BASE, class LIST>
-  static void RevertObject(const LIST& object_list, MutableKevesValue kev) {
+  static void revertObject(const LIST& object_list, MutableKevesValue kev) {
     LambdaKev* lambda(kev);
-    BASE::RevertValue(object_list, &lambda->free_vars_);
-    BASE::RevertValue(object_list, &lambda->code_);
+    BASE::revertValue(object_list, &lambda->free_vars_);
+    BASE::revertValue(object_list, &lambda->code_);
   }
 };
 
@@ -263,14 +263,14 @@ private:
   }
 
   template<class ZONE>
-  static MutableKev* CopyTo(ZONE* zone, MutableKev* kev) {
-    return FixedLengthKev<ContinuationKev>::From(kev)->CopyTo(zone);
+  static MutableKev* copyTo(ZONE* zone, MutableKev* kev) {
+    return FixedLengthKev<ContinuationKev>::from(kev)->copyTo(zone);
   }
 
   template<class ZONE>
-  static quintptr* CopyContents(ZONE* zone, MutableKev* kev) {
-    FixedLengthKev<ContinuationKev>* conti(FixedLengthKev<ContinuationKev>::From(kev));
-    StackFrameKev::CopyContents(zone, conti->ptr_registers());
+  static quintptr* copyContents(ZONE* zone, MutableKev* kev) {
+    FixedLengthKev<ContinuationKev>* conti(FixedLengthKev<ContinuationKev>::from(kev));
+    StackFrameKev::copyContents(zone, conti->ptr_registers());
     return conti->border();
   }
 
@@ -279,25 +279,25 @@ private:
   ////////////////////////////////////////////////////////////
 
   template<class /*BASE*/, class STACK>
-  static void PushChildren(STACK* /*pending*/, KevesValue /*value*/) {
+  static void pushChildren(STACK* /*pending*/, KevesValue /*value*/) {
     std::cerr << "Cannot write ContinuationKev\n";
   }
 
   template<class /*BASE*/, class LIST, class STREAM>
-  static void WriteObject(const LIST& /*list*/,
+  static void writeObject(const LIST& /*list*/,
 			  STREAM& /*out*/,
 			  KevesValue /*value*/) {
     std::cerr << "Cannot write ContinuationKev\n";
   }
 
   template<class /*BASE*/, class STREAM, class GC>
-  static Kev* ReadObject(STREAM& /*in*/, GC* /*gc*/) {
+  static Kev* readObject(STREAM& /*in*/, GC* /*gc*/) {
     std::cerr << "Cannot read ContinuationKev\n";
     return nullptr;
   }
   
   template<class /*BASE*/, class LIST>
-  static void RevertObject(const LIST& /*object_list*/,
+  static void revertObject(const LIST& /*object_list*/,
 			   MutableKevesValue /*kev*/) {
     std::cerr << "Cannot read ContinuationKev\n";
   }

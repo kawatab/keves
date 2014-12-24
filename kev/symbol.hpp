@@ -38,24 +38,24 @@ public:
   explicit SymbolKev(StringKev&&);
   SymbolKev(KevesIterator*, const QString&);
 
-  void CopyFrom(const SymbolKev& org);
-  void CopyFrom(SymbolKev&& org);
+  void copyFrom(const SymbolKev& org);
+  void copyFrom(SymbolKev&& org);
 
-  KevesString GetKevesString() const;
-  void Set(KevesIterator*, const QString&);
-  void Set(StringCoreKev*, int, int);
-  StringKev ToStringKev() const;
-
-  template<class ZONE>
-  static SymbolKev* Make(ZONE* zone, const QString&);
+  KevesString getKevesString() const;
+  void set(KevesIterator*, const QString&);
+  void set(StringCoreKev*, int, int);
+  StringKev toStringKev() const;
 
   template<class ZONE>
-  static SymbolKev* Make(ZONE* zone, StringCoreKev*, int, int);
+  static SymbolKev* make(ZONE* zone, const QString&);
+
+  template<class ZONE>
+  static SymbolKev* make(ZONE* zone, StringCoreKev*, int, int);
 
   template<class ZONE>
   static std::function<SymbolKev*(void*)> ctor(ZONE* zone, const QString& str) {
     return [zone, &str](void* ptr) {
-      StringCoreKev* core(StringCoreKev::Make(zone, str));
+      StringCoreKev* core(StringCoreKev::make(zone, str));
       return new(ptr) SymbolKev(core, 0, core->size());
     };
   }
@@ -74,15 +74,15 @@ public:
   }
 
   template<class ZONE>
-  static MutableKev* CopyTo(ZONE* zone, MutableKev* kev) {
-    return FixedLengthKev<SymbolKev>::From(kev)->CopyTo(zone);
+  static MutableKev* copyTo(ZONE* zone, MutableKev* kev) {
+    return FixedLengthKev<SymbolKev>::from(kev)->copyTo(zone);
   }
 
   template<class ZONE>
-  static quintptr* CopyContents(ZONE* zone, MutableKev* kev) {
-    FixedLengthKev<SymbolKev>* symbol(FixedLengthKev<SymbolKev>::From(kev));
-    VariableLengthKev<StringCoreKev>* core(VariableLengthKev<StringCoreKev>::From(symbol->core_));
-    symbol->core_ = zone->Copy(core);
+  static quintptr* copyContents(ZONE* zone, MutableKev* kev) {
+    FixedLengthKev<SymbolKev>* symbol(FixedLengthKev<SymbolKev>::from(kev));
+    VariableLengthKev<StringCoreKev>* core(VariableLengthKev<StringCoreKev>::from(symbol->core_));
+    symbol->core_ = zone->copy(core);
     return symbol->border();
   }
 
@@ -92,35 +92,35 @@ public:
 
 public:
   template<class BASE, class STACK>
-  static void PushChildren(STACK* pending, KevesValue value) {
+  static void pushChildren(STACK* pending, KevesValue value) {
     const SymbolKev* symbol(value);
-    BASE::PushValue(pending, symbol->core_);
+    BASE::pushValue(pending, symbol->core_);
   }
 
   template<class BASE, class LIST, class STREAM>
-  static void WriteObject(const LIST& list, STREAM& out, KevesValue value) {
+  static void writeObject(const LIST& list, STREAM& out, KevesValue value) {
     const SymbolKev* symbol(value);
 
     out << static_cast<uioword>(symbol->type())
-	<< BASE::IndexAddress(list, symbol->core_)
+	<< BASE::indexAddress(list, symbol->core_)
 	<< static_cast<ioword>(symbol->idx_)
 	<< static_cast<ioword>(symbol->len_);
   }
 
   template<class /*BASE*/, class STREAM, class GC>
-  static Kev* ReadObject(STREAM& in, GC* gc) {
+  static Kev* readObject(STREAM& in, GC* gc) {
     uioword core;
     ioword idx, len;
     in >> core >> idx >> len;
-    return Make(gc,
-		KevesValue::template FromUioword<StringCoreKev>(core),
+    return make(gc,
+		KevesValue::template fromUioword<StringCoreKev>(core),
 		idx,
 		len);
   }
   
   template<class BASE, class LIST>
-  static void RevertObject(const LIST& object_list, MutableKevesValue kev) {
+  static void revertObject(const LIST& object_list, MutableKevesValue kev) {
     SymbolKev* symbol(kev);
-    BASE::RevertValue(object_list, &symbol->core_);
+    BASE::revertValue(object_list, &symbol->core_);
   }
 };

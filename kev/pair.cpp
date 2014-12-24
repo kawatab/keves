@@ -20,17 +20,17 @@
 #include "kev/pair.hpp"
 
 
-void PairKev::CopyFrom(const PairKev& org) {
+void PairKev::copyFrom(const PairKev& org) {
   this->car_ = org.car_;
   this->cdr_ = org.cdr_;
 }
 
-void PairKev::CopyFrom(PairKev&& org) {
+void PairKev::copyFrom(PairKev&& org) {
   this->car_ = org.car_;
   this->cdr_ = org.cdr_;
 }
 
-void PairKev::Set(KevesValue car, KevesValue cdr) {
+void PairKev::set(KevesValue car, KevesValue cdr) {
   this->car_ = car;
   this->cdr_ = cdr;
 }

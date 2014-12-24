@@ -48,7 +48,7 @@ public:
   }
 
   template<class ZONE>
-  static WindKev* Make(ZONE* zone, KevesValue before, KevesValue thunk,
+  static WindKev* make(ZONE* zone, KevesValue before, KevesValue thunk,
 		       KevesValue after);
 
 private:
@@ -67,16 +67,16 @@ public:
   }
 
   template<class ZONE>
-  static MutableKev* CopyTo(ZONE* zone, MutableKev* kev) {
-    return FixedLengthKev<WindKev>::From(kev)->CopyTo(zone);
+  static MutableKev* copyTo(ZONE* zone, MutableKev* kev) {
+    return FixedLengthKev<WindKev>::from(kev)->copyTo(zone);
   }
 
   template<class ZONE>
-  static quintptr* CopyContents(ZONE* zone, MutableKev* kev) {
-    FixedLengthKev<WindKev>* wind(FixedLengthKev<WindKev>::From(kev));
-    wind->before_ = zone->Copy(wind->before_);
-    wind->thunk_ = zone->Copy(wind->thunk_);
-    wind->after_ = zone->Copy(wind->after_);
+  static quintptr* copyContents(ZONE* zone, MutableKev* kev) {
+    FixedLengthKev<WindKev>* wind(FixedLengthKev<WindKev>::from(kev));
+    wind->before_ = zone->copy(wind->before_);
+    wind->thunk_ = zone->copy(wind->thunk_);
+    wind->after_ = zone->copy(wind->after_);
     return wind->border();
   }
 
@@ -86,38 +86,38 @@ public:
 
 public:
   template<class BASE, class STACK>
-  static void PushChildren(STACK* pending, KevesValue value) {
+  static void pushChildren(STACK* pending, KevesValue value) {
     const WindKev* wind(value);
-    BASE::PushValue(pending, wind->before_);
-    BASE::PushValue(pending, wind->thunk_);
-    BASE::PushValue(pending, wind->after_);
+    BASE::pushValue(pending, wind->before_);
+    BASE::pushValue(pending, wind->thunk_);
+    BASE::pushValue(pending, wind->after_);
   }
 
   template<class BASE, class LIST, class STREAM>
-  static void WriteObject(const LIST& list, STREAM& out, KevesValue value) {
+  static void writeObject(const LIST& list, STREAM& out, KevesValue value) {
     const WindKev* wind(value);
 
     out << static_cast<uioword>(wind->type())
-	<< BASE::IndexAddress(list, wind->before_)
-	<< BASE::IndexAddress(list, wind->thunk_)
-	<< BASE::IndexAddress(list, wind->after_);
+	<< BASE::indexAddress(list, wind->before_)
+	<< BASE::indexAddress(list, wind->thunk_)
+	<< BASE::indexAddress(list, wind->after_);
   }
 
   template<class /*BASE*/, class STREAM, class GC>
-  static Kev* ReadObject(STREAM& in, GC* gc) {
+  static Kev* readObject(STREAM& in, GC* gc) {
     uioword before, thunk, after;
     in >> before >> thunk >> after;
-    return Make(gc,
-		KevesValue::template FromUioword<Kev>(before),
-		KevesValue::template FromUioword<Kev>(thunk),
-		KevesValue::template FromUioword<Kev>(after));
+    return make(gc,
+		KevesValue::template fromUioword<Kev>(before),
+		KevesValue::template fromUioword<Kev>(thunk),
+		KevesValue::template fromUioword<Kev>(after));
   }
   
   template<class BASE, class LIST>
-  static void RevertObject(const LIST& object_list, MutableKevesValue kev) {
+  static void revertObject(const LIST& object_list, MutableKevesValue kev) {
     WindKev* wind(kev);
-    BASE::RevertValue(object_list, &wind->before_);
-    BASE::RevertValue(object_list, &wind->thunk_);
-    BASE::RevertValue(object_list, &wind->after_);
+    BASE::revertValue(object_list, &wind->before_);
+    BASE::revertValue(object_list, &wind->thunk_);
+    BASE::revertValue(object_list, &wind->after_);
   }
 };

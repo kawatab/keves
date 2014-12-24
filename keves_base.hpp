@@ -47,20 +47,20 @@ public:
   // General functions                                          //
   ////////////////////////////////////////////////////////////////
 public:
-  void AddLibrary(KevesLibrary* library);
+  void addLibrary(KevesLibrary* library);
 
-  KevesLibrary* GetLibrary(const QStringList& id,
+  KevesLibrary* getLibrary(const QStringList& id,
 			   const QList<ver_num_t>& ver_num);
 
-  const StringKev* GetMesgText(const QString& key) const;
-  KevesValue MakeAssertCondition(KevesValue a, KevesValue b, KevesValue c);
+  const StringKev* getMesgText(const QString& key) const;
+  KevesValue makeAssertCondition(KevesValue a, KevesValue b, KevesValue c);
 
-  void RunThread();
+  void runThread();
 
   template<class KEV>
-  KEV* ToMutable(const KEV* kev);
+  KEV* toMutable(const KEV* kev);
 
-  QString ToString(KevesValue value) const;
+  QString toString(KevesValue value) const;
 
   KevesBuiltinValues* builtin() {
     return &builtin_;
@@ -78,22 +78,22 @@ public:
     return &instruct_table_;
   }
 
-  static bool Match(const QStringList& list1, const QStringList& list2);
+  static bool match(const QStringList& list1, const QStringList& list2);
 
 private:
-  void InitCMDTable();
-  void InitLibraryList();
+  void initCMDTable();
+  void initLibraryList();
 
-  KevesLibrary* LoadLibrary(const QStringList& id,
+  KevesLibrary* loadLibrary(const QStringList& id,
 			    const QList<ver_num_t>& ver_num);
 
-  KevesLibrary* LoadCompiledLibrary(const QStringList& id,
+  KevesLibrary* loadCompiledLibrary(const QStringList& id,
 				    const QList<ver_num_t>& ver_num);
 
-  void ToString_code(QString*, KevesValue, int) const;
-  void ToString_element(QString*, KevesValue) const;
-  void ToString_list(QString*, KevesValue, int) const;
-  void ToString_vector(QString*, KevesValue, int) const;
+  void toString_code(QString*, KevesValue, int) const;
+  void toString_element(QString*, KevesValue) const;
+  void toString_list(QString*, KevesValue, int) const;
+  void toString_vector(QString*, KevesValue, int) const;
 
 
   ////////////////////////////////////////////////////////////////
@@ -102,54 +102,54 @@ private:
 public:
   enum { ALIGN = 0x3, INDEX = 0x2 };
 
-  void AppendObjectList(QList<const Kev*>* list, const Kev* kev);
+  void appendObjectList(QList<const Kev*>* list, const Kev* kev);
 
-  static uioword IndexAddress(const QList<const Kev*>& object_list,
+  static uioword indexAddress(const QList<const Kev*>& object_list,
 			      KevesValue value);
 
   template<class KEV>
-  static void ReadArray(QDataStream& in, KEV* kev);
+  static void readArray(QDataStream& in, KEV* kev);
 
   template<class KEV>
-  static void RevertArray(const QList<const Kev*>& object_list, KEV* kev);
+  static void revertArray(const QList<const Kev*>& object_list, KEV* kev);
   
-  void RevertObjects(const QList<const Kev*>& object_list, int start_pos);
+  void revertObjects(const QList<const Kev*>& object_list, int start_pos);
 
   template<class KEV>
-  static void RevertValue(const QList<const Kev*>& object_list, KEV** kev);
+  static void revertValue(const QList<const Kev*>& object_list, KEV** kev);
   
-  static void RevertValue(const QList<const Kev*>& object_list, KevesValue* value);
+  static void revertValue(const QList<const Kev*>& object_list, KevesValue* value);
 
   template<class KEV>
-  static void PushArray(QStack<const Kev*>* pending, KEV* kev);
+  static void pushArray(QStack<const Kev*>* pending, KEV* kev);
 
   template<class KEV>
-  static void PushValue(QStack<const Kev*>* pending, KEV* kev);
+  static void pushValue(QStack<const Kev*>* pending, KEV* kev);
   
-  static void PushValue(QStack<const Kev*>* pending, KevesValue value);
+  static void pushValue(QStack<const Kev*>* pending, KevesValue value);
 
   template<class KEV>
-  static void WriteArray(const QList<const Kev*>& list, QDataStream& out, KEV* kev);
+  static void writeArray(const QList<const Kev*>& list, QDataStream& out, KEV* kev);
 
-  Kev* (*ft_ReadObject(uioword value))(QDataStream&, KevesBase*) {
+  Kev* (*ft_readObject(uioword value))(QDataStream&, KevesBase*) {
     return ft_ReadObject_[value];
   }
   
-  void (*ft_WriteObject(kev_type type))(const QList<const Kev*>&, QDataStream&, KevesValue) {
+  void (*ft_writeObject(kev_type type))(const QList<const Kev*>&, QDataStream&, KevesValue) {
     return ft_WriteObject_[type];
   }
   
 private:
-  static bool IsIndex(Kev* kev) {
-    return IsIndex(KevesValue(kev));
+  static bool isIndex(Kev* kev) {
+    return isIndex(KevesValue(kev));
   }
 
-  static bool IsIndex(KevesValue value) {
+  static bool isIndex(KevesValue value) {
     return (value.toUIntPtr() & ALIGN) == INDEX; // 10
   }
   
   template<class KEV>
-  void SetFunctionTable();
+  void setFunctionTable();
   
 
   ////////////////////////////////////////////////////////////////
@@ -157,10 +157,10 @@ private:
   ////////////////////////////////////////////////////////////////
 public:
   template<class CTOR>
-  auto Make(CTOR ctor, size_t size) -> decltype(ctor(nullptr)) {
+  auto make(CTOR ctor, size_t size) -> decltype(ctor(nullptr)) {
     void* ptr(Alloc(size));
     decltype(ctor(nullptr)) temp(ctor(ptr));
-    PushToSharedList(temp);
+    pushToSharedList(temp);
     return temp;
   }
 
@@ -170,7 +170,7 @@ public:
 
 private:
   void* Alloc(size_t alloc_size);
-  void PushToSharedList(MutableKev* kev);
+  void pushToSharedList(MutableKev* kev);
 
 
   ////////////////////////////////////////////////////////////////

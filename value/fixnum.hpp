@@ -46,7 +46,7 @@ public:
 
   explicit KevesFixnum(KevesValue qev)
     : val_(qev.toUIntPtr() >> 2) {
-    Q_ASSERT(qev.IsFixnum());
+    Q_ASSERT(qev.isFixnum());
   }
   
   template<typename Other> explicit KevesFixnum(Other) = delete;

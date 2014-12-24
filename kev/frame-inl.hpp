@@ -20,44 +20,46 @@
 #pragma once
 
 template<class ZONE>
-ArgumentFrameKev* ArgumentFrameKev::Make(ZONE* zone, int size) {
+ArgumentFrameKev* ArgumentFrameKev::make(ZONE* zone, int size) {
   auto ctor = [size](void* ptr) {
     ArgumentFrameKev* arg_frame(new(ptr) ArgumentFrameKev(size));
     std::fill_n(arg_frame->array(), size, EMB_UNDEF);
     return arg_frame;
   };
 
-  return zone->Make(ctor, alloc_size(size));
+  return zone->make(ctor, alloc_size(size));
 }
 
 
 template<class ZONE>
-LocalVarFrameKev* LocalVarFrameKev::Make(ZONE* zone, int size) {
-  auto ctor = [size](void* ptr) {
-    LocalVarFrameKev* env_frame(new(ptr) LocalVarFrameKev(size));
+LocalVarFrameKev* LocalVarFrameKev::make(ZONE* zone, int size, LocalVarFrameKev* next) {
+  auto ctor = [size, next](void* ptr) {
+    LocalVarFrameKev* env_frame(new(ptr) LocalVarFrameKev(size, next));
     std::fill_n(env_frame->array(), size, EMB_UNDEF);
     return env_frame;
   };
   
-  return zone->Make(ctor, alloc_size(size));
+  return zone->make(ctor, alloc_size(size));
 }
 
+/*
 template<class ZONE>
-FreeVarFrameKev* FreeVarFrameKev::Make(ZONE* zone, int size, FreeVarFrameKev* next) {
+FreeVarFrameKev* FreeVarFrameKev::make(ZONE* zone, int size, FreeVarFrameKev* next) {
   auto ctor = [size, next](void* ptr) {
     FreeVarFrameKev* closure(new(ptr) FreeVarFrameKev(size, next));
     std::fill_n(closure->array(), size, EMB_UNDEF);
     return closure;
   };
   
-  return zone->Make(ctor, alloc_size(size));
+  return zone->make(ctor, alloc_size(size));
 }
+*/
 
 template<class ZONE>
-StackFrameKev* StackFrameKev::Make(ZONE* zone) {
+StackFrameKev* StackFrameKev::make(ZONE* zone) {
   auto ctor = [](void* ptr) {
     return new(ptr) StackFrameKev();
   };
 
-  return zone->Make(ctor, alloc_size(nullptr));
+  return zone->make(ctor, alloc_size(nullptr));
 }

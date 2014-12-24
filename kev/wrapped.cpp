@@ -30,7 +30,7 @@ WrappedKev::WrappedKev(KevesValue form, KevesValue local_vars,
     local_vars_(local_vars),
     free_vars_(free_vars),
     global_vars_(global_vars) {
-  if (!form.IsWrapped()) return;
+  if (!form.isWrapped()) return;
   
   const WrappedKev* wrapped(form);
   this->copyFrom(*wrapped);
@@ -61,7 +61,7 @@ void WrappedKev::set(KevesValue form, KevesValue local_vars, KevesValue free_var
 }
 
 KevesValue WrappedKev::getDatum(KevesValue obj) {
-  if (!obj.IsWrapped())
+  if (!obj.isWrapped())
     return obj;
 
   const WrappedKev* wrapped(obj);

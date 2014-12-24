@@ -47,26 +47,26 @@ protected:
 public:
   QChar* array();
   const QChar* array() const;
-  StringCoreKev* Copy(KevesGC* gc, const QChar*, int) const;
-  bool IsEmpty() const;
+  StringCoreKev* copy(KevesGC* gc, const QChar*, int) const;
+  bool isEmpty() const;
 
   int size() const {
     return size_;
   }
 
-  StringCoreKev* ToCaseFolded(KevesGC* gc, const QChar*, int) const;
-  StringCoreKev* ToLower(KevesGC* gc, const QChar*, int) const;
-  StringCoreKev* ToTitleCase(KevesGC* gc, const QChar*, int) const;
-  StringCoreKev* ToUpper(KevesGC* gc, const QChar*, int) const;
+  StringCoreKev* toCaseFolded(KevesGC* gc, const QChar*, int) const;
+  StringCoreKev* toLower(KevesGC* gc, const QChar*, int) const;
+  StringCoreKev* toTitleCase(KevesGC* gc, const QChar*, int) const;
+  StringCoreKev* toUpper(KevesGC* gc, const QChar*, int) const;
 
   template<class ZONE>
-  static StringCoreKev* Make(ZONE* zone, int size);
+  static StringCoreKev* make(ZONE* zone, int size);
 
   template<class ZONE>
-  static StringCoreKev* Make(ZONE* zone, const QString& str);
+  static StringCoreKev* make(ZONE* zone, const QString& str);
 
   template<class ZONE>
-  static StringCoreKev* MakeAsImmovableT(ZONE* zone, const QString& str);
+  static StringCoreKev* makeAsImmovableT(ZONE* zone, const QString& str);
 
 private:
   void set(const QString&);
@@ -88,20 +88,20 @@ public:
   }
 
   template<class ZONE>
-  static MutableKev* CopyTo(ZONE* zone, MutableKev* kev) {
-    return VariableLengthKev<StringCoreKev>::From(kev)->CopyTo(zone);
+  static MutableKev* copyTo(ZONE* zone, MutableKev* kev) {
+    return VariableLengthKev<StringCoreKev>::from(kev)->copyTo(zone);
   }
 
   template<class ZONE>
-  static quintptr* CopyContents(ZONE*, MutableKev* kev) {
-    return VariableLengthKev<StringCoreKev>::From(kev)->border();
+  static quintptr* copyContents(ZONE*, MutableKev* kev) {
+    return VariableLengthKev<StringCoreKev>::from(kev)->border();
   }
 
   quintptr* border() {
     return reinterpret_cast<quintptr*>(this + 1) + (sizeof(QChar) * size_ + sizeof(quintptr) - 1) / sizeof(quintptr);
   }
 
-  void CopyArray(const StringCoreKev* org);
+  void copyArray(const StringCoreKev* org);
   
   ////////////////////////////////////////////////////////////
   // Section For serialize !!!                              //
@@ -109,12 +109,12 @@ public:
 
 public:
   template<class /*BASE*/, class STACK>
-  static void PushChildren(STACK* /*pending*/, KevesValue /*value*/) {
+  static void pushChildren(STACK* /*pending*/, KevesValue /*value*/) {
     return;
   }
 
   template<class /*BASE*/, class LIST, class STREAM>
-  static void WriteObject(const LIST&, STREAM& out, KevesValue value) {
+  static void writeObject(const LIST&, STREAM& out, KevesValue value) {
     const StringCoreKev* string(value);
     int size(string->size());
 
@@ -126,17 +126,17 @@ public:
   }
 
   template<class /*BASE*/, class STREAM, class GC>
-  static Kev* ReadObject(STREAM& in, GC* gc) {
+  static Kev* readObject(STREAM& in, GC* gc) {
     ioword size;
     in >> size;
-    StringCoreKev* string(Make(gc, size));
+    StringCoreKev* string(make(gc, size));
     QChar* array(string->array());
     for (int i(0); i < size; ++i) in >> array[i];
     return string;
   }
 
   template<class /*BASE*/, class LIST>
-  static void RevertObject(const LIST&, MutableKevesValue) {
+  static void revertObject(const LIST&, MutableKevesValue) {
     return;
   }
 };
@@ -153,38 +153,38 @@ public:
 
   KevesString(StringCoreKev*, int idx, int len);
 
-  KevesString Append(KevesGC* gc, const KevesString&) const;
-  QChar At(int) const;
+  KevesString append(KevesGC* gc, const KevesString&) const;
+  QChar at(int) const;
   StringCoreKev* core();
   const StringCoreKev* core() const;
   QChar* data();
   const QChar* data() const;
-  bool Equals(const char*) const;
-  bool Equals(const KevesString&) const;
-  void Fill(QChar);
-  int Index() const;
-  int IndexOf(char) const;
-  int IndexOf(const char*) const;
-  int IndexOf(const char*, int) const;
-  bool IsEmpty() const;
-  bool IsGT(const KevesString&) const;
-  bool IsGTE(const KevesString&) const;
-  bool IsLT(const KevesString&) const;
-  bool IsLTE(const KevesString&) const;
-  KevesString Left(int) const;
-  KevesString Mid(int, int) const;
-  KevesString Right(int) const ;
-  void Set(StringCoreKev*, int, int);
+  bool equals(const char*) const;
+  bool equals(const KevesString&) const;
+  void fill(QChar);
+  int index() const;
+  int indexOf(char) const;
+  int indexOf(const char*) const;
+  int indexOf(const char*, int) const;
+  bool isEmpty() const;
+  bool isGT(const KevesString&) const;
+  bool isGTE(const KevesString&) const;
+  bool isLT(const KevesString&) const;
+  bool isLTE(const KevesString&) const;
+  KevesString left(int) const;
+  KevesString mid(int, int) const;
+  KevesString right(int) const ;
+  void set(StringCoreKev*, int, int);
 
   int size() const {
     return len_;
   }
 
-  double ToDouble(bool*) const;
-  int ToInt(bool*, int) const;
-  QByteArray ToLocal8Bit() const;
-  QString ToQString() const;
-  unsigned int ToUInt(bool*, int) const;
+  double toDouble(bool*) const;
+  int toInt(bool*, int) const;
+  QByteArray toLocal8Bit() const;
+  QString toQString() const;
+  unsigned int toUInt(bool*, int) const;
 
 protected:
   StringCoreKev* core_;
@@ -207,55 +207,55 @@ public:
   explicit StringKev(const KevesString&);
   StringKev(StringCoreKev*, int, int);
 
-  StringKev Append(KevesGC* gc, const StringKev&) const;
-  StringKev Copy(KevesGC* gc) const;
-  void CopyFrom(const StringKev& org);
-  void CopyFrom(StringKev&& org);
+  StringKev append(KevesGC* gc, const StringKev&) const;
+  StringKev copy(KevesGC* gc) const;
+  void copyFrom(const StringKev& org);
+  void copyFrom(StringKev&& org);
 
-  KevesString& GetKevesString() {
+  KevesString& getKevesString() {
     return *static_cast<KevesString*>(this);
   }
 
-  const KevesString& GetKevesString() const {
+  const KevesString& getKevesString() const {
     return *static_cast<const KevesString*>(this);
   }
 
-  StringKev Left(int);
-  StringKev Left(int) const;
-  StringKev Mid(int, int);
-  StringKev Mid(int, int) const;
-  StringKev Right(int);
-  StringKev Right(int) const;
-  void Set(int, QChar);
-  void Set(const StringKev&);
-  void Set(StringKev&&);
+  StringKev left(int);
+  StringKev left(int) const;
+  StringKev mid(int, int);
+  StringKev mid(int, int) const;
+  StringKev right(int);
+  StringKev right(int) const;
+  void set(int, QChar);
+  void set(const StringKev&);
+  void set(StringKev&&);
 
   int size() const {
     return KevesString::size();
   }
 
-  StringKev ToCaseFolded(KevesGC* gc) const;
-  StringKev ToLower(KevesGC* gc) const;
-  StringKev ToTitleCase(KevesGC* gc) const;
-  StringKev ToUpper(KevesGC* gc) const;
+  StringKev toCaseFolded(KevesGC* gc) const;
+  StringKev toLower(KevesGC* gc) const;
+  StringKev toTitleCase(KevesGC* gc) const;
+  StringKev toUpper(KevesGC* gc) const;
 
   template<class ZONE>
-  static StringKev* Make(ZONE* zone, int);
+  static StringKev* make(ZONE* zone, int);
 
   template<class ZONE>
-  static StringKev* Make(ZONE* zone, const QString&);
+  static StringKev* make(ZONE* zone, const QString&);
   // static StringKev* make(KevesIterator*, const QString&);
   // static StringKev* make(KevesValue*, size_t, const QString&);
   template<class ZONE>
-  static StringKev* Make(ZONE* zone, StringCoreKev*, int, int);
+  static StringKev* make(ZONE* zone, StringCoreKev*, int, int);
 
   template<class ZONE>
-  static StringKev* MakeSubstring(ZONE* zone, const StringKev*, int, int);
+  static StringKev* makeSubstring(ZONE* zone, const StringKev*, int, int);
 
   template<class ZONE>
   static std::function<StringKev*(void*)> ctor(ZONE* zone, int size) {
     return [zone, size](void* ptr) {
-      StringCoreKev* core(StringCoreKev::Make(zone, size));
+      StringCoreKev* core(StringCoreKev::make(zone, size));
       return new(ptr) StringKev(core, 0, core->size());
     };
   }
@@ -263,7 +263,7 @@ public:
   template<class ZONE>
   static std::function<StringKev*(void*)> ctor(ZONE* zone, const QString& str) {
     return [zone, &str](void* ptr) {
-      StringCoreKev* core(StringCoreKev::Make(zone, str));
+      StringCoreKev* core(StringCoreKev::make(zone, str));
       return new(ptr) StringKev(core, 0, core->size());
     };
   }
@@ -279,15 +279,15 @@ public:
   }
 
   template<class ZONE>
-  static MutableKev* CopyTo(ZONE* zone, MutableKev* kev) {
-    return FixedLengthKev<StringKev>::From(kev)->CopyTo(zone);
+  static MutableKev* copyTo(ZONE* zone, MutableKev* kev) {
+    return FixedLengthKev<StringKev>::from(kev)->copyTo(zone);
   }
 
   template<class ZONE>
-  static quintptr* CopyContents(ZONE* zone, MutableKev* kev) {
-    FixedLengthKev<StringKev>* string(FixedLengthKev<StringKev>::From(kev));
-    VariableLengthKev<StringCoreKev>* core(VariableLengthKev<StringCoreKev>::From(string->core_));
-    string->core_ = zone->Copy(core);
+  static quintptr* copyContents(ZONE* zone, MutableKev* kev) {
+    FixedLengthKev<StringKev>* string(FixedLengthKev<StringKev>::from(kev));
+    VariableLengthKev<StringCoreKev>* core(VariableLengthKev<StringCoreKev>::from(string->core_));
+    string->core_ = zone->copy(core);
     return string->border();
   }
 
@@ -297,36 +297,36 @@ public:
 
 public:
   template<class BASE, class STACK>
-  static void PushChildren(STACK* pending, KevesValue value) {
+  static void pushChildren(STACK* pending, KevesValue value) {
     const StringKev* string(value);
-    BASE::PushValue(pending, string->core_);
+    BASE::pushValue(pending, string->core_);
   }
 
   template<class BASE, class LIST, class STREAM>
-  static void WriteObject(const LIST& list, STREAM& out, KevesValue value) {
+  static void writeObject(const LIST& list, STREAM& out, KevesValue value) {
     const StringKev* string(value);
 
     out << static_cast<uioword>(string->type())
-	<< BASE::IndexAddress(list, string->core_)
+	<< BASE::indexAddress(list, string->core_)
 	<< static_cast<ioword>(string->idx_)
 	<< static_cast<ioword>(string->len_);
   }
 
   template<class /*BASE*/, class STREAM, class GC>
-  static Kev* ReadObject(STREAM& in, GC* gc) {
+  static Kev* readObject(STREAM& in, GC* gc) {
     uioword core;
     ioword idx, len;
     in >> core >> idx >> len;
-    return Make(gc,
-		KevesValue::template FromUioword<StringCoreKev>(core),
+    return make(gc,
+		KevesValue::template fromUioword<StringCoreKev>(core),
 		idx,
 		len);
   }
   
   template<class BASE, class LIST>
-  static void RevertObject(const LIST& object_list, MutableKevesValue kev) {
+  static void revertObject(const LIST& object_list, MutableKevesValue kev) {
     StringKev* string(kev);
-    BASE::RevertValue(object_list, &string->core_);
+    BASE::revertValue(object_list, &string->core_);
   }
 };
 
@@ -351,7 +351,7 @@ public:
   }
 
   explicit StringKevWithArray(const char* str) : string_core_(str) {
-    this->KevesString::Set(&string_core_, 0, string_core_.size());
+    this->KevesString::set(&string_core_, 0, string_core_.size());
   }
 
   explicit StringKevWithArray(const QString& str) : string_core_(str) {

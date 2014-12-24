@@ -54,60 +54,60 @@ public:
     return KevesValue(reinterpret_cast<Kev*>(static_cast<quintptr>(chr_.unicode()) << 8 | 0xd));
   }
 
-  QChar::Category Category() const {
+  QChar::Category category() const {
     return chr_.category();
   }
 
-  bool IsLetter() const {
+  bool isLetter() const {
     return chr_.isLetter();
   }
 
-  bool IsLower() const {
+  bool isLower() const {
     return chr_.isLower();
   }
 
-  bool IsNumber() const {
+  bool isNumber() const {
     return chr_.isNumber();
   }
 
-  bool IsSpace() const {
+  bool isSpace() const {
     return chr_.isSpace();
   }
 
-  bool IsTitleCase() const {
+  bool isTitleCase() const {
     return chr_.isTitleCase();
   }
 
-  bool IsUpper() const {
+  bool isUpper() const {
     return chr_.isUpper();
   }
 
-  KevesChar ToCaseFolded() const {
+  KevesChar toCaseFolded() const {
     return KevesChar(chr_.toCaseFolded());
   }
 
-  KevesChar ToLower() const {
+  KevesChar toLower() const {
     return KevesChar(chr_.toLower());
   }
 
-  KevesChar ToTitleCase() const {
+  KevesChar toTitleCase() const {
     return KevesChar(chr_.toTitleCase());
   }
 
-  ushort Unicode() const {
+  ushort unicode() const {
     return chr_.unicode();
   }
 
-  KevesChar ToUpper() const {
+  KevesChar toUpper() const {
     return KevesChar(chr_.toUpper());
   }
 
-  int Compare(QChar other) const {
+  int compare(QChar other) const {
     return this->chr_.unicode() - other.unicode();
   }
 
-  int Compare(KevesChar other) const {
-    return this->Compare(other.chr_);
+  int compare(KevesChar other) const {
+    return this->compare(other.chr_);
   }
 
 private:

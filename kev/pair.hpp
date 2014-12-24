@@ -48,9 +48,9 @@ public:
     return cdr_;
   }
 
-  void CopyFrom(const PairKev& org);
-  void CopyFrom(PairKev&& org);
-  void Set(KevesValue car, KevesValue cdr);
+  void copyFrom(const PairKev& org);
+  void copyFrom(PairKev&& org);
+  void set(KevesValue car, KevesValue cdr);
 
   void set_car(KevesValue value) {
     car_ = value;
@@ -61,7 +61,7 @@ public:
   }
 
   template<class ZONE>
-  static PairKev* Make(ZONE* zone, KevesValue car, KevesValue cdr);
+  static PairKev* make(ZONE* zone, KevesValue car, KevesValue cdr);
 
 private:
   KevesValue car_;
@@ -78,15 +78,15 @@ public:
   }
 
   template<class ZONE>
-  static MutableKev* CopyTo(ZONE* zone, MutableKev* kev) {
-    return FixedLengthKev<PairKev>::From(kev)->CopyTo(zone);
+  static MutableKev* copyTo(ZONE* zone, MutableKev* kev) {
+    return FixedLengthKev<PairKev>::from(kev)->copyTo(zone);
   }
 
   template<class ZONE>
-  static quintptr* CopyContents(ZONE* zone, MutableKev* kev) {
-    FixedLengthKev<PairKev>* pair(FixedLengthKev<PairKev>::From(kev));
-    pair->car_ = zone->Copy(pair->car_);
-    pair->cdr_ = zone->Copy(pair->cdr_);
+  static quintptr* copyContents(ZONE* zone, MutableKev* kev) {
+    FixedLengthKev<PairKev>* pair(FixedLengthKev<PairKev>::from(kev));
+    pair->car_ = zone->copy(pair->car_);
+    pair->cdr_ = zone->copy(pair->cdr_);
     return pair->border();
   }
 
@@ -96,34 +96,34 @@ public:
 
 public:
   template<class IO, class STACK>
-  static void PushChildren(STACK* pending, KevesValue value) {
+  static void pushChildren(STACK* pending, KevesValue value) {
     const PairKev* pair(value);
-    IO::PushValue(pending, pair->car_);
-    IO::PushValue(pending, pair->cdr_);
+    IO::pushValue(pending, pair->car_);
+    IO::pushValue(pending, pair->cdr_);
   }
 
   template<class IO, class LIST, class STREAM>
-  static void WriteObject(const LIST& list, STREAM& out, KevesValue value) {
+  static void writeObject(const LIST& list, STREAM& out, KevesValue value) {
     const PairKev* pair(value);
 
     out << static_cast<uioword>(pair->type())
-	<< IO::IndexAddress(list, pair->car_)
-	<< IO::IndexAddress(list, pair->cdr_);
+	<< IO::indexAddress(list, pair->car_)
+	<< IO::indexAddress(list, pair->cdr_);
   }
 
   template<class IO, class STREAM, class GC>
-  static Kev* ReadObject(STREAM& in, GC* gc) {
+  static Kev* readObject(STREAM& in, GC* gc) {
     uioword car, cdr;
     in >> car >> cdr;
-    return Make(gc,
-		KevesValue::template FromUioword<Kev>(car),
-		KevesValue::template FromUioword<Kev>(cdr));
+    return make(gc,
+		KevesValue::template fromUioword<Kev>(car),
+		KevesValue::template fromUioword<Kev>(cdr));
   }
   
   template<class IO, class LIST>
-  static void RevertObject(const LIST& object_list, MutableKevesValue value) {
+  static void revertObject(const LIST& object_list, MutableKevesValue value) {
     PairKev* pair(value);
-    IO::RevertValue(object_list, &pair->car_);
-    IO::RevertValue(object_list, &pair->cdr_);
+    IO::revertValue(object_list, &pair->car_);
+    IO::revertValue(object_list, &pair->cdr_);
   }
 };

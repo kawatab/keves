@@ -39,10 +39,10 @@ LambdaKev::LambdaKev()
 LambdaKev::LambdaKev(CodeKev* code, int index)
   : LambdaKev(nullptr, code, index) {}
 
-LambdaKev::LambdaKev(const FreeVarFrameKev* free_vars, CodeKev* code, int index)
+LambdaKev::LambdaKev(const LocalVarFrameKev* free_vars, CodeKev* code, int index)
   : MutableKev(TYPE), free_vars_(free_vars), code_(code), index_(index) {}
 
-LambdaKev::LambdaKev(const FreeVarFrameKev* free_vars, CodeKev* code,
+LambdaKev::LambdaKev(const LocalVarFrameKev* free_vars, CodeKev* code,
 		     const_KevesIterator pc)
   : MutableKev(TYPE),
     free_vars_(free_vars),

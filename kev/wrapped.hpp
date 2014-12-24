@@ -78,7 +78,7 @@ public:
   static KevesValue getDatum(KevesValue);
 
   template<class ZONE>
-  static WrappedKev* Make(ZONE*, KevesValue, KevesValue, KevesValue, KevesValue);
+  static WrappedKev* make(ZONE*, KevesValue, KevesValue, KevesValue, KevesValue);
 
 private:
   KevesValue form_;
@@ -98,12 +98,12 @@ public:
 
   template<class T>
   static MutableKev* copyTo(T* zone, MutableKev* kev) {
-    return FixedLengthKev<WrappedKev>::From(kev)->copyTo(zone);
+    return FixedLengthKev<WrappedKev>::from(kev)->copyTo(zone);
   }
 
   template<class T>
   static quintptr* copyContents(T* zone, MutableKev* kev) {
-    FixedLengthKev<WrappedKev>* wrapped(FixedLengthKev<WrappedKev>::From(kev));
+    FixedLengthKev<WrappedKev>* wrapped(FixedLengthKev<WrappedKev>::from(kev));
     wrapped->form_ = zone->copy(wrapped->form_);
     wrapped->local_vars_ = zone->copy(wrapped->local_vars_);
     wrapped->free_vars_ = zone->copy(wrapped->free_vars_);
@@ -117,42 +117,42 @@ public:
 
 public:
   template<class BASE, class STACK>
-  static void PushChildren(STACK* pending, KevesValue value) {
+  static void pushChildren(STACK* pending, KevesValue value) {
     const WrappedKev* wrapped(value);
-    BASE::PushValue(pending, wrapped->form_);
-    BASE::PushValue(pending, wrapped->local_vars_);
-    BASE::PushValue(pending, wrapped->free_vars_);
-    BASE::PushValue(pending, wrapped->global_vars_);
+    BASE::pushValue(pending, wrapped->form_);
+    BASE::pushValue(pending, wrapped->local_vars_);
+    BASE::pushValue(pending, wrapped->free_vars_);
+    BASE::pushValue(pending, wrapped->global_vars_);
   }
 
   template<class BASE, class LIST, class STREAM>
-  static void WriteObject(const LIST& list, STREAM& out, KevesValue value) {
+  static void writeObject(const LIST& list, STREAM& out, KevesValue value) {
     const WrappedKev* wrapped(value);
 
     out << static_cast<uioword>(wrapped->type())
-	<< BASE::IndexAddress(list, wrapped->form_)
-	<< BASE::IndexAddress(list, wrapped->local_vars_)
-	<< BASE::IndexAddress(list, wrapped->free_vars_)
-	<< BASE::IndexAddress(list, wrapped->global_vars_);
+	<< BASE::indexAddress(list, wrapped->form_)
+	<< BASE::indexAddress(list, wrapped->local_vars_)
+	<< BASE::indexAddress(list, wrapped->free_vars_)
+	<< BASE::indexAddress(list, wrapped->global_vars_);
   }
 
   template<class /*BASE*/, class STREAM, class GC>
-  static Kev* ReadObject(STREAM& in, GC* gc) {
+  static Kev* readObject(STREAM& in, GC* gc) {
     uioword form, local_vars, free_vars, global_vars;
     in >> form >> local_vars >> free_vars >> global_vars;
     return make(gc,
-		KevesValue::template FromUioword<Kev>(form),
-		KevesValue::template FromUioword<Kev>(local_vars),
-		KevesValue::template FromUioword<Kev>(free_vars),
-		KevesValue::template FromUioword<Kev>(global_vars));
+		KevesValue::template fromUioword<Kev>(form),
+		KevesValue::template fromUioword<Kev>(local_vars),
+		KevesValue::template fromUioword<Kev>(free_vars),
+		KevesValue::template fromUioword<Kev>(global_vars));
   }
   
   template<class BASE, class LIST>
-  static void RevertObject(const LIST& object_list, MutableKevesValue value) {
+  static void revertObject(const LIST& object_list, MutableKevesValue value) {
     WrappedKev* wrapped(value);
-    BASE::RevertValue(object_list, &wrapped->form_);
-    BASE::RevertValue(object_list, &wrapped->local_vars_);
-    BASE::RevertValue(object_list, &wrapped->free_vars_);
-    BASE::RevertValue(object_list, &wrapped->global_vars_);
+    BASE::revertValue(object_list, &wrapped->form_);
+    BASE::revertValue(object_list, &wrapped->local_vars_);
+    BASE::revertValue(object_list, &wrapped->free_vars_);
+    BASE::revertValue(object_list, &wrapped->global_vars_);
   }
 };

@@ -23,7 +23,7 @@
 
 
 // class StringCoreKev ----------------------------------------
-void StringCoreKev::CopyArray(const StringCoreKev* org) {
+void StringCoreKev::copyArray(const StringCoreKev* org) {
   const quintptr* org_begin(reinterpret_cast<const quintptr*>(org + 1));
   const quintptr* org_end(org_begin + (sizeof(QChar) * size_ + sizeof(quintptr) - 1) / sizeof(quintptr));
   quintptr* this_begin(reinterpret_cast<quintptr*>(this + 1));
@@ -38,21 +38,21 @@ const QChar* StringCoreKev::array() const {
   return size_ ? reinterpret_cast<const QChar*>(this + 1) : nullptr;
 }
 
-bool StringCoreKev::IsEmpty() const {
+bool StringCoreKev::isEmpty() const {
   return !array();
 }
 
-StringCoreKev* StringCoreKev::Copy(KevesGC* gc, const QChar* org_data, int len) const {
+StringCoreKev* StringCoreKev::copy(KevesGC* gc, const QChar* org_data, int len) const {
   auto ctor = [org_data, len](void* ptr) {
     StringCoreKev* string(new(ptr) StringCoreKev(len));
     std::copy(org_data, org_data + len, string->array());
     return string;
   };
 
-  return gc->Make(ctor, alloc_size(len));
+  return gc->make(ctor, alloc_size(len));
 }
 
-StringCoreKev* StringCoreKev::ToCaseFolded(KevesGC* gc, const QChar* org_data, int len) const {
+StringCoreKev* StringCoreKev::toCaseFolded(KevesGC* gc, const QChar* org_data, int len) const {
   auto ctor = [org_data, len](void* ptr) {
     StringCoreKev* string(new(ptr) StringCoreKev(len));
     QChar* dist_data(string->array());
@@ -60,10 +60,10 @@ StringCoreKev* StringCoreKev::ToCaseFolded(KevesGC* gc, const QChar* org_data, i
     return string;
   };
 
-  return gc->Make(ctor, alloc_size(len));
+  return gc->make(ctor, alloc_size(len));
 }
 
-StringCoreKev* StringCoreKev::ToLower(KevesGC* gc, const QChar* org_data, int len) const {
+StringCoreKev* StringCoreKev::toLower(KevesGC* gc, const QChar* org_data, int len) const {
   auto ctor = [org_data, len](void* ptr) {
     StringCoreKev* string(new(ptr) StringCoreKev(len));
     QChar* dist_data(string->array());
@@ -71,10 +71,10 @@ StringCoreKev* StringCoreKev::ToLower(KevesGC* gc, const QChar* org_data, int le
     return string;
   };
 
-  return gc->Make(ctor, alloc_size(len));
+  return gc->make(ctor, alloc_size(len));
 }
 
-StringCoreKev* StringCoreKev::ToUpper(KevesGC* gc, const QChar* org_data, int len) const {
+StringCoreKev* StringCoreKev::toUpper(KevesGC* gc, const QChar* org_data, int len) const {
   auto ctor = [org_data, len](void* ptr) {
     StringCoreKev* string(new(ptr) StringCoreKev(len));
     QChar* dist_data(string->array());
@@ -82,10 +82,10 @@ StringCoreKev* StringCoreKev::ToUpper(KevesGC* gc, const QChar* org_data, int le
     return string;
   };
 
-  return gc->Make(ctor, alloc_size(len));
+  return gc->make(ctor, alloc_size(len));
 }
 
-StringCoreKev* StringCoreKev::ToTitleCase(KevesGC* gc, const QChar* org_data, int len) const {
+StringCoreKev* StringCoreKev::toTitleCase(KevesGC* gc, const QChar* org_data, int len) const {
   auto ctor = [org_data, len](void* ptr) {
     StringCoreKev* string(new(ptr) StringCoreKev(len));
     QChar* dist_data(string->array());
@@ -99,7 +99,7 @@ StringCoreKev* StringCoreKev::ToTitleCase(KevesGC* gc, const QChar* org_data, in
     return string;
   };
 
-  return gc->Make(ctor, alloc_size(len));
+  return gc->make(ctor, alloc_size(len));
 }
 
 void StringCoreKev::set(const QString& str) {
@@ -115,16 +115,16 @@ KevesString::KevesString(StringCoreKev* core, int idx, int len)
   : core_(core), idx_(idx), len_(len)  {
 }
 
-void KevesString::Set(StringCoreKev* core, int idx, int len) {
+void KevesString::set(StringCoreKev* core, int idx, int len) {
   this->core_ = core;
   this->idx_ = idx;
   this->len_ = len;
 }
 
-KevesString KevesString::Append(KevesGC* gc, const KevesString& other) const {
+KevesString KevesString::append(KevesGC* gc, const KevesString& other) const {
   int this_size(this->size());
   int other_size(other.size());
-  StringCoreKev* core(StringCoreKev::Make(gc, this_size + other_size));
+  StringCoreKev* core(StringCoreKev::make(gc, this_size + other_size));
   QChar* dist_iter(core->array());
   {
     const QChar* org_iter(this->data());
@@ -137,7 +137,7 @@ KevesString KevesString::Append(KevesGC* gc, const KevesString& other) const {
   return KevesString(core, 0, core->size());
 }
 
-QChar KevesString::At(int idx) const {
+QChar KevesString::at(int idx) const {
   Q_ASSERT(idx >= 0 && idx < len_);
   return data() ? data()[idx] : QChar(0);
 }
@@ -158,31 +158,31 @@ const QChar* KevesString::data() const {
   return core_ ? core_->array() + idx_ : nullptr;
 }
 
-void KevesString::Fill(QChar chr) {
+void KevesString::fill(QChar chr) {
   std::fill_n(data(), size(), chr);
 }
 
-bool KevesString::IsEmpty() const {
+bool KevesString::isEmpty() const {
   return !data();
 }
 
-int KevesString::Index() const {
+int KevesString::index() const {
   return idx_;
 }
 
-int KevesString::IndexOf(char chr) const {
+int KevesString::indexOf(char chr) const {
   return QString::fromRawData(data(), len_).indexOf(chr);
 }
 
-int KevesString::IndexOf(const char* chr) const {
+int KevesString::indexOf(const char* chr) const {
   return QString::fromRawData(data(), len_).indexOf(chr);
 }
 
-int KevesString::IndexOf(const char* chr, int pos) const {
+int KevesString::indexOf(const char* chr, int pos) const {
   return QString::fromRawData(data(), len_).indexOf(chr, pos);
 }
 
-bool KevesString::Equals(const char* other) const {
+bool KevesString::equals(const char* other) const {
   const QChar* ptr(this->data());
   const QChar* end_ptr(ptr + this->len_);
 
@@ -194,64 +194,64 @@ bool KevesString::Equals(const char* other) const {
   return *other == '\0';
 }
 
-bool KevesString::Equals(const KevesString& other) const {
+bool KevesString::equals(const KevesString& other) const {
   return QString::fromRawData(this->data(), this->len_)
     .operator==(QString::fromRawData(other.data(), other.len_));
 }
 
-bool KevesString::IsLT(const KevesString& other) const {
+bool KevesString::isLT(const KevesString& other) const {
   return QString::fromRawData(this->data(), this->len_)
     .operator<(QString::fromRawData(other.data(), other.len_));
 }
 
-bool KevesString::IsGT(const KevesString& other) const {
+bool KevesString::isGT(const KevesString& other) const {
   return QString::fromRawData(this->data(), this->len_)
     .operator>(QString::fromRawData(other.data(), other.len_));
 }
 
-bool KevesString::IsLTE(const KevesString& other) const {
+bool KevesString::isLTE(const KevesString& other) const {
   return QString::fromRawData(this->data(), this->len_)
     .operator<=(QString::fromRawData(other.data(), other.len_));
 }
 
-bool KevesString::IsGTE(const KevesString& other) const {
+bool KevesString::isGTE(const KevesString& other) const {
   return QString::fromRawData(this->data(), this->len_)
     .operator>=(QString::fromRawData(other.data(), other.len_));
 }
 
-KevesString KevesString::Left(int len) const {
+KevesString KevesString::left(int len) const {
   return (len < 0 || len > len_) ? *this : KevesString(core_, idx_, len);
 }
 
-KevesString KevesString::Mid(int pos, int len) const {
+KevesString KevesString::mid(int pos, int len) const {
   return (pos < 0 || pos >= len_) ? KevesString() :
     KevesString(core_,
 		pos + idx_,
 		(len < 0 || pos + len > len_) ? len_ - pos : len);
 }
 
-KevesString KevesString::Right(int len) const {
+KevesString KevesString::right(int len) const {
   return (len < 0 || len > len_) ?
     *this : KevesString(core_, idx_ + len_ - len, len);
 }
 
-double KevesString::ToDouble(bool* ok = nullptr) const {
+double KevesString::toDouble(bool* ok = nullptr) const {
   return QString::fromRawData(data(), len_).toDouble(ok);
 }
 
-int KevesString::ToInt(bool* ok = nullptr, int base = 10) const {
+int KevesString::toInt(bool* ok = nullptr, int base = 10) const {
   return QString::fromRawData(data(), len_).toInt(ok, base);
 }
 
-QByteArray KevesString::ToLocal8Bit() const {
+QByteArray KevesString::toLocal8Bit() const {
   return QString::fromRawData(data(), len_).toLocal8Bit();
 }
 
-QString KevesString::ToQString() const {
+QString KevesString::toQString() const {
   return QString::fromRawData(data(), len_);
 }
 
-unsigned int KevesString::ToUInt(bool* ok = nullptr, int base = 10) const {
+unsigned int KevesString::toUInt(bool* ok = nullptr, int base = 10) const {
   return QString::fromRawData(data(), len_).toUInt(ok, base);
 }
 
@@ -266,72 +266,72 @@ StringKev::StringKev(StringCoreKev* core, int idx, int len)
   : StringKev(KevesString(core, idx, len)) {
 }
 
-void StringKev::CopyFrom(const StringKev& org) {
+void StringKev::copyFrom(const StringKev& org) {
   this->core_ = org.core_;
   this->idx_ = org.idx_;
   this->len_ = org.len_;
 }
 
-void StringKev::CopyFrom(StringKev&& org) {
+void StringKev::copyFrom(StringKev&& org) {
   this->core_ = org.core_;
   this->idx_ = org.idx_;
   this->len_ = org.len_;
 }
 
-StringKev StringKev::Left(int len) {
-  return StringKev(this->KevesString::Left(len));
+StringKev StringKev::left(int len) {
+  return StringKev(this->KevesString::left(len));
 }
 
-StringKev StringKev::Left(int len) const {
-  return StringKev(this->KevesString::Left(len));
+StringKev StringKev::left(int len) const {
+  return StringKev(this->KevesString::left(len));
 }
 
-StringKev StringKev::Mid(int pos, int len) {
-  return StringKev(this->KevesString::Mid(pos, len));
+StringKev StringKev::mid(int pos, int len) {
+  return StringKev(this->KevesString::mid(pos, len));
 }
 
-StringKev StringKev::Mid(int pos, int len) const {
-  return StringKev(this->KevesString::Mid(pos, len));
+StringKev StringKev::mid(int pos, int len) const {
+  return StringKev(this->KevesString::mid(pos, len));
 }
 
-StringKev StringKev::Right(int len) {
-  return StringKev(this->KevesString::Right(len));
+StringKev StringKev::right(int len) {
+  return StringKev(this->KevesString::right(len));
 }
 
-StringKev StringKev::Right(int len) const {
-  return StringKev(this->KevesString::Right(len));
+StringKev StringKev::right(int len) const {
+  return StringKev(this->KevesString::right(len));
 }
 
-StringKev StringKev::Copy(KevesGC* gc) const {
-  StringCoreKev* core(this->core()->Copy(gc, data(), size()));
+StringKev StringKev::copy(KevesGC* gc) const {
+  StringCoreKev* core(this->core()->copy(gc, data(), size()));
   return StringKev(core, 0, core->size());
 }
 
-void StringKev::Set(int idx, QChar chr) {
+void StringKev::set(int idx, QChar chr) {
   Q_ASSERT(idx >= 0 && idx < len_);
   this->data()[idx] = chr;
 }
 
-StringKev StringKev::ToCaseFolded(KevesGC* gc) const {
-  StringCoreKev* core(this->core()->ToCaseFolded(gc, data(), size()));
+StringKev StringKev::toCaseFolded(KevesGC* gc) const {
+  StringCoreKev* core(this->core()->toCaseFolded(gc, data(), size()));
   return StringKev(core, 0, core->size());
 }
 
-StringKev StringKev::ToLower(KevesGC* gc) const {
-  StringCoreKev* core(this->core()->ToLower(gc, data(), size()));
+StringKev StringKev::toLower(KevesGC* gc) const {
+  StringCoreKev* core(this->core()->toLower(gc, data(), size()));
   return StringKev(core, 0, core->size());
 }
 
-StringKev StringKev::ToUpper(KevesGC* gc) const {
-  StringCoreKev* core(this->core()->ToUpper(gc, data(), size()));
+StringKev StringKev::toUpper(KevesGC* gc) const {
+  StringCoreKev* core(this->core()->toUpper(gc, data(), size()));
   return StringKev(core, 0, core->size());
 }
 
-StringKev StringKev::ToTitleCase(KevesGC* gc) const {
-  StringCoreKev* core(this->core()->ToTitleCase(gc, data(), size()));
+StringKev StringKev::toTitleCase(KevesGC* gc) const {
+  StringCoreKev* core(this->core()->toTitleCase(gc, data(), size()));
   return StringKev(core, 0, core->size());
 }
 
-StringKev StringKev::Append(KevesGC* gc, const StringKev& str) const {
-  return StringKev(this->KevesString::Append(gc, static_cast<KevesString>(str)));
+StringKev StringKev::append(KevesGC* gc, const StringKev& str) const {
+  return StringKev(this->KevesString::append(gc, static_cast<KevesString>(str)));
 }

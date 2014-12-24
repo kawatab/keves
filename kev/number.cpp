@@ -30,7 +30,7 @@
 
 namespace {
   int getSignOfNumberString(StringKev str, bool* ptr_neg) {
-    QChar chr(str.At(0));
+    QChar chr(str.at(0));
     return (*ptr_neg = chr == QChar('-')) || chr == QChar('+');
   }
   
@@ -40,23 +40,23 @@ namespace {
     
     if (radix == 2) {
       for (; pos < len; ++pos) {
-	QChar chr(str.At(pos));
+	QChar chr(str.at(pos));
 	
 	if (chr != '0' && chr != '1')
 	  break;
       }
     } else if (radix == 8) {
       for (; pos < len; ++pos) {
-	QChar chr(str.At(pos));
+	QChar chr(str.at(pos));
 
 	if (chr < '0' || chr > '7')
 	  break;
       }
     } else if (radix == 10) {
-      while (pos < len && str.At(pos).isDigit()) ++pos;
+      while (pos < len && str.at(pos).isDigit()) ++pos;
     } else if (radix == 16) {
       for (; pos < len; ++pos) {
-	QChar chr(str.At(pos));
+	QChar chr(str.at(pos));
 	
 	if ((chr < '0' || chr > '9') &&
 	    (chr < 'A' || chr > 'F') &&
@@ -71,29 +71,29 @@ namespace {
   KevesValue NumberKev_makeFromDecimal(KevesGC* gc, StringKev str, const StringKev* next_str, int radix, bool exct, RationalNumberKev* real) {
     FlonumKev flonum;
     
-    if (str.Equals("0") || str.Equals("+0") || str.Equals("-0")) {
+    if (str.equals("0") || str.equals("+0") || str.equals("-0")) {
       if (next_str) {
 	RationalNumberKev* zero(RationalNumberKev::makeFromInt(gc, 0));
 	return NumberKev_makeFromDecimal(gc, *next_str, nullptr, radix, exct, zero);
       }
 
       KevesValue int_num(real->toKevesFixnum());
-      return int_num.IsFixnum() ? int_num : KevesValue(real);
+      return int_num.isFixnum() ? int_num : KevesValue(real);
     }
 
-    if (str.Equals("inf.0") || str.Equals("+inf.0")) {
+    if (str.equals("inf.0") || str.equals("+inf.0")) {
       flonum.set(std::numeric_limits<double>::infinity());
-    } else if (str.Equals("-inf.0")) {
+    } else if (str.equals("-inf.0")) {
       flonum.set(-std::numeric_limits<double>::infinity());
-    } else if (str.Equals("nan.0") || str.Equals("+nan.0") || str.Equals("-nan.0")) {
+    } else if (str.equals("nan.0") || str.equals("+nan.0") || str.equals("-nan.0")) {
       flonum.set(std::numeric_limits<double>::quiet_NaN());
     } else {
       if (radix != 10) {
-	exct = str.IndexOf('.') < 0 &&
-	  str.IndexOf("e") < 0 &&
-	  str.IndexOf("f") < 0 &&
-	  str.IndexOf("d") < 0 &&
-	  str.IndexOf("l") < 0;
+	exct = str.indexOf('.') < 0 &&
+	  str.indexOf("e") < 0 &&
+	  str.indexOf("f") < 0 &&
+	  str.indexOf("d") < 0 &&
+	  str.indexOf("l") < 0;
       }
       
       if (exct) {
@@ -102,20 +102,20 @@ namespace {
 	if (next_str)
 	  return NumberKev_makeFromDecimal(gc, *next_str, nullptr, radix, exct, rational);
 	RationalNumberKev* imag(rational);
-	ExactComplexNumberKev* complex(ExactComplexNumberKev::Make(gc));
+	ExactComplexNumberKev* complex(ExactComplexNumberKev::make(gc));
 	complex->set(*real, *imag);
 	return complex;
       }
       
       bool ok;
-      flonum.CopyFrom(FlonumKev::fromString(str, &ok));
+      flonum.copyFrom(FlonumKev::fromString(str, &ok));
       
       if (!ok)
 	return EMB_UNDEF;
     }
     
     if (next_str) {
-      if (next_str->Equals("0") || next_str->Equals("+0") || next_str->Equals("-0")) {
+      if (next_str->equals("0") || next_str->equals("+0") || next_str->equals("-0")) {
 	FlonumKev* real(flonum.copy(gc));
 	return real;
       }
@@ -139,19 +139,19 @@ KevesValue NumberKev::makeFromBinary(KevesGC* gc, StringKev str, int radix, bool
   StringKev str_real;
   StringKev str_imag;
   int len(str.size());
-  int pos_imag(str.IndexOf("+", 1));
+  int pos_imag(str.indexOf("+", 1));
 
-  if (pos_imag < 0) pos_imag = str.IndexOf("-", 1);
+  if (pos_imag < 0) pos_imag = str.indexOf("-", 1);
   
   if (pos_imag > 0) {
-    str_real.CopyFrom(str.Left(pos_imag));
-    str_imag.CopyFrom(str.Mid(pos_imag, len - pos_imag - 1));
-  } else if (str.Right(1).Equals("i")) {
-    str_real.CopyFrom(str_zero);
-    str_imag.CopyFrom(str.Left(len - 1));
+    str_real.copyFrom(str.left(pos_imag));
+    str_imag.copyFrom(str.mid(pos_imag, len - pos_imag - 1));
+  } else if (str.right(1).equals("i")) {
+    str_real.copyFrom(str_zero);
+    str_imag.copyFrom(str.left(len - 1));
   } else {
-    str_real.CopyFrom(str.Left(len));
-    str_imag.CopyFrom(str_zero);
+    str_real.copyFrom(str.left(len));
+    str_imag.copyFrom(str_zero);
   }
   
   return exct ?
@@ -164,35 +164,35 @@ KevesValue NumberKev::makeFromDecimal(KevesGC* gc, StringKev str, int radix, boo
   StringKevWithArray<0x4> str_zero("0");
   StringKevWithArray<0x4> str_one("1");
   
-  int pos_plus(str.IndexOf("+", 1));
-  int pos_minus(str.IndexOf("-", 1));
+  int pos_plus(str.indexOf("+", 1));
+  int pos_minus(str.indexOf("-", 1));
   
   int pos_imag((pos_plus < 0 || (pos_minus > 0 && pos_plus > pos_minus)) ?
 		  pos_minus : pos_plus);
   
-  StringKev str_real(str.Left(pos_imag));
-  QChar chr_last(str_real.Right(1).At(0));
+  StringKev str_real(str.left(pos_imag));
+  QChar chr_last(str_real.right(1).at(0));
   
   if (chr_last == 'e' || chr_last == 'E' ||
       chr_last == 's' || chr_last == 'S' ||
       chr_last == 'f' || chr_last == 'F' ||
       chr_last == 'd' || chr_last == 'D' ||
       chr_last == 'l' || chr_last == 'L') {
-    int pos_plus(str.IndexOf("+", pos_imag + 1));
-    int pos_minus(str.IndexOf("-", pos_imag + 1));
+    int pos_plus(str.indexOf("+", pos_imag + 1));
+    int pos_minus(str.indexOf("-", pos_imag + 1));
     pos_imag = pos_plus < 0 ? pos_minus : pos_plus;
-    str_real.CopyFrom(str.Mid(0, pos_imag));
+    str_real.copyFrom(str.mid(0, pos_imag));
   }
   
-  StringKev str_imag(str.Mid(pos_imag, len - pos_imag - 1));
+  StringKev str_imag(str.mid(pos_imag, len - pos_imag - 1));
   
   if (pos_imag < 0) {
-    if (str.Right(1).Equals("i")) {
-      str_real.CopyFrom(str_zero);
-      str_imag.CopyFrom(str.Mid(0, len - 1));
+    if (str.right(1).equals("i")) {
+      str_real.copyFrom(str_zero);
+      str_imag.copyFrom(str.mid(0, len - 1));
     } else {
-      str_real.CopyFrom(str.Mid(0, len));
-      str_imag.CopyFrom(str_zero);
+      str_real.copyFrom(str.mid(0, len));
+      str_imag.copyFrom(str_zero);
     }
   }
   
@@ -214,7 +214,7 @@ KevesValue NumberKev::makeRealNumberFromBinary(KevesGC* gc, StringKev str, int* 
     return EMB_UNDEF;
   }
   
-  const StringKev rest1(str.Right(str.size() - pos));
+  const StringKev rest1(str.right(str.size() - pos));
   *position += pos;
   return makeRealNumberFromBinary_helper1(gc, rest1, position, radix, negative);
 }
@@ -222,19 +222,19 @@ KevesValue NumberKev::makeRealNumberFromBinary(KevesGC* gc, StringKev str, int* 
 KevesValue NumberKev::makeRealNumberFromBinary_helper1(KevesGC* gc, StringKev rest, int* position, int radix, bool negative) {
   // get first digit part
   int pos(getEndOfDigitString(rest, radix));
-  const StringKev num_a(rest.Left(pos));
-  const StringKev rest1(rest.Right(rest.size() - pos));
+  const StringKev num_a(rest.left(pos));
+  const StringKev rest1(rest.right(rest.size() - pos));
   *position += pos;
   
   if (rest1.size() > 0) {
-    QChar chr(rest1.At(0));
-    const StringKev rest2(rest1.Right(rest1.size() - 1));
+    QChar chr(rest1.at(0));
+    const StringKev rest2(rest1.right(rest1.size() - 1));
     *position += 1;
     
     // get second digit part
     int pos(getEndOfDigitString(rest2, radix));
-    const StringKev num_b(rest2.Left(pos));
-    const StringKev rest3(rest2.Right(rest2.size() - pos));
+    const StringKev num_b(rest2.left(pos));
+    const StringKev rest3(rest2.right(rest2.size() - pos));
     *position += pos;
     
     if (chr == QChar('/')) { // rational
@@ -242,7 +242,7 @@ KevesValue NumberKev::makeRealNumberFromBinary_helper1(KevesGC* gc, StringKev re
 	int idx(0);
 	int len(num_a.size());
 
-	while (idx < len && num_a.At(idx) == QChar('0')) ++idx;
+	while (idx < len && num_a.at(idx) == QChar('0')) ++idx;
 
 	if (idx == len) {
 	  *position = -1;
@@ -257,7 +257,7 @@ KevesValue NumberKev::makeRealNumberFromBinary_helper1(KevesGC* gc, StringKev re
     }
   }
   
-  const StringKev num_b(rest.Left(0));
+  const StringKev num_b(rest.left(0));
 
   return RationalNumberKev::makeIntegerFromString(gc, negative, num_a, radix);
 }
@@ -277,7 +277,7 @@ KevesValue NumberKev::makeRealNumberFromDecimal(KevesGC* gc, StringKev str, int*
     return EMB_UNDEF;
   }
 
-  const StringKev rest1(str.Right(str.size() - pos));
+  const StringKev rest1(str.right(str.size() - pos));
   *position += pos;
 
   return makeRealNumberFromDecimal_helper1(gc, rest1, position,
@@ -287,19 +287,19 @@ KevesValue NumberKev::makeRealNumberFromDecimal(KevesGC* gc, StringKev str, int*
 KevesValue NumberKev::makeRealNumberFromDecimal_helper1(KevesGC* gc, StringKev rest, int* position, int* radix, bool* exact, bool negative) {
   // get first digit part
   int pos(getEndOfDigitString(rest, 10));
-  const StringKev num_a(rest.Left(pos));
-  const StringKev rest1(rest.Right(rest.size() - pos));
+  const StringKev num_a(rest.left(pos));
+  const StringKev rest1(rest.right(rest.size() - pos));
   *position += pos;
   
   if (rest1.size() > 0) {
-    QChar chr(rest1.At(0));
-    const StringKev rest2(rest1.Right(rest1.size() - 1));
+    QChar chr(rest1.at(0));
+    const StringKev rest2(rest1.right(rest1.size() - 1));
     *position += 1;
     
     // get second digit part
     int pos(getEndOfDigitString(rest2, 10));
-    const StringKev num_b(rest2.Left(pos));
-    const StringKev rest3(rest2.Right(rest2.size() - pos));
+    const StringKev num_b(rest2.left(pos));
+    const StringKev rest3(rest2.right(rest2.size() - pos));
     *position += pos;
     
     if (chr == QChar('/')) { // rational
@@ -307,7 +307,7 @@ KevesValue NumberKev::makeRealNumberFromDecimal_helper1(KevesGC* gc, StringKev r
 	int idx(0);
 	int len(num_a.size());
 
-	while (idx < len && num_a.At(idx) == QChar('0')) ++idx;
+	while (idx < len && num_a.at(idx) == QChar('0')) ++idx;
 
 	if (idx == len) {
 	  *position = -1;
@@ -337,14 +337,14 @@ KevesValue NumberKev::makeRealNumberFromDecimal_helper1(KevesGC* gc, StringKev r
 
 KevesValue NumberKev::makeRealNumberFromDecimal_helper2(KevesGC* gc, StringKev rest, int* position, int* radix, bool* exact, bool negative, StringKev num_a) {
   if (num_a.size() > 0) {
-    const StringKev num_b(rest.Left(0));
+    const StringKev num_b(rest.left(0));
     return makeRealNumberFromDecimal_helper3(gc, rest, position, radix, exact, negative, num_a, num_b);
   }
 
   if (*position == 1) {
-    const StringKev num_c(rest.Left(5));
+    const StringKev num_c(rest.left(5));
     
-    if (num_c.Equals("inf.0")) {
+    if (num_c.equals("inf.0")) {
       FlonumKev flonum(negative ?
 		       -std::numeric_limits<double>::infinity() :
 		       std::numeric_limits<double>::infinity());
@@ -352,7 +352,7 @@ KevesValue NumberKev::makeRealNumberFromDecimal_helper2(KevesGC* gc, StringKev r
       return flonum.copy(gc);
     }
 
-    if (num_c.Equals("nan.0")) {
+    if (num_c.equals("nan.0")) {
       FlonumKev flonum(std::numeric_limits<double>::quiet_NaN());
       *position += 5;
       return flonum.copy(gc);
@@ -372,7 +372,7 @@ KevesValue NumberKev::makeRealNumberFromDecimal_helper3(KevesGC* gc, StringKev r
   int expt(0);
 
   if (rest.size() > 1) {
-    QChar chr(rest.At(0));
+    QChar chr(rest.at(0));
     
     if (chr == QChar('e') || chr == QChar('E') ||
 	chr == QChar('s') || chr == QChar('S') ||
@@ -381,12 +381,12 @@ KevesValue NumberKev::makeRealNumberFromDecimal_helper3(KevesGC* gc, StringKev r
 	chr == QChar('l') || chr == QChar('L')) {
       if (*radix == 0) *exact = false;
 
-      const StringKev rest1(rest.Right(rest.size() - 1));
+      const StringKev rest1(rest.right(rest.size() - 1));
       *position += 1;
 
       bool expt_neg;
       int pos(getSignOfNumberString(rest1, &expt_neg));
-      const StringKev rest2(rest1.Right(rest1.size() - pos));
+      const StringKev rest2(rest1.right(rest1.size() - pos));
       *position += pos;
       
       if (rest2.size() == 0) { // exponent part is empty
@@ -395,11 +395,11 @@ KevesValue NumberKev::makeRealNumberFromDecimal_helper3(KevesGC* gc, StringKev r
       }
       
       pos = getEndOfDigitString(rest2, 10);
-      const StringKev rest3(rest2.Right(rest2.size() - pos));
-      const StringKev str_expt(rest2.Left(pos));
+      const StringKev rest3(rest2.right(rest2.size() - pos));
+      const StringKev str_expt(rest2.left(pos));
       *position += pos;
       
-      QString qstr_expt(str_expt.ToQString());
+      QString qstr_expt(str_expt.toQString());
       bool ok;
       expt = qstr_expt.toUInt(&ok);
       
@@ -425,8 +425,8 @@ int NumberKev::getPrefix(StringKev str, int* radix, bool* exact) {
 			0xf00, 0xf00, 0x030, 0xf00, 0xf00 }; // v w X y z
 
   if (str.size() > 2) {
-    QChar chr1(str.At(0));
-    int code1(str.At(1).unicode());
+    QChar chr1(str.at(0));
+    int code1(str.at(1).unicode());
     int exact_and_radix;
     int req_exact(0);
     int req_radix(0);
@@ -443,8 +443,8 @@ int NumberKev::getPrefix(StringKev str, int* radix, bool* exact) {
       pos = 2;
 
       if (str.size() > 4) {
-	QChar chr2(str.At(2));
-	int code2(str.At(3).unicode());
+	QChar chr2(str.at(2));
+	int code2(str.at(3).unicode());
 
 	if (chr2 == '#') {
 	  if (code2 >= 'A' && code2 <= 'Z') {
@@ -506,42 +506,42 @@ StringKev* NumberKev::makeStringFromNumber(KevesGC* gc, KevesValue num, int radi
 StringKev* NumberKev::makeStringFromDecimal(KevesGC* gc, KevesValue num, int precision) {
   QString str;
 
-  if (num.IsFixnum()) {
+  if (num.isFixnum()) {
     str.operator=(QString::number(KevesFixnum(num)));
-  } else if (num.Is<RationalNumberKev>()) {
+  } else if (num.is<RationalNumberKev>()) {
     try {
-      str.operator=(num.ToPtr<RationalNumberKev>()->toQString(false));
+      str.operator=(num.toPtr<RationalNumberKev>()->toQString(false));
     } catch (int i) {
       std::cout << "Allocation is failed!" << std::endl;
     }
-  } else if (num.Is<FlonumKev>()) {
-    str.operator=(num.ToPtr<FlonumKev>()->toQString(false, precision));
-  } else if (num.Is<ExactComplexNumberKev>()) {
+  } else if (num.is<FlonumKev>()) {
+    str.operator=(num.toPtr<FlonumKev>()->toQString(false, precision));
+  } else if (num.is<ExactComplexNumberKev>()) {
     try {
-      str.operator=(num.ToPtr<ExactComplexNumberKev>()->toQString());
+      str.operator=(num.toPtr<ExactComplexNumberKev>()->toQString());
     } catch (int i) {
       std::cout << "Allocation is failed!" << std::endl;
     }
-  } else if (num.Is<InexactComplexNumberKev>()) {
-    str.operator=(num.ToPtr<InexactComplexNumberKev>()->toQString(precision));
+  } else if (num.is<InexactComplexNumberKev>()) {
+    str.operator=(num.toPtr<InexactComplexNumberKev>()->toQString(precision));
   }
 
-  return StringKev::Make(gc, str);
+  return StringKev::make(gc, str);
 }
 
 StringKev* NumberKev::makeStringFromBinary(KevesGC* gc, KevesValue num, int radix) {
   QString str;
 
-  if (num.IsFixnum()) {
+  if (num.isFixnum()) {
     str.operator=(QString::number(KevesFixnum(num), radix));
-  } else if (num.Is<RationalNumberKev>()) {
-    str.operator=(num.ToPtr<RationalNumberKev>()->toBinary(false, radix));
-  } else if (num.Is<FlonumKev>()) {
-    RationalNumberKev exact(num.ToPtr<FlonumKev>()->toExact(gc));
+  } else if (num.is<RationalNumberKev>()) {
+    str.operator=(num.toPtr<RationalNumberKev>()->toBinary(false, radix));
+  } else if (num.is<FlonumKev>()) {
+    RationalNumberKev exact(num.toPtr<FlonumKev>()->toExact(gc));
     str.operator=(exact.toBinary(false, radix));
-  } else if (num.Is<ExactComplexNumberKev>()) {
-    str.operator=(num.ToPtr<ExactComplexNumberKev>()->toBinary(radix));
-  } else if (num.Is<InexactComplexNumberKev>()) {
+  } else if (num.is<ExactComplexNumberKev>()) {
+    str.operator=(num.toPtr<ExactComplexNumberKev>()->toBinary(radix));
+  } else if (num.is<InexactComplexNumberKev>()) {
     const InexactComplexNumberKev* complex(num);
     RationalNumberKev real(complex->real().toExact(gc));
     RationalNumberKev imag(complex->imag().toExact(gc));
@@ -550,7 +550,7 @@ StringKev* NumberKev::makeStringFromBinary(KevesGC* gc, KevesValue num, int radi
     str.append('i');
   }
 
-  return StringKev::Make(gc, str);
+  return StringKev::make(gc, str);
 }
 
 mpq_class RationalNumberKev::makeMPQ() const {
@@ -631,17 +631,17 @@ InexactComplexNumberKev NumberKev::quotient(KevesFixnum dividend, InexactComplex
 }
 
 FlonumKev NumberKev::makeFlonum(KevesValue x) {
-  if (x.IsFixnum()) {
+  if (x.isFixnum()) {
     KevesFixnum fixnum(x);
     return FlonumKev(fixnum);
   }
   
-  if (x.Is<RationalNumberKev>()) {
+  if (x.is<RationalNumberKev>()) {
     const RationalNumberKev* rational(x);
     return rational->toInexact();
   }
 
-  if (x.Is<FlonumKev>()) {
+  if (x.is<FlonumKev>()) {
     const FlonumKev* flonum(x);
     return *flonum;
   }
@@ -714,50 +714,50 @@ bool NumberKev::IsGTE::func(FlonumKev num1, FlonumKev num2) {
 }
 
 KevesValue NumberKev::max(KevesGC* gc, KevesValue x, KevesValue y) {
-  if (y.IsFixnum()) {
+  if (y.isFixnum()) {
     KevesFixnum num2(y);
 
-    if (x.IsFixnum()) {
+    if (x.isFixnum()) {
       KevesFixnum num1(x);
       return num1 > num2 ? num1 : num2;
     }
 
-    if (x.Is<RationalNumberKev>())
+    if (x.is<RationalNumberKev>())
       return max(gc, x, RationalNumberKev::makeFromInt(gc, num2));
     
-    if (x.Is<FlonumKev>())
+    if (x.is<FlonumKev>())
       return max(gc, x, FlonumKev(num2).copy(gc));
 
-  } else if (y.Is<RationalNumberKev>()) {
+  } else if (y.is<RationalNumberKev>()) {
     const RationalNumberKev* num2(y);
 
-    if (x.IsFixnum()) {
+    if (x.isFixnum()) {
       KevesFixnum num1(x);
       return max(gc, RationalNumberKev::makeFromInt(gc, num1), num2);
     }
 
-    if (x.Is<RationalNumberKev>()) {
+    if (x.is<RationalNumberKev>()) {
       const RationalNumberKev* num1(x);
       return num1->isGT(*num2) ? num1 : num2;
     }
 
-    if (x.Is<FlonumKev>())
+    if (x.is<FlonumKev>())
       return max(gc, x, num2->toInexact().copy(gc));
     
-  } else if (y.Is<FlonumKev>()) {
+  } else if (y.is<FlonumKev>()) {
     const FlonumKev* num2(y);
 
-    if (x.IsFixnum()) {
+    if (x.isFixnum()) {
       KevesFixnum num1(x);
       return max(gc, FlonumKev(num1).copy(gc), num2);
     }
 
-    if (x.Is<RationalNumberKev>()) {
+    if (x.is<RationalNumberKev>()) {
       const RationalNumberKev* num1(x);
       return max(gc, num1->toInexact().copy(gc), num2);
     }
 
-    if (x.Is<FlonumKev>()) {
+    if (x.is<FlonumKev>()) {
       const FlonumKev* num1(x);
       return num1->isGT(*num2) ? num1 :num2;
     }
@@ -768,50 +768,50 @@ KevesValue NumberKev::max(KevesGC* gc, KevesValue x, KevesValue y) {
 }
 
 KevesValue NumberKev::min(KevesGC* gc, KevesValue x, KevesValue y) {
-  if (y.IsFixnum()) {
+  if (y.isFixnum()) {
     KevesFixnum num2(y);
 
-    if (x.IsFixnum()) {
+    if (x.isFixnum()) {
       KevesFixnum num1(x);
       return num1 < num2 ? num1 : num2;
     }
 
-    if (x.Is<RationalNumberKev>())
+    if (x.is<RationalNumberKev>())
       return min(gc, x, RationalNumberKev::makeFromInt(gc, num2));
 
-    if (x.Is<FlonumKev>())
+    if (x.is<FlonumKev>())
       return min(gc, x, FlonumKev(num2).copy(gc));
     
-  } else if (y.Is<RationalNumberKev>()) {
+  } else if (y.is<RationalNumberKev>()) {
     const RationalNumberKev* num2(y);
 
-    if (x.IsFixnum()) {
+    if (x.isFixnum()) {
       KevesFixnum num1(x);
       return min(gc, RationalNumberKev::makeFromInt(gc, num1), num2);
     }
 
-    if (x.Is<RationalNumberKev>()) {
+    if (x.is<RationalNumberKev>()) {
       const RationalNumberKev* num1(x);
       return num1->isLT(*num2) ? num1 : num2;
     }
 
-    if (x.Is<FlonumKev>())
+    if (x.is<FlonumKev>())
       return min(gc, x, num2->toInexact().copy(gc));
     
-  } else if (y.Is<FlonumKev>()) {
+  } else if (y.is<FlonumKev>()) {
     const FlonumKev* num2(y);
 
-    if (x.IsFixnum()) {
+    if (x.isFixnum()) {
       KevesFixnum num1(x);
       return min(gc, FlonumKev(num1).copy(gc), num2);
     }
 
-    if (x.Is<RationalNumberKev>()) {
+    if (x.is<RationalNumberKev>()) {
       const RationalNumberKev* num1(x);
       return min(gc, num1->toInexact().copy(gc), num2);
     }
 
-    if (x.Is<FlonumKev>()) {
+    if (x.is<FlonumKev>()) {
       const FlonumKev* num1(x);
       return num1->isLT(*num2) ? num1 :num2;
     }
@@ -840,13 +840,13 @@ RationalNumberKev::RationalNumberKev()
 RationalNumberKev::RationalNumberKev(bool neg, const Bignum* num, const Bignum* den) : MutableKev(TYPE), neg_(neg), numerator_(num), denominator_(den) {
 }
 
-void RationalNumberKev::CopyFrom(const RationalNumberKev& other) {
+void RationalNumberKev::copyFrom(const RationalNumberKev& other) {
   this->neg_ = other.neg_;
   this->numerator_ = other.numerator_;
   this->denominator_ = other.denominator_;
 }
 
-void RationalNumberKev::CopyFrom(RationalNumberKev&& other) {
+void RationalNumberKev::copyFrom(RationalNumberKev&& other) {
   this->neg_ = other.neg_;
   this->numerator_ = other.numerator_;
   this->denominator_ = other.denominator_;
@@ -981,7 +981,7 @@ void RationalNumberKev::multiplyByExponentiationWithBase2(KevesGC* gc, int expon
 
 KevesValue RationalNumberKev::optimize() {
   KevesValue fixnum(this->toKevesFixnum());
-  return fixnum.IsFixnum() ? fixnum : KevesValue(this);
+  return fixnum.isFixnum() ? fixnum : KevesValue(this);
 }
 
 RationalNumberKev RationalNumberKev::reciprocal() const {
@@ -1027,7 +1027,7 @@ bool RationalNumberKev::isEqualTo(RationalNumberKev other) const {
     this->denominator_->equals(*other.denominator_);
 }
 
-bool RationalNumberKev::IsEmpty() const {
+bool RationalNumberKev::isEmpty() const {
   return numerator_ == nullptr || numerator_ == nullptr;
 }
 
@@ -1199,15 +1199,15 @@ RationalNumberKev* RationalNumberKev::makeFromInt(KevesIterator* iter, bg_int re
 */
 
 RationalNumberKev* RationalNumberKev::makeFromInt(KevesGC* gc, bg_int real) {
-  return gc->Make(ctorFromInt(gc, real), alloc_size(nullptr));
+  return gc->make(ctorFromInt(gc, real), alloc_size(nullptr));
 }
 
 RationalNumberKev* RationalNumberKev::makeFromLong(KevesGC* gc, bg_long real) {
-  return gc->Make(ctorFromLong(gc, real), alloc_size(nullptr));
+  return gc->make(ctorFromLong(gc, real), alloc_size(nullptr));
 }
 
 RationalNumberKev* RationalNumberKev::makeFromMPQ(KevesGC* gc, const mpq_class& mpq_num) {
-  return gc->Make(ctorFromMPQ(gc, mpq_num), alloc_size(nullptr));
+  return gc->make(ctorFromMPQ(gc, mpq_num), alloc_size(nullptr));
 }
 
 RationalNumberKev* RationalNumberKev::makeFromString(KevesGC* gc, StringKev str, int radix) {
@@ -1215,56 +1215,56 @@ RationalNumberKev* RationalNumberKev::makeFromString(KevesGC* gc, StringKev str,
   StringKev str_denominator;
   StringKevWithArray<0x4> str_one("1");
   
-  int pos(str.IndexOf("/"));
+  int pos(str.indexOf("/"));
 
   if (pos > 0) { // rational
-    str_numerator.CopyFrom(str.Left(pos));
-    str_denominator.CopyFrom(str.Right(str.size() - pos - 1));
+    str_numerator.copyFrom(str.left(pos));
+    str_denominator.copyFrom(str.right(str.size() - pos - 1));
   } else {
-    str_numerator.CopyFrom(str);
-    str_denominator.CopyFrom(str_one);
+    str_numerator.copyFrom(str);
+    str_denominator.copyFrom(str_one);
   }
   
-  RationalNumberKev* number(RationalNumberKev::Make(gc));
+  RationalNumberKev* number(RationalNumberKev::make(gc));
 
-  if (str_numerator.Left(1).Equals("+")) {
+  if (str_numerator.left(1).equals("+")) {
     number->neg_ = false;
-    str_numerator.CopyFrom(str_numerator.Right(str_numerator.size() - 1));
-  } else if (str_numerator.Left(1).Equals("-")) {
+    str_numerator.copyFrom(str_numerator.right(str_numerator.size() - 1));
+  } else if (str_numerator.left(1).equals("-")) {
     number->neg_ = true;
-    str_numerator.CopyFrom(str_numerator.Right(str_numerator.size() - 1));
+    str_numerator.copyFrom(str_numerator.right(str_numerator.size() - 1));
   } else {
     number->neg_ = false;
   }
   
-  number->numerator_ = Bignum::makeFromString(gc, str_numerator.ToQString(), radix);
-  number->denominator_ = Bignum::makeFromString(gc, str_denominator.ToQString(), radix);
+  number->numerator_ = Bignum::makeFromString(gc, str_numerator.toQString(), radix);
+  number->denominator_ = Bignum::makeFromString(gc, str_denominator.toQString(), radix);
 
   return number;
 }
 
 KevesValue RationalNumberKev::makeRationalFromString(KevesGC* gc, bool negative, StringKev str_num, StringKev str_den) {
-  RationalNumberKev* number(RationalNumberKev::Make(gc));
+  RationalNumberKev* number(RationalNumberKev::make(gc));
   number->neg_ = negative;
-  number->numerator_ = Bignum::makeFromString(gc, str_num.ToQString());
-  number->denominator_ = Bignum::makeFromString(gc, str_den.ToQString());
+  number->numerator_ = Bignum::makeFromString(gc, str_num.toQString());
+  number->denominator_ = Bignum::makeFromString(gc, str_den.toQString());
   number->reduce(gc);
   return number->optimize();
 }
 
 KevesValue RationalNumberKev::makeRationalFromString(KevesGC* gc, bool negative, StringKev str_num, StringKev str_den, int radix) {
-  RationalNumberKev* number(RationalNumberKev::Make(gc));
+  RationalNumberKev* number(RationalNumberKev::make(gc));
   number->neg_ = negative;
-  number->numerator_ = Bignum::makeFromString(gc, str_num.ToQString(), radix);
-  number->denominator_ = Bignum::makeFromString(gc, str_den.ToQString(), radix);
+  number->numerator_ = Bignum::makeFromString(gc, str_num.toQString(), radix);
+  number->denominator_ = Bignum::makeFromString(gc, str_den.toQString(), radix);
   number->reduce(gc);
   return number->optimize();
 }
 
 KevesValue RationalNumberKev::makeFractionFromString(KevesGC* gc, bool negative, StringKev str_int, StringKev str_fract, int expt) {
-  RationalNumberKev* number(RationalNumberKev::Make(gc));
+  RationalNumberKev* number(RationalNumberKev::make(gc));
   
-  QString str(str_int.ToQString() + str_fract.ToQString());
+  QString str(str_int.toQString() + str_fract.toQString());
   expt -= str_fract.size();
   for (; expt > 0; --expt) str.append('0');
 
@@ -1277,9 +1277,9 @@ KevesValue RationalNumberKev::makeFractionFromString(KevesGC* gc, bool negative,
 }
 
 KevesValue RationalNumberKev::makeIntegerFromString(KevesGC* gc, bool negative, StringKev str, int radix) {
-  RationalNumberKev* number(RationalNumberKev::Make(gc));
+  RationalNumberKev* number(RationalNumberKev::make(gc));
   number->neg_ = negative;
-  number->numerator_ = Bignum::makeFromString(gc, str.ToQString(), radix);
+  number->numerator_ = Bignum::makeFromString(gc, str.toQString(), radix);
   number->denominator_ = Bignum::makeFromString(gc, "1");
   return number->optimize();
 }
@@ -1305,8 +1305,8 @@ RationalNumberKevFromInt::RationalNumberKevFromInt(bg_int numerator, bg_int deno
   bg_int num2(denominator = std::abs(denominator));
 
   if (num1 == 0) {
-    bignum_numerator_.CopyFrom(BignumInt(0));
-    bignum_denominator_.CopyFrom(BignumInt(1));
+    bignum_numerator_.copyFrom(BignumInt(0));
+    bignum_denominator_.copyFrom(BignumInt(1));
   } else {
     if (num1 < num2) {
       bg_int temp(num1);
@@ -1323,8 +1323,8 @@ RationalNumberKevFromInt::RationalNumberKevFromInt(bg_int numerator, bg_int deno
     }
     
     bg_int gcd(num2);
-    bignum_numerator_.CopyFrom(BignumInt(static_cast<bg_uint>(numerator / gcd)));
-    bignum_denominator_.CopyFrom(BignumInt(static_cast<bg_uint>(denominator / gcd)));
+    bignum_numerator_.copyFrom(BignumInt(static_cast<bg_uint>(numerator / gcd)));
+    bignum_denominator_.copyFrom(BignumInt(static_cast<bg_uint>(denominator / gcd)));
   }
 }
 
@@ -1348,8 +1348,8 @@ RationalNumberKevFromLong::RationalNumberKevFromLong(bg_long numerator, bg_long 
   bg_long num2(denominator = std::abs(denominator));
 
   if (num1 == 0) {
-    bignum_numerator_.CopyFrom(BignumLong(0));
-    bignum_denominator_.CopyFrom(BignumLong(1));
+    bignum_numerator_.copyFrom(BignumLong(0));
+    bignum_denominator_.copyFrom(BignumLong(1));
   } else {
     if (num1 < num2) {
       bg_long temp(num1);
@@ -1366,8 +1366,8 @@ RationalNumberKevFromLong::RationalNumberKevFromLong(bg_long numerator, bg_long 
     }
     
     bg_long gcd(num2);
-    bignum_numerator_.CopyFrom(BignumLong(static_cast<bg_ulong>(numerator / gcd)));
-    bignum_denominator_.CopyFrom(BignumLong(static_cast<bg_ulong>(denominator / gcd)));
+    bignum_numerator_.copyFrom(BignumLong(static_cast<bg_ulong>(numerator / gcd)));
+    bignum_denominator_.copyFrom(BignumLong(static_cast<bg_ulong>(denominator / gcd)));
   }
 }
 
@@ -1381,26 +1381,26 @@ FlonumKev::FlonumKev() : FlonumKev(0) {
 FlonumKev::FlonumKev(double a) : MutableKev(TYPE), value_(a) {
 }
 
-void FlonumKev::CopyFrom(const FlonumKev& other) {
+void FlonumKev::copyFrom(const FlonumKev& other) {
   this->value_ = other.value_;
 }
 
-void FlonumKev::CopyFrom(FlonumKev&& other) {
+void FlonumKev::copyFrom(FlonumKev&& other) {
   this->value_ = other.value_;
 }
 
 FlonumKev FlonumKev::fromString(StringKev str, bool* ok) {
-  if (str.Equals("inf.0") || str.Equals("+inf.0")) {
+  if (str.equals("inf.0") || str.equals("+inf.0")) {
     *ok = true;
     return FlonumKev(std::numeric_limits<double>::infinity());
   }
 
-  if (str.Equals("-inf.0")) {
+  if (str.equals("-inf.0")) {
     *ok = true;
     return FlonumKev(-std::numeric_limits<double>::infinity());
   }
 
-  if (str.Equals("nan.0") || str.Equals("+nan.0") || str.Equals("-nan.0")) {
+  if (str.equals("nan.0") || str.equals("+nan.0") || str.equals("-nan.0")) {
     *ok = true;
     return FlonumKev(std::numeric_limits<double>::quiet_NaN());
   }
@@ -1892,7 +1892,7 @@ FlonumKev* FlonumKev::copy(KevesGC* gc) const {
   Q_ASSERT(type() == TYPE);
 
   auto ctor = [this](void* ptr) { return new(ptr) FlonumKev(*this); };
-  return gc->Make(ctor, alloc_size(nullptr));
+  return gc->make(ctor, alloc_size(nullptr));
 }
 
 
@@ -1908,7 +1908,7 @@ ExactComplexNumberKev::ExactComplexNumberKev(const RationalNumberKev& real, cons
     imag_numerator_(imag.numerator_), imag_denominator_(imag.denominator_) {
 }
 
-void ExactComplexNumberKev::CopyFrom(const ExactComplexNumberKev& other) {
+void ExactComplexNumberKev::copyFrom(const ExactComplexNumberKev& other) {
   this->real_neg_ = other.real_neg_;
   this->imag_neg_ = other.imag_neg_;
   this->real_numerator_ = other.real_numerator_;
@@ -1917,7 +1917,7 @@ void ExactComplexNumberKev::CopyFrom(const ExactComplexNumberKev& other) {
   this->imag_denominator_ = other.imag_denominator_;
 }
 
-void ExactComplexNumberKev::CopyFrom(ExactComplexNumberKev&& other) {
+void ExactComplexNumberKev::copyFrom(ExactComplexNumberKev&& other) {
   this->real_neg_ = other.real_neg_;
   this->imag_neg_ = other.imag_neg_;
   this->real_numerator_ = other.real_numerator_;
@@ -1942,8 +1942,8 @@ ExactComplexNumberKev ExactComplexNumberKev::inverse() const {
   return inverse;
 }
 
-bool ExactComplexNumberKev::IsEmpty() const {
-  return real().IsEmpty() || imag().IsEmpty();
+bool ExactComplexNumberKev::isEmpty() const {
+  return real().isEmpty() || imag().isEmpty();
 }
 
 ExactComplexNumberKev ExactComplexNumberKev::reciprocal(KevesGC* gc) const {
@@ -2021,10 +2021,10 @@ KevesValue ExactComplexNumberKev::makeFromBinary(KevesGC* gc, StringKev str_real
 
   if (imag->numerator()->isZero()) {
     KevesValue int_num(KevesFixnum(real->toKevesFixnum()));
-    return int_num.IsFixnum() ? int_num : KevesValue(real);
+    return int_num.isFixnum() ? int_num : KevesValue(real);
   }
 
-  ExactComplexNumberKev* complex(Make(gc));
+  ExactComplexNumberKev* complex(make(gc));
   complex->set(*real, *imag);
   return complex;
 }
@@ -2136,12 +2136,12 @@ InexactComplexNumberKev::InexactComplexNumberKev(double real, double imag)
 InexactComplexNumberKev::InexactComplexNumberKev(const FlonumKev& real, const FlonumKev& imag) : InexactComplexNumberKev(real.toDouble(), imag.toDouble()) {
 }
 
-void InexactComplexNumberKev::CopyFrom(const InexactComplexNumberKev& other) {
+void InexactComplexNumberKev::copyFrom(const InexactComplexNumberKev& other) {
   this->real_ = other.real_;
   this->imag_ = other.imag_;
 }
 
-void InexactComplexNumberKev::CopyFrom(InexactComplexNumberKev&& other) {
+void InexactComplexNumberKev::copyFrom(InexactComplexNumberKev&& other) {
   this->real_ = other.real_;
   this->imag_ = other.imag_;
 }
@@ -2174,9 +2174,9 @@ InexactComplexNumberKev InexactComplexNumberKev::reciprocal() const {
   FlonumKev imag(this->imag());
 
   if (real.isZero() && !imag.isZero()) {
-    imag.CopyFrom(imag.inverse().reciprocal());
+    imag.copyFrom(imag.inverse().reciprocal());
   } else if (!real.isZero() && imag.isZero()) {
-    real.CopyFrom(real.inverse().reciprocal());
+    real.copyFrom(real.inverse().reciprocal());
   } else if (real.isZero() && imag.isZero()) {
     real.set(real.isNegative() ?
 	     std::numeric_limits<double>::infinity() :
@@ -2307,18 +2307,18 @@ bool InexactComplexNumberKev::isEqualTo(InexactComplexNumberKev other) const {
 }
 
 KevesValue InexactComplexNumberKev::makeFromBinary(KevesGC* gc, StringKev str_real, StringKev str_imag, int radix) {
-  double real(str_real.Equals("0") ?
+  double real(str_real.equals("0") ?
 	      0.0 :
-	      static_cast<double>(str_real.ToInt(nullptr, radix)));
+	      static_cast<double>(str_real.toInt(nullptr, radix)));
 
-  if (str_imag.Equals("0"))
-    return FlonumKev::Make(gc, real);
+  if (str_imag.equals("0"))
+    return FlonumKev::make(gc, real);
 
-  double imag(static_cast<double>(str_imag.ToInt(nullptr, radix)));
+  double imag(static_cast<double>(str_imag.toInt(nullptr, radix)));
   
   auto ctor = [real, imag](void* ptr) {
     return new(ptr) InexactComplexNumberKev(real, imag);
   };
 
-  return gc->Make(ctor, alloc_size(nullptr));
+  return gc->make(ctor, alloc_size(nullptr));
 }

@@ -99,7 +99,7 @@ namespace Function {
 
     if (registers->argn() == 2) {
       vm->acc_ = TEST::func(registers->lastArgument()) ? EMB_TRUE : EMB_FALSE;
-      return KevesVM::ReturnValue(vm, pc);
+      return KevesVM::returnValue(vm, pc);
     }
 
     return raiseNotGet1Arg(vm, pc);
@@ -117,13 +117,13 @@ namespace Function {
 
     if (PRETEST::func(last)) {
       vm->acc_ = TEST::func(last) ? EMB_TRUE : EMB_FALSE;
-      return KevesVM::ReturnValue(vm, pc);
+      return KevesVM::returnValue(vm, pc);
     }
 
     vm->acc_ = vm->gr2_;
     vm->gr1_ = PRETEST::message(vm->base());
     vm->gr2_ = EMB_NULL;
-    return KevesVM::RaiseAssertCondition(vm, pc);
+    return KevesVM::raiseAssertCondition(vm, pc);
   }
 
   template<class TEST, class COMPARE>
@@ -132,7 +132,7 @@ namespace Function {
     vm->acc_ = vm->gr2_;
     vm->gr1_ = TEST::message(vm->base());
     vm->gr2_ = EMB_NULL;
-    return KevesVM::RaiseAssertCondition(vm, pc);
+    return KevesVM::raiseAssertCondition(vm, pc);
   }
   
   template<class TEST, class COMPARE>
@@ -164,7 +164,7 @@ namespace Function {
 	}
 
 	vm->acc_ = EMB_FALSE;
-	return KevesVM::ReturnValue(vm, pc);
+	return KevesVM::returnValue(vm, pc);
       }
 
       if (registers->argn() < 3)
@@ -175,7 +175,7 @@ namespace Function {
     }
 
     vm->acc_ = EMB_TRUE;
-    return KevesVM::ReturnValue(vm, pc);
+    return KevesVM::returnValue(vm, pc);
   }
 
   template<class TEST, class COMPOSE>
@@ -191,7 +191,7 @@ namespace Function {
 	vm->acc_ = vm->gr2_;
 	vm->gr1_ = TEST::message(vm->base());
 	vm->gr2_ = EMB_NULL;
-	return KevesVM::RaiseAssertCondition(vm, pc);
+	return KevesVM::raiseAssertCondition(vm, pc);
       }
       
       for (;; registers->popArgument()) {
@@ -201,7 +201,7 @@ namespace Function {
 	  vm->acc_ = vm->gr2_;
 	  vm->gr1_ = TEST::message(vm->base());
 	  vm->gr2_ = EMB_NULL;
-	  return KevesVM::RaiseAssertCondition(vm, pc);
+	  return KevesVM::raiseAssertCondition(vm, pc);
 	}
 	
 	result = COMPOSE::func(vm->gc(), result, current);
@@ -211,7 +211,7 @@ namespace Function {
       }
       
       vm->acc_ = result;
-      return KevesVM::ReturnValue(vm, pc);
+      return KevesVM::returnValue(vm, pc);
     }
 
     if (registers->argn() == 2) {
@@ -221,7 +221,7 @@ namespace Function {
 	vm->acc_ = vm->gr2_;
 	vm->gr1_ = TEST::message(vm->base());
 	vm->gr2_ = EMB_NULL;
-	return KevesVM::RaiseAssertCondition(vm, pc);
+	return KevesVM::raiseAssertCondition(vm, pc);
       }
       
       vm->acc_ = kev;
@@ -246,7 +246,7 @@ namespace Function {
       vm->acc_ = vm->gr2_;
       vm->gr1_ = TEST::message(vm->base());
       vm->gr2_ = EMB_NULL;
-      return KevesVM::RaiseAssertCondition(vm, pc);
+      return KevesVM::raiseAssertCondition(vm, pc);
     }
     
     for (;; registers->popArgument()) {
@@ -256,14 +256,14 @@ namespace Function {
 	vm->acc_ = vm->gr2_;
 	vm->gr1_ = TEST::message(vm->base());
 	vm->gr2_ = EMB_NULL;
-	return KevesVM::RaiseAssertCondition(vm, pc);
+	return KevesVM::raiseAssertCondition(vm, pc);
       }
       
       result = COMPOSE::func(vm->gc(), result, current);
 
       if (registers->argn() < 3) {
 	vm->acc_ = result;
-	return KevesVM::ReturnValue(vm, pc);
+	return KevesVM::returnValue(vm, pc);
       }
     }
   }
@@ -286,7 +286,7 @@ namespace Function {
     vm->acc_ = vm->gr2_;
     vm->gr1_ = TEST::message(vm->base());
     vm->gr2_ = EMB_NULL;
-    return KevesVM::RaiseAssertCondition(vm, pc);
+    return KevesVM::raiseAssertCondition(vm, pc);
   }
 
   template<class TEST1, class TEST2, class MAKE>
@@ -302,14 +302,14 @@ namespace Function {
 	vm->acc_ = vm->gr2_;
 	vm->gr1_ = TEST1::message1(vm->base());
 	vm->gr2_ = EMB_NULL;
-	return KevesVM::RaiseAssertCondition(vm, pc);
+	return KevesVM::raiseAssertCondition(vm, pc);
       }
 
       if (!TEST2::func(kev2)) {
 	vm->acc_ = vm->gr2_;
 	vm->gr1_ = TEST2::message2(vm->base());
 	vm->gr2_ = EMB_NULL;
-	return KevesVM::RaiseAssertCondition(vm, pc);
+	return KevesVM::raiseAssertCondition(vm, pc);
       }
 
       vm->acc_ = kev1;
@@ -334,21 +334,21 @@ namespace Function {
 	vm->acc_ = vm->gr2_;
 	vm->gr1_ = TEST1::message1(vm->base());
 	vm->gr2_ = EMB_NULL;
-	return KevesVM::RaiseAssertCondition(vm, pc);
+	return KevesVM::raiseAssertCondition(vm, pc);
       }
 
       if (!TEST2::func(kev2)) {
 	vm->acc_ = vm->gr2_;
 	vm->gr1_ = TEST2::message2(vm->base());
 	vm->gr2_ = EMB_NULL;
-	return KevesVM::RaiseAssertCondition(vm, pc);
+	return KevesVM::raiseAssertCondition(vm, pc);
       }
 
       if (!TEST3::func(kev3)) {
 	vm->acc_ = vm->gr2_;
 	vm->gr1_ = TEST2::message3(vm->base());
 	vm->gr2_ = EMB_NULL;
-	return KevesVM::RaiseAssertCondition(vm, pc);
+	return KevesVM::raiseAssertCondition(vm, pc);
       }
 
       return MAKE::func(vm, pc);
@@ -398,25 +398,25 @@ namespace Arithmatic {
       registers->popArgument();
       vm->gr1_ = registers->lastArgument();
 
-      if (last.IsFixnum())
+      if (last.isFixnum())
 	return func1<OPERATOR1, OPERATOR2, FIXNUM, RATIONAL>(vm, pc);
       
-      if (last.Is<RationalNumberKev>())
+      if (last.is<RationalNumberKev>())
 	return func2<OPERATOR1, OPERATOR2, FIXNUM, RATIONAL>(vm, pc);
 
-      if (last.Is<FlonumKev>())
+      if (last.is<FlonumKev>())
 	return func3<OPERATOR1, OPERATOR2>(vm, pc);
 
-      if (last.Is<ExactComplexNumberKev>())
+      if (last.is<ExactComplexNumberKev>())
 	return func4<OPERATOR1, OPERATOR2, FIXNUM, RATIONAL>(vm, pc);
       
-      if (last.Is<InexactComplexNumberKev>())
+      if (last.is<InexactComplexNumberKev>())
 	return func5<OPERATOR1, OPERATOR2>(vm, pc);
       
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = KevesValue(vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqNum));
+      vm->gr1_ = KevesValue(vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqNum));
       vm->gr2_ = EMB_NULL;
-      return KevesVM::RaiseAssertCondition(vm, pc);
+      return KevesVM::raiseAssertCondition(vm, pc);
     }
 
     return argn == 2 ? OPERATOR1::func1(vm, pc) : OPERATOR1::func0(vm, pc);
@@ -430,25 +430,25 @@ namespace Arithmatic {
     if (registers->argn() < 3) {
       KevesValue current(vm->gr1_);
 
-      if (current.IsFixnum())
+      if (current.isFixnum())
 	return OPERATOR1::funcFixnumFixnum(vm, pc);
 
-      if (current.Is<RationalNumberKev>())
+      if (current.is<RationalNumberKev>())
 	return OPERATOR1::funcRationalFixnum(vm, pc);
 
-      if (current.Is<FlonumKev>())
+      if (current.is<FlonumKev>())
 	return OPERATOR1::funcFlonumFixnum(vm, pc);
 
-      if (current.Is<ExactComplexNumberKev>())
+      if (current.is<ExactComplexNumberKev>())
 	return OPERATOR1::funcExactComplexFixnum(vm, pc);
 
-      if (current.Is<InexactComplexNumberKev>())
+      if (current.is<InexactComplexNumberKev>())
 	return OPERATOR1::funcInexactComplexFixnum(vm, pc);
 
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = KevesValue(vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqNum));
+      vm->gr1_ = KevesValue(vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqNum));
       vm->gr2_ = EMB_NULL;
-      return KevesVM::RaiseAssertCondition(vm, pc);
+      return KevesVM::raiseAssertCondition(vm, pc);
     }
 
     return func1a<OPERATOR1, OPERATOR2, FIXNUM, RATIONAL>(vm, pc);
@@ -459,7 +459,7 @@ namespace Arithmatic {
   {
     StackFrameKev* registers(&vm->registers_);
 
-    if (vm->gr1_.IsFixnum()) {
+    if (vm->gr1_.isFixnum()) {
       KevesFixnum num1(vm->gr1_);
       KevesFixnum num2(vm->acc_);
       FIXNUM result(OPERATOR2::func(num1, num2));
@@ -478,28 +478,28 @@ namespace Arithmatic {
       return func2<OPERATOR1, OPERATOR2, FIXNUM, RATIONAL>(vm, pc);
     }
 
-    if (vm->gr1_.Is<RationalNumberKev>()) {
+    if (vm->gr1_.is<RationalNumberKev>()) {
       KevesValue temp(vm->gr1_);
       vm->gr1_ = vm->acc_;
       vm->acc_ = temp;
       return func2a<OPERATOR1, OPERATOR2, FIXNUM, RATIONAL>(vm, pc);
     }
     
-    if (vm->gr1_.Is<FlonumKev>()) {
+    if (vm->gr1_.is<FlonumKev>()) {
       KevesValue temp(vm->gr1_);
       vm->gr1_ = vm->acc_;
       vm->acc_ = temp;
       return func3a<OPERATOR1, OPERATOR2>(vm, pc);
     }
 
-    if (vm->gr1_.Is<ExactComplexNumberKev>()) {
+    if (vm->gr1_.is<ExactComplexNumberKev>()) {
       KevesValue temp(vm->gr1_);
       vm->gr1_ = vm->acc_;
       vm->acc_ = temp;
       return func4a<OPERATOR1, OPERATOR2, FIXNUM, RATIONAL>(vm, pc);
     }
 
-    if (vm->gr1_.Is<InexactComplexNumberKev>()) {
+    if (vm->gr1_.is<InexactComplexNumberKev>()) {
       KevesValue temp(vm->gr1_);
       vm->gr1_ = vm->acc_;
       vm->acc_ = temp;
@@ -507,9 +507,9 @@ namespace Arithmatic {
     }
 
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = KevesValue(vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqNum));
+    vm->gr1_ = KevesValue(vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqNum));
     vm->gr2_ = EMB_NULL;
-    return KevesVM::RaiseAssertCondition(vm, pc);
+    return KevesVM::raiseAssertCondition(vm, pc);
   }
   
   template<class OPERATOR1, class OPERATOR2, class FIXNUM, class RATIONAL>
@@ -520,25 +520,25 @@ namespace Arithmatic {
     if (registers->argn() < 3) {
       KevesValue current(vm->gr1_);
 
-      if (current.IsFixnum())
+      if (current.isFixnum())
 	return OPERATOR1::funcFixnumRational(vm, pc);
 
-      if (current.Is<RationalNumberKev>())
+      if (current.is<RationalNumberKev>())
 	return OPERATOR1::funcRationalRational(vm, pc);
 
-      if (current.Is<FlonumKev>())
+      if (current.is<FlonumKev>())
 	return OPERATOR1::funcFixnumRational(vm, pc);
 
-      if (current.Is<ExactComplexNumberKev>())
+      if (current.is<ExactComplexNumberKev>())
 	return OPERATOR1::funcExactComplexRational(vm, pc);
 
-      if (current.Is<InexactComplexNumberKev>())
+      if (current.is<InexactComplexNumberKev>())
 	return OPERATOR1::funcInexactComplexRational(vm, pc);
       
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = KevesValue(vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqNum));
+      vm->gr1_ = KevesValue(vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqNum));
       vm->gr2_ = EMB_NULL;
-      return KevesVM::RaiseAssertCondition(vm, pc);
+      return KevesVM::raiseAssertCondition(vm, pc);
     }
     
     return func2a<OPERATOR1, OPERATOR2, FIXNUM, RATIONAL>(vm, pc);
@@ -551,27 +551,27 @@ namespace Arithmatic {
     const RationalNumberKev* num2(vm->acc_);
     KevesValue current(vm->gr1_);
     
-    if (current.IsFixnum()) {
+    if (current.isFixnum()) {
       KevesFixnum num1(current);
       RationalNumberKev result(OPERATOR2::func(vm->gc(), *num2, num1));
       registers->popArgument();
       
-      return KevesVM::ContinueRationalNumberKev(vm, pc, &result,
+      return KevesVM::continueRationalNumberKev(vm, pc, &result,
 						func1<OPERATOR1, OPERATOR2, FIXNUM, RATIONAL>,
 						func2<OPERATOR1, OPERATOR2, FIXNUM, RATIONAL>);
     }
 
-    if (current.Is<RationalNumberKev>()) {
+    if (current.is<RationalNumberKev>()) {
       const RationalNumberKev* num1(current);
       RationalNumberKev result(OPERATOR2::func(vm->gc(), *num1, *num2));
       registers->popArgument();
       
-      return KevesVM::ContinueRationalNumberKev(vm, pc, &result,
+      return KevesVM::continueRationalNumberKev(vm, pc, &result,
 						func1<OPERATOR1, OPERATOR2, FIXNUM, RATIONAL>,
 						func2<OPERATOR1, OPERATOR2, FIXNUM, RATIONAL>);
     }
 
-    if (current.Is<FlonumKev>()) {
+    if (current.is<FlonumKev>()) {
       const FlonumKev* num1(current);
       FlonumKev result(OPERATOR2::func(*num1, *num2));
       registers->popArgument();
@@ -580,16 +580,16 @@ namespace Arithmatic {
       return func3<OPERATOR1, OPERATOR2>(vm, pc);
     }
 
-    if (current.Is<ExactComplexNumberKev>()) {
+    if (current.is<ExactComplexNumberKev>()) {
       const ExactComplexNumberKev* num1(current);
       ExactComplexNumberKev result(OPERATOR2::func(vm->gc(), *num1, *num2));
-      return KevesVM::ContinueExactComplexNumberKev(vm, pc, &result,
+      return KevesVM::continueExactComplexNumberKev(vm, pc, &result,
 						    func1<OPERATOR1, OPERATOR2, FIXNUM, RATIONAL>,
 						    func2<OPERATOR1, OPERATOR2, FIXNUM, RATIONAL>,
 						    func4<OPERATOR1, OPERATOR2, FIXNUM, RATIONAL>);
     }
 
-    if (current.Is<InexactComplexNumberKev>()) {
+    if (current.is<InexactComplexNumberKev>()) {
       const InexactComplexNumberKev* num1(current);
       InexactComplexNumberKev result(OPERATOR2::func(*num1, *num2));
       registers->popArgument();
@@ -599,9 +599,9 @@ namespace Arithmatic {
     }
     
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = KevesValue(vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqNum));
+    vm->gr1_ = KevesValue(vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqNum));
     vm->gr2_ = EMB_NULL;
-    return KevesVM::RaiseAssertCondition(vm, pc);
+    return KevesVM::raiseAssertCondition(vm, pc);
   }
   
   template<class OPERATOR1, class OPERATOR2>
@@ -612,25 +612,25 @@ namespace Arithmatic {
     if (registers->argn() < 3) {
       KevesValue current(vm->gr1_);
 
-      if (current.IsFixnum())
+      if (current.isFixnum())
 	return OPERATOR1::funcFixnumFlonum(vm, pc);
 
-      if (current.Is<RationalNumberKev>())
+      if (current.is<RationalNumberKev>())
 	return OPERATOR1::funcRationalFlonum(vm, pc);
 
-      if (current.Is<FlonumKev>())
+      if (current.is<FlonumKev>())
 	return OPERATOR1::funcFlonumFlonum(vm, pc);
 
-      if (current.Is<ExactComplexNumberKev>())
+      if (current.is<ExactComplexNumberKev>())
 	return OPERATOR1::funcExactComplexFlonum(vm, pc);
 
-      if (current.Is<InexactComplexNumberKev>())
+      if (current.is<InexactComplexNumberKev>())
 	return OPERATOR1::funcInexactComplexFlonum(vm, pc);
 
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = KevesValue(vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqNum));
+      vm->gr1_ = KevesValue(vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqNum));
       vm->gr2_ = EMB_NULL;
-      return KevesVM::RaiseAssertCondition(vm, pc);
+      return KevesVM::raiseAssertCondition(vm, pc);
     }
     
     return func3a<OPERATOR1, OPERATOR2>(vm, pc);
@@ -643,7 +643,7 @@ namespace Arithmatic {
     const FlonumKev* num2(vm->acc_);
     KevesValue current(vm->gr1_);
 
-    if (current.IsFixnum()) {
+    if (current.isFixnum()) {
       KevesFixnum num1(current);
       FlonumKev result(OPERATOR2::func(*num2, num1));
       registers->popArgument();
@@ -652,7 +652,7 @@ namespace Arithmatic {
       return func3<OPERATOR1, OPERATOR2>(vm, pc);
     }
 
-    if (current.Is<RationalNumberKev>()) {
+    if (current.is<RationalNumberKev>()) {
       const RationalNumberKev* num1(current);
       FlonumKev result(OPERATOR2::func(*num2, *num1));
       registers->popArgument();
@@ -661,7 +661,7 @@ namespace Arithmatic {
       return func3<OPERATOR1, OPERATOR2>(vm, pc);
     }
 
-    if (current.Is<FlonumKev>()) {
+    if (current.is<FlonumKev>()) {
       const FlonumKev* num1(current);
       FlonumKev result(OPERATOR2::func(*num1, *num2));
       registers->popArgument();
@@ -670,7 +670,7 @@ namespace Arithmatic {
       return func3<OPERATOR1, OPERATOR2>(vm, pc);
     }
 
-    if (current.Is<ExactComplexNumberKev>()) {
+    if (current.is<ExactComplexNumberKev>()) {
       const ExactComplexNumberKev* num1(current);
       InexactComplexNumberKev result(OPERATOR2::func(num1->toInexact(), *num2));
       registers->popArgument();
@@ -679,7 +679,7 @@ namespace Arithmatic {
       return func5<OPERATOR1, OPERATOR2>(vm, pc);
     }
 
-    if (current.Is<InexactComplexNumberKev>()) {
+    if (current.is<InexactComplexNumberKev>()) {
       const InexactComplexNumberKev* num1(current);
       InexactComplexNumberKev result(OPERATOR2::func(*num1, *num2));
       registers->popArgument();
@@ -689,9 +689,9 @@ namespace Arithmatic {
     }
 
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = KevesValue(vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqNum));
+    vm->gr1_ = KevesValue(vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqNum));
     vm->gr2_ = EMB_NULL;
-    return KevesVM::RaiseAssertCondition(vm, pc);
+    return KevesVM::raiseAssertCondition(vm, pc);
   }
   
   template<class OPERATOR1, class OPERATOR2, class FIXNUM, class RATIONAL>
@@ -702,25 +702,25 @@ namespace Arithmatic {
     if (registers->argn() < 3) {
       KevesValue current(vm->gr1_);
 
-      if (current.IsFixnum())
+      if (current.isFixnum())
 	return OPERATOR1::funcFixnumExactComplex(vm, pc);
       
-      if (current.Is<RationalNumberKev>())
+      if (current.is<RationalNumberKev>())
 	return OPERATOR1::funcRationalExactComplex(vm, pc);
       
-      if (current.Is<FlonumKev>())
+      if (current.is<FlonumKev>())
 	return OPERATOR1::funcFlonumExactComplex(vm, pc);
      
-      if (current.Is<ExactComplexNumberKev>())
+      if (current.is<ExactComplexNumberKev>())
 	return OPERATOR1::funcExactComplexExactComplex(vm, pc);
       
-      if (current.Is<InexactComplexNumberKev>())
+      if (current.is<InexactComplexNumberKev>())
 	return OPERATOR1::funcInexactComplexExactComplex(vm, pc);
       
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = KevesValue(vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqNum));
+      vm->gr1_ = KevesValue(vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqNum));
       vm->gr2_ = EMB_NULL;
-      return KevesVM::RaiseAssertCondition(vm, pc);
+      return KevesVM::raiseAssertCondition(vm, pc);
     }
 
     return func4a<OPERATOR1, OPERATOR2, FIXNUM, RATIONAL>(vm, pc);
@@ -733,25 +733,25 @@ namespace Arithmatic {
     const ExactComplexNumberKev* num2(vm->acc_);
     KevesValue current(vm->gr1_);
 
-    if (current.IsFixnum()) {
+    if (current.isFixnum()) {
       KevesFixnum num1(current);
       ExactComplexNumberKev result(OPERATOR2::func(vm->gc(), *num2, num1));
-      return KevesVM::ContinueExactComplexNumberKev(vm, pc, &result,
+      return KevesVM::continueExactComplexNumberKev(vm, pc, &result,
 						    func1<OPERATOR1, OPERATOR2, FIXNUM, RATIONAL>,
 						    func2<OPERATOR1, OPERATOR2, FIXNUM, RATIONAL>,
 						    func4<OPERATOR1, OPERATOR2, FIXNUM, RATIONAL>);
     }
 
-    if (current.Is<RationalNumberKev>()) {
+    if (current.is<RationalNumberKev>()) {
       const RationalNumberKev* num1(current);
       ExactComplexNumberKev result(OPERATOR2::func(vm->gc(), *num2, *num1));
-      return KevesVM::ContinueExactComplexNumberKev(vm, pc, &result,
+      return KevesVM::continueExactComplexNumberKev(vm, pc, &result,
 						    func1<OPERATOR1, OPERATOR2, FIXNUM, RATIONAL>,
 						    func2<OPERATOR1, OPERATOR2, FIXNUM, RATIONAL>,
 						    func4<OPERATOR1, OPERATOR2, FIXNUM, RATIONAL>);
     }
 
-    if (current.Is<FlonumKev>()) {
+    if (current.is<FlonumKev>()) {
       const FlonumKev* num1(current);
       InexactComplexNumberKev result(OPERATOR2::func(num2->toInexact(), *num1));
       registers->popArgument();
@@ -760,16 +760,16 @@ namespace Arithmatic {
       return func5<OPERATOR1, OPERATOR2>(vm, pc);
     }
 
-    if (current.Is<ExactComplexNumberKev>()) {
+    if (current.is<ExactComplexNumberKev>()) {
       const ExactComplexNumberKev* num1(current);
       ExactComplexNumberKev result(OPERATOR2::func(vm->gc(), *num2, *num1));
-      return KevesVM::ContinueExactComplexNumberKev(vm, pc, &result,
+      return KevesVM::continueExactComplexNumberKev(vm, pc, &result,
 						    func1<OPERATOR1, OPERATOR2, FIXNUM, RATIONAL>,
 						    func2<OPERATOR1, OPERATOR2, FIXNUM, RATIONAL>,
 						    func4<OPERATOR1, OPERATOR2, FIXNUM, RATIONAL>);
     }
 
-    if (current.Is<InexactComplexNumberKev>()) {
+    if (current.is<InexactComplexNumberKev>()) {
       const InexactComplexNumberKev* num1(current);
       InexactComplexNumberKev result(OPERATOR2::func(num2->toInexact(), *num1));
       registers->popArgument();
@@ -779,9 +779,9 @@ namespace Arithmatic {
     }
 
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = KevesValue(vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqNum));
+    vm->gr1_ = KevesValue(vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqNum));
     vm->gr2_ = EMB_NULL;
-    return KevesVM::RaiseAssertCondition(vm, pc);
+    return KevesVM::raiseAssertCondition(vm, pc);
   }
   
   template<class OPERATOR1, class OPERATOR2>
@@ -792,25 +792,25 @@ namespace Arithmatic {
     if (registers->argn() < 3) {
       KevesValue current(vm->gr1_);
 
-      if (current.IsFixnum())
+      if (current.isFixnum())
 	return OPERATOR1::funcFixnumInexactComplex(vm, pc);
       
-      if (current.Is<RationalNumberKev>())
+      if (current.is<RationalNumberKev>())
 	return OPERATOR1::funcRationalInexactComplex(vm, pc);
       
-      if (current.Is<FlonumKev>())
+      if (current.is<FlonumKev>())
 	return OPERATOR1::funcFlonumInexactComplex(vm, pc);
       
-      if (current.Is<ExactComplexNumberKev>())
+      if (current.is<ExactComplexNumberKev>())
 	return OPERATOR1::funcExactComplexInexactComplex(vm, pc);
       
-      if (current.Is<InexactComplexNumberKev>())
+      if (current.is<InexactComplexNumberKev>())
 	return OPERATOR1::funcInexactComplexInexactComplex(vm, pc);
       
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = KevesValue(vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqNum));
+      vm->gr1_ = KevesValue(vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqNum));
       vm->gr2_ = EMB_NULL;
-      return KevesVM::RaiseAssertCondition(vm, pc);
+      return KevesVM::raiseAssertCondition(vm, pc);
     }
 
     return func5a<OPERATOR1, OPERATOR2>(vm, pc);
@@ -824,26 +824,26 @@ namespace Arithmatic {
     InexactComplexNumberKev result { };
     KevesValue current(vm->gr1_);
 
-    if (current.IsFixnum()) {
+    if (current.isFixnum()) {
       KevesFixnum num1(current);
-      result.CopyFrom(OPERATOR2::func(*num2, num1));
-    } else if (current.Is<RationalNumberKev>()) {
+      result.copyFrom(OPERATOR2::func(*num2, num1));
+    } else if (current.is<RationalNumberKev>()) {
       const RationalNumberKev* num1(current);
-      result.CopyFrom(OPERATOR2::func(*num2, *num1));
-    } else if (current.Is<FlonumKev>()) {
+      result.copyFrom(OPERATOR2::func(*num2, *num1));
+    } else if (current.is<FlonumKev>()) {
       const FlonumKev* num1(current);
-      result.CopyFrom(OPERATOR2::func(*num2, *num1));
-    } else if (current.Is<ExactComplexNumberKev>()) {
+      result.copyFrom(OPERATOR2::func(*num2, *num1));
+    } else if (current.is<ExactComplexNumberKev>()) {
       const ExactComplexNumberKev* num1(current);
-      result.CopyFrom(OPERATOR2::func(*num2, *num1));
-    } else if (current.Is<InexactComplexNumberKev>()) {
+      result.copyFrom(OPERATOR2::func(*num2, *num1));
+    } else if (current.is<InexactComplexNumberKev>()) {
       const InexactComplexNumberKev* num1(current);
-      result.CopyFrom(OPERATOR2::func(*num2, *num1));
+      result.copyFrom(OPERATOR2::func(*num2, *num1));
     } else {
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = KevesValue(vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqNum));
+      vm->gr1_ = KevesValue(vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqNum));
       vm->gr2_ = EMB_NULL;
-      return KevesVM::RaiseAssertCondition(vm, pc);
+      return KevesVM::raiseAssertCondition(vm, pc);
     }
     
     registers->popArgument();

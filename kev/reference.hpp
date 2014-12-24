@@ -47,7 +47,7 @@ public:
   }
 
   template<class ZONE>
-  static ReferenceKev* Make(ZONE* zone, KevesValue);
+  static ReferenceKev* make(ZONE* zone, KevesValue);
 
 private:
   KevesValue val_;
@@ -63,14 +63,14 @@ public:
   }
 
   template<class ZONE>
-  static MutableKev* CopyTo(ZONE* zone, MutableKev* kev) {
-    return FixedLengthKev<ReferenceKev>::From(kev)->CopyTo(zone);
+  static MutableKev* copyTo(ZONE* zone, MutableKev* kev) {
+    return FixedLengthKev<ReferenceKev>::from(kev)->copyTo(zone);
   }
   
   template<class ZONE>
-  static quintptr* CopyContents(ZONE* zone, MutableKev* kev) {
-    FixedLengthKev<ReferenceKev>* reference(FixedLengthKev<ReferenceKev>::From(kev));
-    reference->val_ = zone->Copy(reference->val_);
+  static quintptr* copyContents(ZONE* zone, MutableKev* kev) {
+    FixedLengthKev<ReferenceKev>* reference(FixedLengthKev<ReferenceKev>::from(kev));
+    reference->val_ = zone->copy(reference->val_);
     return reference->border();
   }
 
@@ -80,28 +80,28 @@ public:
 
 public:
   template<class BASE, class STACK>
-  static void PushChildren(STACK* pending, KevesValue value) {
+  static void pushChildren(STACK* pending, KevesValue value) {
     const ReferenceKev* ref(value);
-    BASE::PushValue(pending, ref->val_);
+    BASE::pushValue(pending, ref->val_);
   }
 
   template<class BASE, class LIST, class STREAM>
-  static void WriteObject(const LIST& list, STREAM& out, KevesValue value) {
+  static void writeObject(const LIST& list, STREAM& out, KevesValue value) {
     const ReferenceKev* ref(value);
     out << static_cast<uioword>(ref->type())
-	<< BASE::IndexAddress(list, ref->val_);
+	<< BASE::indexAddress(list, ref->val_);
   }
 
   template<class /*BASE*/, class STREAM, class GC>
-  static Kev* ReadObject(STREAM& in, GC* gc) {
+  static Kev* readObject(STREAM& in, GC* gc) {
     uioword val;
     in >> val;
-    return Make(gc, KevesValue::template FromUioword<Kev>(val));
+    return make(gc, KevesValue::template fromUioword<Kev>(val));
   }
   
   template<class BASE, class LIST>
-  static void RevertObject(const LIST& object_list, MutableKevesValue kev) {
+  static void revertObject(const LIST& object_list, MutableKevesValue kev) {
     ReferenceKev* ref(kev);
-    BASE::RevertValue(object_list, &ref->val_);
+    BASE::revertValue(object_list, &ref->val_);
   }
 };

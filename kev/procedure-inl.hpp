@@ -21,12 +21,12 @@
 
 
 template<class ZONE>
-LambdaKev* LambdaKev::Make(ZONE* zone, FreeVarFrameKev* free_vars,
+LambdaKev* LambdaKev::make(ZONE* zone, LocalVarFrameKev* free_vars,
 			   CodeKev* code, int index) {
   auto ctor = [free_vars, code, index](void* ptr) {
     return new(ptr) LambdaKev(free_vars, code, index);
   };
 
-  return zone->Make(ctor, sizeof(LambdaKev));
+  return zone->make(ctor, sizeof(LambdaKev));
 }
   

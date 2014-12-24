@@ -10,55 +10,35 @@ INCLUDEPATH += . ../..
 QMAKE_CXXFLAGS += -std=c++11
 
 # Input
-HEADERS += rnrs-base.hpp \
+HEADERS += rnrs-exceptions.hpp \
            keves_base.hpp \
            keves_builtin_values.hpp \
-           keves_gc.hpp \
-           keves_gc-inl.hpp \
            keves_library.hpp \
            keves_template.hpp \
            keves_textual_port.hpp \
            keves_vm.hpp \
            kev/code.hpp \
            kev/code-inl.hpp \
-           kev/condition.hpp \
-           kev/condition-inl.hpp \
-           kev/frame.hpp \
-           kev/frame-inl.hpp \
-           kev/number.hpp \
-           kev/number-inl.hpp \
            kev/procedure.hpp \
            kev/procedure-inl.hpp \
-           kev/record.hpp \
-           kev/record-inl.hpp \
            kev/string.hpp \
            kev/string-inl.hpp \
            kev/symbol.hpp \
            kev/symbol-inl.hpp \
-           kev/vector.hpp \
-           kev/vector-inl.hpp \
-           value/char.hpp \
-           value/fixnum.hpp
+           value/char.hpp
 
-SOURCES += rnrs-base.cpp \
+SOURCES += rnrs-exceptions.cpp \
            keves_base.cpp \
            keves_builtin_values.cpp \
-           keves_gc.cpp \
            keves_library.cpp \
            keves_template.cpp \
            keves_textual_port.cpp \
            keves_vm.cpp \
            kev/code.cpp \
-           kev/condition.cpp \
-           kev/frame.cpp \
-           kev/number.cpp \
            kev/procedure.cpp \
-           kev/record.cpp \
            kev/string.cpp \
            kev/symbol.cpp \
-           kev/vector.cpp \
-           value/char.cpp \
-           value/fixnum.hpp
+           value/char.cpp
 
 CONFIG += debug
 # CONFIG += qt release

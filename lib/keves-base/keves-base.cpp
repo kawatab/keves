@@ -38,46 +38,46 @@
 #include "kev/symbol-inl.hpp"
 
 
-void LibKevesBase::Init(KevesBase* base) {
-  std::cout << "LibKevesBase::Init()" << std::endl;
+void LibKevesBase::init(KevesBase* base) {
+  std::cout << "LibKevesBase::init()" << std::endl;
 
-  // SetID("keves", "base-bin");
-  // SetVerNum(0, 1);
+  // setID("keves", "base-bin");
+  // setVerNum(0, 1);
 					       
-  sym_display_ = SymbolKev::Make(base, "display");
-  sym_newline_ = SymbolKev::Make(base, "newline");
+  sym_display_ = SymbolKev::make(base, "display");
+  sym_newline_ = SymbolKev::make(base, "newline");
 
   proc_display_.set(procDisplay, sym_display_);
   proc_newline_.set(&Function::thunk<Newline>, sym_newline_);
 
-  AddBind("display", &proc_display_);
-  AddBind("newline", &proc_newline_);
+  addBind("display", &proc_display_);
+  addBind("newline", &proc_newline_);
 
-  AddBind("&syntax", base->builtin()->amp_syntax());
-  AddBind("&lexical", base->builtin()->amp_lexical());
-  AddBind("&assert", base->builtin()->amp_assert());
-  AddBind("&irritants", base->builtin()->amp_irritants());
-  AddBind("&who", base->builtin()->amp_who());
-  AddBind("&message", base->builtin()->amp_message());
+  addBind("&syntax", base->builtin()->amp_syntax());
+  addBind("&lexical", base->builtin()->amp_lexical());
+  addBind("&assert", base->builtin()->amp_assert());
+  addBind("&irritants", base->builtin()->amp_irritants());
+  addBind("&who", base->builtin()->amp_who());
+  addBind("&message", base->builtin()->amp_message());
 
-  CodeKev* code(CodeKev::Make(base, 16));
+  CodeKev* code(CodeKev::make(base, 16));
   KevesIterator iter(code->begin());
   *iter++ = KevesInstruct(CMD_FRAME_R);
   *iter++ = KevesFixnum(5);
   *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
-  *iter++ = FindBind("display");
+  *iter++ = findBind("display");
   *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
   *iter++ = KevesFixnum(5);
   *iter++ = KevesInstruct(CMD_APPLY);
   *iter++ = KevesInstruct(CMD_FRAME_R);
   *iter++ = KevesFixnum(3);
   *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
-  *iter++ = FindBind("newline");
+  *iter++ = findBind("newline");
   *iter++ = KevesInstruct(CMD_APPLY);
   *iter++ = KevesInstruct(CMD_HALT);
   Q_ASSERT(iter <= code->end());
 
-  AddBind("my-code", code);
+  addBind("my-code", code);
 }
 
 void LibKevesBase::procDisplay(KevesVM* vm, const_KevesIterator pc) {
@@ -87,22 +87,22 @@ void LibKevesBase::procDisplay(KevesVM* vm, const_KevesIterator pc) {
     vm->acc_ = vm->gr2_;
 
     vm->gr1_ = registers->argn() > 2 ?
-      vm->base()->GetMesgText(KevesBuiltinValues::mesg_Req1GotMore) :
-      vm->base()->GetMesgText(KevesBuiltinValues::mesg_Req1Got0);
+      vm->base()->getMesgText(KevesBuiltinValues::mesg_Req1GotMore) :
+      vm->base()->getMesgText(KevesBuiltinValues::mesg_Req1Got0);
 
     vm->gr2_ = EMB_NULL;
-    return KevesVM::RaiseAssertCondition(vm, pc);
+    return KevesVM::raiseAssertCondition(vm, pc);
   }
   
-  vm->result_field()->Append(vm->base()->ToString(registers->lastArgument()));
+  vm->result_field()->append(vm->base()->toString(registers->lastArgument()));
   vm->acc_ = EMB_UNDEF;
-  return KevesVM::ReturnValueSafe(vm, pc);
+  return KevesVM::returnValueSafe(vm, pc);
 }
 
 void LibKevesBase::Newline::func(KevesVM* vm, const_KevesIterator pc) {
-  vm->result_field()->Append(QString("\n"));
+  vm->result_field()->append(QString("\n"));
   vm->acc_ = EMB_UNDEF;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 
@@ -111,9 +111,9 @@ void LibKevesBase::Newline::func(KevesVM* vm, const_KevesIterator pc) {
 ////////////////////////////////////////////////////////////////
 
 extern "C" {
-  KevesLibrary* Make(KevesBase* base) {
+  KevesLibrary* make(KevesBase* base) {
     LibKevesBase* library(new LibKevesBase());
-    library->Init(base);
+    library->init(base);
     return library;
   }
 }

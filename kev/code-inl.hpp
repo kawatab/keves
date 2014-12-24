@@ -21,7 +21,7 @@
 
 
 template<class ZONE>
-CodeKev* CodeKev::Make(ZONE* zone, int size) {
+CodeKev* CodeKev::make(ZONE* zone, int size) {
   auto ctor = [size](void* ptr) { return new(ptr) CodeKev(size); };
-  return zone->Make(ctor, alloc_size(size));
+  return zone->make(ctor, alloc_size(size));
 }

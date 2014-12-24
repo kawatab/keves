@@ -43,24 +43,24 @@ public:
   explicit KevesBaseNode(MutableKev* kev)
     : prefix_(reinterpret_cast<KevesPrefix*>(kev) - 1) {}
     
-  void Dispose() {
+  void dispose() {
     delete [] reinterpret_cast<char*>(prefix_);
   }
 
-  bool IsEmpty() const {
+  bool isEmpty() const {
     return !prefix_;
   }
 
-  void* ToPtr() const {
+  void* toPtr() const {
     return prefix_ + 1;
   }
 
-  MutableKev* ToKev() const {
-    return static_cast<MutableKev*>(ToPtr());
+  MutableKev* toKev() const {
+    return static_cast<MutableKev*>(toPtr());
   }
 
   MutableKev* operator->() const {
-    return static_cast<MutableKev*>(ToPtr());
+    return static_cast<MutableKev*>(toPtr());
   }
   
 protected:
@@ -81,11 +81,11 @@ public:
   explicit KevesNode(KevesBaseNode node)
     : KevesBaseNode(node) {}
   
-  KevesNode GetNext() const {
+  KevesNode getNext() const {
     return prefix_->node[SIZE];
   }
   
-  void SetNext(KevesBaseNode prev) const {
+  void setNext(KevesBaseNode prev) const {
     prefix_->node[SIZE] = KevesNode(prev).prefix_;
   }
   
@@ -107,12 +107,12 @@ public:
   KevesList& operator=(KevesList&&) = default;
   ~KevesList() = default;
   
-  void Clear() {
+  void clear() {
     top_ = NODE();
   }
 
-  bool IsEmpty() const {
-    return top_.IsEmpty();
+  bool isEmpty() const {
+    return top_.isEmpty();
   }
 
   NODE top() const {
@@ -121,21 +121,21 @@ public:
   
   NODE Pop() {
     NODE temp(top_);
-    top_ = temp.GetNext();
+    top_ = temp.getNext();
     return temp;
   }
   
-  void Push(NODE node) {
-    node.SetNext(top_);
+  void push(NODE node) {
+    node.setNext(top_);
     top_ = node;
   }
   
-  void Push(KevesBaseNode base_node) {
-    Push(NODE(base_node));
+  void push(KevesBaseNode base_node) {
+    push(NODE(base_node));
   }
 
-  void Push(MutableKev* kev) {
-    Push(KevesBaseNode(kev));
+  void push(MutableKev* kev) {
+    push(KevesBaseNode(kev));
   }
   
 private:

@@ -34,5 +34,5 @@ public:
   typedef QStack<KevesValue>::iterator iterator;
   typedef QStack<KevesValue>::const_iterator const_iterator;
 
-  bool Find(KevesValue) const;
+  bool find(KevesValue) const;
 };

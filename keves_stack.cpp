@@ -19,7 +19,7 @@
 
 #include "keves_stack.hpp"
 
-bool KevesStack::Find(KevesValue kev) const {
+bool KevesStack::find(KevesValue kev) const {
   for (KevesValue elem : *this)
     if (kev == elem) return true;
 

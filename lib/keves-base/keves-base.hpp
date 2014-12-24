@@ -36,7 +36,7 @@ public:
   LibKevesBase& operator=(LibKevesBase&&) = delete;
   ~LibKevesBase() = default;
 
-  void Init(KevesBase* base);
+  void init(KevesBase* base);
 
   SymbolKev* sym_display_;
   CPSKev proc_display_;

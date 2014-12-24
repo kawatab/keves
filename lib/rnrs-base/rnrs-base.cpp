@@ -31,6 +31,8 @@
 #include "keves_vm.hpp"
 #include "kev/code.hpp"
 #include "kev/code-inl.hpp"
+#include "kev/frame.hpp"
+#include "kev/frame-inl.hpp"
 #include "kev/number.hpp"
 #include "kev/number-inl.hpp"
 #include "kev/procedure-inl.hpp"
@@ -44,142 +46,142 @@
 #include "value/fixnum.hpp"
 
 
-void LibRnrsBase::Init(KevesBase* base) {
-  std::cout << "LibRnrsBase::Init()" << std::endl;
+void LibRnrsBase::init(KevesBase* base) {
+  std::cout << "LibRnrsBase::init()" << std::endl;
 
-  // SetID("rnrs", "base-bin");
-  // SetVerNum(6);
+  // setID("rnrs", "base-bin");
+  // setVerNum(6);
 					       
-  sym_abs_ = SymbolKev::Make(base, "abs");
-  sym_add_ = SymbolKev::Make(base, "+");
-  // sym_and_ = SymbolKev::Make(base, "and");
-  sym_angle_ = SymbolKev::Make(base, "angle");
-  // sym_append_ = SymbolKev::Make(base, "append");
-  sym_apply_ = SymbolKev::Make(base, "apply");
-  sym_assertion_violation_ = SymbolKev::Make(base, "assertion-violation");
-  // sym_begin_ = SymbolKev::Make(base, "begin");
-  // sym_begin0_ = SymbolKev::Make(base, "begin0");
-  sym_boolean_q_ = SymbolKev::Make(base, "boolean?");
-  sym_call_with_cc_ = SymbolKev::Make(base, "call/cc");
-  sym_call_with_current_continuation_ = SymbolKev::Make(base, "call-with-current-continuation");
-  sym_call_with_values_ = SymbolKev::Make(base, "call-with-values");
-  sym_car_ = SymbolKev::Make(base, "car");
-  sym_cdr_ = SymbolKev::Make(base, "cdr");
-  sym_caar_ = SymbolKev::Make(base, "caar");
-  sym_cadr_ = SymbolKev::Make(base, "cadr");
-  sym_cdar_ = SymbolKev::Make(base, "cdar");
-  sym_cddr_ = SymbolKev::Make(base, "cddr");
-  sym_caaar_ = SymbolKev::Make(base, "caaar");
-  sym_caadr_ = SymbolKev::Make(base, "caadr");
-  sym_cadar_ = SymbolKev::Make(base, "cadar");
-  sym_caddr_ = SymbolKev::Make(base, "caddr");
-  sym_cdaar_ = SymbolKev::Make(base, "cdaar");
-  sym_cdadr_ = SymbolKev::Make(base, "cdadr");
-  sym_cddar_ = SymbolKev::Make(base, "cddar");
-  sym_cdddr_ = SymbolKev::Make(base, "cdddr");
-  sym_ceiling_ = SymbolKev::Make(base, "ceiling");
-  sym_char_eq_q_ = SymbolKev::Make(base, "char=?");
-  sym_char_gt_q_ = SymbolKev::Make(base, "char>?");
-  sym_char_gte_q_ = SymbolKev::Make(base, "char>=?");
-  sym_char_lt_q_ = SymbolKev::Make(base, "char<?");
-  sym_char_lte_q_ = SymbolKev::Make(base, "char<=?");
-  sym_char_q_ = SymbolKev::Make(base, "char?");
-  sym_char_to_integer_ = SymbolKev::Make(base, "char->integer");
-  sym_complex_q_ = SymbolKev::Make(base, "complex?");
-  sym_cons_ = SymbolKev::Make(base, "cons");
-  sym_denominator_ = SymbolKev::Make(base, "denominator");
-  sym_divide_ = SymbolKev::Make(base, "/");
-  sym_dynamic_wind_ = SymbolKev::Make(base, "dynamic-wind");
-  // sym_eq_q_ = SymbolKev::Make(base, "eq?");
-  sym_equal_ = SymbolKev::Make(base, "=");
-  // sym_eqv_q_ = SymbolKev::Make(base, "eqv?");
-  sym_exact_q_ = SymbolKev::Make(base, "exact?");
-  sym_flacos_ = SymbolKev::Make(base, "flacos");
-  sym_flasin_ = SymbolKev::Make(base, "flasin");
-  sym_flatan_ = SymbolKev::Make(base, "flatan");
-  sym_flcos_ = SymbolKev::Make(base, "flcos");
-  sym_flexact_ = SymbolKev::Make(base, "flexact");
-  sym_flexp_ = SymbolKev::Make(base, "flexp");
-  sym_flexpt_ = SymbolKev::Make(base, "flexpt");
-  sym_fllog_ = SymbolKev::Make(base, "fllog");
-  sym_floor_ = SymbolKev::Make(base, "floor");
-  sym_flsin_ = SymbolKev::Make(base, "flsin");
-  sym_flsqrt_ = SymbolKev::Make(base, "flsqrt");
-  sym_fltan_ = SymbolKev::Make(base, "fltan");
-  sym_greater_than_ = SymbolKev::Make(base, ">");
-  sym_greater_than_equal_ = SymbolKev::Make(base, ">=");
-  sym_even_q_ = SymbolKev::Make(base, "even?");
-  sym_finite_q_ = SymbolKev::Make(base, "finite?");
-  sym_imag_part_ = SymbolKev::Make(base, "imag-part");
-  sym_infinite_q_ = SymbolKev::Make(base, "infinite?");
-  sym_inexact_ = SymbolKev::Make(base, "inexact");
-  sym_inexact_q_ = SymbolKev::Make(base, "inexact?");
-  sym_integer_q_ = SymbolKev::Make(base, "integer?");
-  sym_integer_valued_q_ = SymbolKev::Make(base, "integer-valued?");
-  sym_integer_to_char_ = SymbolKev::Make(base, "integer->char");
-  sym_length_ = SymbolKev::Make(base, "length");
-  // sym_length_check_ = SymbolKev::Make(base, "length-check");
-  sym_less_than_ = SymbolKev::Make(base, "<");
-  sym_less_than_equal_ = SymbolKev::Make(base, "<=");
-  sym_list_ = SymbolKev::Make(base, "list");
-  sym_magnitude_ = SymbolKev::Make(base, "magnitude");
-  sym_make_polar_ = SymbolKev::Make(base, "make-polar");
-  sym_make_rectangular_ = SymbolKev::Make(base, "make-rectangular");
-  sym_make_string_ = SymbolKev::Make(base, "make-string");
-  sym_make_vector_ = SymbolKev::Make(base, "make-vector");
-  // sym_map_ = SymbolKev::Make(base, "map");
-  sym_max_ = SymbolKev::Make(base, "max");
-  sym_min_ = SymbolKev::Make(base, "min");
-  sym_multiply_ = SymbolKev::Make(base, "*");
-  sym_nan_q_ = SymbolKev::Make(base, "nan?");
-  sym_negative_q_ = SymbolKev::Make(base, "negative?");
-  sym_not_ = SymbolKev::Make(base, "not");
-  sym_null_q_ = SymbolKev::Make(base, "null?");
-  sym_number_q_ = SymbolKev::Make(base, "number?");
-  sym_number_to_string_ = SymbolKev::Make(base, "number->string");
-  sym_numerator_ = SymbolKev::Make(base, "numerator");
-  sym_odd_q_ = SymbolKev::Make(base, "odd?");
-  sym_pair_q_ = SymbolKev::Make(base, "pair?");
-  sym_positive_q_ = SymbolKev::Make(base, "positive?");
-  sym_procedure_q_ = SymbolKev::Make(base, "procedure?");
-  sym_rational_q_ = SymbolKev::Make(base, "rational?");
-  sym_rational_valued_q_ = SymbolKev::Make(base, "rational-valued?");
-  sym_real_part_ = SymbolKev::Make(base, "real-part");
-  sym_real_q_ = SymbolKev::Make(base, "real?");
-  sym_real_valued_q_ = SymbolKev::Make(base, "real-valued?");
-  sym_reverse_ = SymbolKev::Make(base, "reverse");
-  sym_round_ = SymbolKev::Make(base, "round");
-  // sym_separate_first_value_ = SymbolKev::Make(base, "separate-first-value");
-  sym_string_ = SymbolKev::Make(base, "string");
-  // sym_string_append_ = SymbolKev::Make(base, "string-append");
-  sym_string_copy_ = SymbolKev::Make(base, "string-copy");
-  sym_string_eq_q_ = SymbolKev::Make(base, "string=?");
-  sym_string_gt_q_ = SymbolKev::Make(base, "string>?");
-  sym_string_gte_q_ = SymbolKev::Make(base, "string>=?");
-  sym_string_length_ = SymbolKev::Make(base, "string-length");
-  sym_string_lt_q_ = SymbolKev::Make(base, "string<?");
-  sym_string_lte_q_ = SymbolKev::Make(base, "string<=?");
-  sym_string_q_ = SymbolKev::Make(base, "string?");
-  sym_string_ref_ = SymbolKev::Make(base, "string-ref");
-  sym_string_to_list_ = SymbolKev::Make(base, "string->list");
-  sym_string_to_number_ = SymbolKev::Make(base, "string->number");
-  sym_string_to_symbol_ = SymbolKev::Make(base, "string->symbol");
-  sym_substring_ = SymbolKev::Make(base, "substring");
-  sym_subtract_ = SymbolKev::Make(base, "-");
-  sym_symbol_eq_q_ = SymbolKev::Make(base, "symbol=?");
-  sym_symbol_q_ = SymbolKev::Make(base, "symbol?");
-  sym_symbol_to_string_ = SymbolKev::Make(base, "symbol->string");
-  // sym_transpose_ = SymbolKev::Make(base, "transpose");
-  sym_truncate_ = SymbolKev::Make(base, "truncate");
-  sym_values_ = SymbolKev::Make(base, "values");
-  sym_vector_ = SymbolKev::Make(base, "vector");
-  sym_vector_length_ = SymbolKev::Make(base, "vector-length");
-  sym_vector_q_ = SymbolKev::Make(base, "vector?");
-  sym_vector_ref_ = SymbolKev::Make(base, "vector-ref");
-  sym_vector_set_e_ = SymbolKev::Make(base, "vector-set!");
-  sym_vector_to_list_ = SymbolKev::Make(base, "vector->list");
-  sym_list_to_vector_ = SymbolKev::Make(base, "list->vector");
-  sym_zero_q_ = SymbolKev::Make(base, "zero?");
+  sym_abs_ = SymbolKev::make(base, "abs");
+  sym_add_ = SymbolKev::make(base, "+");
+  // sym_and_ = SymbolKev::make(base, "and");
+  sym_angle_ = SymbolKev::make(base, "angle");
+  // sym_append_ = SymbolKev::make(base, "append");
+  sym_apply_ = SymbolKev::make(base, "apply");
+  sym_assertion_violation_ = SymbolKev::make(base, "assertion-violation");
+  // sym_begin_ = SymbolKev::make(base, "begin");
+  // sym_begin0_ = SymbolKev::make(base, "begin0");
+  sym_boolean_q_ = SymbolKev::make(base, "boolean?");
+  sym_call_with_cc_ = SymbolKev::make(base, "call/cc");
+  sym_call_with_current_continuation_ = SymbolKev::make(base, "call-with-current-continuation");
+  sym_call_with_values_ = SymbolKev::make(base, "call-with-values");
+  sym_car_ = SymbolKev::make(base, "car");
+  sym_cdr_ = SymbolKev::make(base, "cdr");
+  sym_caar_ = SymbolKev::make(base, "caar");
+  sym_cadr_ = SymbolKev::make(base, "cadr");
+  sym_cdar_ = SymbolKev::make(base, "cdar");
+  sym_cddr_ = SymbolKev::make(base, "cddr");
+  sym_caaar_ = SymbolKev::make(base, "caaar");
+  sym_caadr_ = SymbolKev::make(base, "caadr");
+  sym_cadar_ = SymbolKev::make(base, "cadar");
+  sym_caddr_ = SymbolKev::make(base, "caddr");
+  sym_cdaar_ = SymbolKev::make(base, "cdaar");
+  sym_cdadr_ = SymbolKev::make(base, "cdadr");
+  sym_cddar_ = SymbolKev::make(base, "cddar");
+  sym_cdddr_ = SymbolKev::make(base, "cdddr");
+  sym_ceiling_ = SymbolKev::make(base, "ceiling");
+  sym_char_eq_q_ = SymbolKev::make(base, "char=?");
+  sym_char_gt_q_ = SymbolKev::make(base, "char>?");
+  sym_char_gte_q_ = SymbolKev::make(base, "char>=?");
+  sym_char_lt_q_ = SymbolKev::make(base, "char<?");
+  sym_char_lte_q_ = SymbolKev::make(base, "char<=?");
+  sym_char_q_ = SymbolKev::make(base, "char?");
+  sym_char_to_integer_ = SymbolKev::make(base, "char->integer");
+  sym_complex_q_ = SymbolKev::make(base, "complex?");
+  sym_cons_ = SymbolKev::make(base, "cons");
+  sym_denominator_ = SymbolKev::make(base, "denominator");
+  sym_divide_ = SymbolKev::make(base, "/");
+  sym_dynamic_wind_ = SymbolKev::make(base, "dynamic-wind");
+  // sym_eq_q_ = SymbolKev::make(base, "eq?");
+  sym_equal_ = SymbolKev::make(base, "=");
+  // sym_eqv_q_ = SymbolKev::make(base, "eqv?");
+  sym_exact_q_ = SymbolKev::make(base, "exact?");
+  sym_flacos_ = SymbolKev::make(base, "flacos");
+  sym_flasin_ = SymbolKev::make(base, "flasin");
+  sym_flatan_ = SymbolKev::make(base, "flatan");
+  sym_flcos_ = SymbolKev::make(base, "flcos");
+  sym_flexact_ = SymbolKev::make(base, "flexact");
+  sym_flexp_ = SymbolKev::make(base, "flexp");
+  sym_flexpt_ = SymbolKev::make(base, "flexpt");
+  sym_fllog_ = SymbolKev::make(base, "fllog");
+  sym_floor_ = SymbolKev::make(base, "floor");
+  sym_flsin_ = SymbolKev::make(base, "flsin");
+  sym_flsqrt_ = SymbolKev::make(base, "flsqrt");
+  sym_fltan_ = SymbolKev::make(base, "fltan");
+  sym_greater_than_ = SymbolKev::make(base, ">");
+  sym_greater_than_equal_ = SymbolKev::make(base, ">=");
+  sym_even_q_ = SymbolKev::make(base, "even?");
+  sym_finite_q_ = SymbolKev::make(base, "finite?");
+  sym_imag_part_ = SymbolKev::make(base, "imag-part");
+  sym_infinite_q_ = SymbolKev::make(base, "infinite?");
+  sym_inexact_ = SymbolKev::make(base, "inexact");
+  sym_inexact_q_ = SymbolKev::make(base, "inexact?");
+  sym_integer_q_ = SymbolKev::make(base, "integer?");
+  sym_integer_valued_q_ = SymbolKev::make(base, "integer-valued?");
+  sym_integer_to_char_ = SymbolKev::make(base, "integer->char");
+  sym_length_ = SymbolKev::make(base, "length");
+  // sym_length_check_ = SymbolKev::make(base, "length-check");
+  sym_less_than_ = SymbolKev::make(base, "<");
+  sym_less_than_equal_ = SymbolKev::make(base, "<=");
+  sym_list_ = SymbolKev::make(base, "list");
+  sym_magnitude_ = SymbolKev::make(base, "magnitude");
+  sym_make_polar_ = SymbolKev::make(base, "make-polar");
+  sym_make_rectangular_ = SymbolKev::make(base, "make-rectangular");
+  sym_make_string_ = SymbolKev::make(base, "make-string");
+  sym_make_vector_ = SymbolKev::make(base, "make-vector");
+  // sym_map_ = SymbolKev::make(base, "map");
+  sym_max_ = SymbolKev::make(base, "max");
+  sym_min_ = SymbolKev::make(base, "min");
+  sym_multiply_ = SymbolKev::make(base, "*");
+  sym_nan_q_ = SymbolKev::make(base, "nan?");
+  sym_negative_q_ = SymbolKev::make(base, "negative?");
+  sym_not_ = SymbolKev::make(base, "not");
+  sym_null_q_ = SymbolKev::make(base, "null?");
+  sym_number_q_ = SymbolKev::make(base, "number?");
+  sym_number_to_string_ = SymbolKev::make(base, "number->string");
+  sym_numerator_ = SymbolKev::make(base, "numerator");
+  sym_odd_q_ = SymbolKev::make(base, "odd?");
+  sym_pair_q_ = SymbolKev::make(base, "pair?");
+  sym_positive_q_ = SymbolKev::make(base, "positive?");
+  sym_procedure_q_ = SymbolKev::make(base, "procedure?");
+  sym_rational_q_ = SymbolKev::make(base, "rational?");
+  sym_rational_valued_q_ = SymbolKev::make(base, "rational-valued?");
+  sym_real_part_ = SymbolKev::make(base, "real-part");
+  sym_real_q_ = SymbolKev::make(base, "real?");
+  sym_real_valued_q_ = SymbolKev::make(base, "real-valued?");
+  sym_reverse_ = SymbolKev::make(base, "reverse");
+  sym_round_ = SymbolKev::make(base, "round");
+  // sym_separate_first_value_ = SymbolKev::make(base, "separate-first-value");
+  sym_string_ = SymbolKev::make(base, "string");
+  // sym_string_append_ = SymbolKev::make(base, "string-append");
+  sym_string_copy_ = SymbolKev::make(base, "string-copy");
+  sym_string_eq_q_ = SymbolKev::make(base, "string=?");
+  sym_string_gt_q_ = SymbolKev::make(base, "string>?");
+  sym_string_gte_q_ = SymbolKev::make(base, "string>=?");
+  sym_string_length_ = SymbolKev::make(base, "string-length");
+  sym_string_lt_q_ = SymbolKev::make(base, "string<?");
+  sym_string_lte_q_ = SymbolKev::make(base, "string<=?");
+  sym_string_q_ = SymbolKev::make(base, "string?");
+  sym_string_ref_ = SymbolKev::make(base, "string-ref");
+  sym_string_to_list_ = SymbolKev::make(base, "string->list");
+  sym_string_to_number_ = SymbolKev::make(base, "string->number");
+  sym_string_to_symbol_ = SymbolKev::make(base, "string->symbol");
+  sym_substring_ = SymbolKev::make(base, "substring");
+  sym_subtract_ = SymbolKev::make(base, "-");
+  sym_symbol_eq_q_ = SymbolKev::make(base, "symbol=?");
+  sym_symbol_q_ = SymbolKev::make(base, "symbol?");
+  sym_symbol_to_string_ = SymbolKev::make(base, "symbol->string");
+  // sym_transpose_ = SymbolKev::make(base, "transpose");
+  sym_truncate_ = SymbolKev::make(base, "truncate");
+  sym_values_ = SymbolKev::make(base, "values");
+  sym_vector_ = SymbolKev::make(base, "vector");
+  sym_vector_length_ = SymbolKev::make(base, "vector-length");
+  sym_vector_q_ = SymbolKev::make(base, "vector?");
+  sym_vector_ref_ = SymbolKev::make(base, "vector-ref");
+  sym_vector_set_e_ = SymbolKev::make(base, "vector-set!");
+  sym_vector_to_list_ = SymbolKev::make(base, "vector->list");
+  sym_list_to_vector_ = SymbolKev::make(base, "list->vector");
+  sym_zero_q_ = SymbolKev::make(base, "zero?");
   
   proc_procedure_q_.set(&Function::predicate<IsProcedure>, sym_procedure_q_);
   proc_number_q_.set(&Function::predicate<IsNumber>, sym_number_q_);
@@ -298,158 +300,159 @@ void LibRnrsBase::Init(KevesBase* base) {
   proc_call_with_values_.set(&Function::make<IsProcedure, IsProcedure, CallWithValues>, sym_call_with_values_);
   proc_dynamic_wind_.set(&Function::make<IsProcedure, IsProcedure, IsProcedure, DynamicWind>, sym_dynamic_wind_);
   proc_assertion_violation_.set(&procAssertionViolation, sym_assertion_violation_);
+  proc_apply_.set(&procApply, sym_apply_);
   
-  AddBind("abs", &proc_abs_);
-  AddBind("+", &proc_add_);
-  // AddBind("and");
-  AddBind("angle", &proc_angle_);
-  // AddBind("append");
-  // AddBind("apply");
-  AddBind("assertion-violation", &proc_assertion_violation_);
-  // AddBind("begin");
-  // AddBind("begin0");
-  AddBind("boolean?", &proc_boolean_q_);
-  AddBind("call/cc", &proc_call_with_cc_);
-  AddBind("call-with-current-continuation", &proc_call_with_cc_);
-  AddBind("call-with-values", &proc_call_with_values_);
-  AddBind("car", &proc_car_);
-  AddBind("cdr", &proc_cdr_);
-  AddBind("caar", &proc_caar_);
-  AddBind("cadr", &proc_cadr_);
-  AddBind("cdar", &proc_cdar_);
-  AddBind("cddr", &proc_cddr_);
-  AddBind("caaar", &proc_caaar_);
-  AddBind("caadr", &proc_caadr_);
-  AddBind("cadar", &proc_cadar_);
-  AddBind("caddr", &proc_caddr_);
-  AddBind("cdaar", &proc_cdaar_);
-  AddBind("cdadr", &proc_cdadr_);
-  AddBind("cddar", &proc_cddar_);
-  AddBind("cdddr", &proc_cdddr_);
-  AddBind("ceiling", &proc_ceiling_);
-  AddBind("char=?", &proc_char_eq_q_);
-  AddBind("char>?", &proc_char_gt_q_);
-  AddBind("char>=?", &proc_char_gte_q_);
-  AddBind("char<?", &proc_char_lt_q_);
-  AddBind("char<=?", &proc_char_lte_q_);
-  AddBind("char?", &proc_char_q_);
-  AddBind("char->integer", &proc_char_to_integer_);
-  AddBind("complex?", &proc_complex_q_);
-  AddBind("cons", &proc_cons_);
-  AddBind("denominator", &proc_denominator_);
-  AddBind("/", &proc_divide_);
-  AddBind("dynamic-wind", &proc_dynamic_wind_);
-  // AddBind("eq?");
-  AddBind("=", &proc_equal_);
-  // AddBind("eqv?");
-  AddBind("exact?", &proc_exact_q_);
-  AddBind("flacos", &proc_flacos_);
-  AddBind("flasin", &proc_flasin_);
-  AddBind("flatan", &proc_flatan_);
-  AddBind("flcos", &proc_flcos_);
-  AddBind("flexact", &proc_flexact_);
-  AddBind("flexp", &proc_flexp_);
-  AddBind("flexpt", &proc_flexpt_);
-  AddBind("fllog", &proc_fllog_);
-  AddBind("floor", &proc_floor_);
-  AddBind("flsin", &proc_flsin_);
-  AddBind("flsqrt", &proc_flsqrt_);
-  AddBind("fltan", &proc_fltan_);
-  AddBind(">", &proc_greater_than_);
-  AddBind(">=", &proc_greater_than_equal_);
-  AddBind("even?", &proc_even_q_);
-  AddBind("finite?", &proc_finite_q_);
-  AddBind("imag-part", &proc_imag_part_);
-  AddBind("infinite?", &proc_infinite_q_);
-  AddBind("inexact", &proc_inexact_);
-  AddBind("inexact?", &proc_inexact_q_);
-  AddBind("integer?", &proc_integer_q_);
-  AddBind("integer-valued?", &proc_integer_valued_q_);
-  AddBind("integer->char", &proc_integer_to_char_);
-  AddBind("length", &proc_length_);
-  // AddBind("length-check");
-  AddBind("<", &proc_less_than_);
-  AddBind("<=", &proc_less_than_equal_);
-  AddBind("list", &proc_list_);
-  AddBind("magnitude", &proc_magnitude_);
-  AddBind("make-polar", &proc_make_polar_);
-  AddBind("make-rectangular", &proc_make_rectangular_);
-  AddBind("make-string", &proc_make_string_);
-  AddBind("make-vector", &proc_make_vector_);
-  // AddBind("map");
-  AddBind("max", &proc_max_);
-  AddBind("min", &proc_min_);
-  AddBind("*", &proc_multiply_);
-  AddBind("nan?", &proc_nan_q_);
-  AddBind("negative?", &proc_negative_q_);
-  AddBind("not", &proc_not_);
-  AddBind("null?", &proc_null_q_);
-  AddBind("number?", &proc_number_q_);
-  AddBind("number->string", &proc_number_to_string_);
-  AddBind("numerator", &proc_numerator_);
-  AddBind("odd?", &proc_odd_q_);
-  AddBind("pair?", &proc_pair_q_);
-  AddBind("positive?", &proc_positive_q_);
-  AddBind("procedure?", &proc_procedure_q_);
-  AddBind("rational?", &proc_rational_q_);
-  AddBind("rational-valued?", &proc_rational_valued_q_);
-  AddBind("real-part", &proc_real_part_);
-  AddBind("real?", &proc_real_q_);
-  AddBind("real-valued?", &proc_real_valued_q_);
-  AddBind("reverse", &proc_reverse_);
-  AddBind("round", &proc_round_);
-  // AddBind("separate-first-value");
-  AddBind("string", &proc_string_);
-  // AddBind("string-append");
-  AddBind("string-copy", &proc_string_copy_);
-  AddBind("string=?", &proc_string_eq_q_);
-  AddBind("string>?", &proc_string_gt_q_);
-  AddBind("string>=?", &proc_string_gte_q_);
-  AddBind("string-length", &proc_string_length_);
-  AddBind("string<?", &proc_string_lt_q_);
-  AddBind("string<=?", &proc_string_lte_q_);
-  AddBind("string?", &proc_string_q_);
-  AddBind("string-ref", &proc_string_ref_);
-  AddBind("string->list", &proc_string_to_list_);
-  AddBind("string->number", &proc_string_to_number_);
-  AddBind("string->symbol", &proc_string_to_symbol_);
-  AddBind("substring", &proc_substring_);
-  AddBind("-", &proc_subtract_);
-  AddBind("symbol=?", &proc_symbol_eq_q_);
-  AddBind("symbol?", &proc_symbol_q_);
-  AddBind("symbol->string", &proc_symbol_to_string_);
-  // AddBind("transpose");
-  AddBind("truncate", &proc_truncate_);
-  AddBind("values", &proc_values_);
-  AddBind("vector", &proc_vector_);
-  AddBind("vector-length", &proc_vector_length_);
-  AddBind("vector?", &proc_vector_q_);
-  AddBind("vector-ref", &proc_vector_ref_);
-  AddBind("vector-set!", &proc_vector_set_e_);
-  AddBind("vector->list", &proc_vector_to_list_);
-  AddBind("list->vector", &proc_list_to_vector_);
-  AddBind("zero?", &proc_zero_q_);
+  addBind("abs", &proc_abs_);
+  addBind("+", &proc_add_);
+  // addBind("and");
+  addBind("angle", &proc_angle_);
+  // addBind("append");
+  addBind("apply", &proc_apply_);
+  addBind("assertion-violation", &proc_assertion_violation_);
+  // addBind("begin");
+  // addBind("begin0");
+  addBind("boolean?", &proc_boolean_q_);
+  addBind("call/cc", &proc_call_with_cc_);
+  addBind("call-with-current-continuation", &proc_call_with_cc_);
+  addBind("call-with-values", &proc_call_with_values_);
+  addBind("car", &proc_car_);
+  addBind("cdr", &proc_cdr_);
+  addBind("caar", &proc_caar_);
+  addBind("cadr", &proc_cadr_);
+  addBind("cdar", &proc_cdar_);
+  addBind("cddr", &proc_cddr_);
+  addBind("caaar", &proc_caaar_);
+  addBind("caadr", &proc_caadr_);
+  addBind("cadar", &proc_cadar_);
+  addBind("caddr", &proc_caddr_);
+  addBind("cdaar", &proc_cdaar_);
+  addBind("cdadr", &proc_cdadr_);
+  addBind("cddar", &proc_cddar_);
+  addBind("cdddr", &proc_cdddr_);
+  addBind("ceiling", &proc_ceiling_);
+  addBind("char=?", &proc_char_eq_q_);
+  addBind("char>?", &proc_char_gt_q_);
+  addBind("char>=?", &proc_char_gte_q_);
+  addBind("char<?", &proc_char_lt_q_);
+  addBind("char<=?", &proc_char_lte_q_);
+  addBind("char?", &proc_char_q_);
+  addBind("char->integer", &proc_char_to_integer_);
+  addBind("complex?", &proc_complex_q_);
+  addBind("cons", &proc_cons_);
+  addBind("denominator", &proc_denominator_);
+  addBind("/", &proc_divide_);
+  addBind("dynamic-wind", &proc_dynamic_wind_);
+  // addBind("eq?");
+  addBind("=", &proc_equal_);
+  // addBind("eqv?");
+  addBind("exact?", &proc_exact_q_);
+  addBind("flacos", &proc_flacos_);
+  addBind("flasin", &proc_flasin_);
+  addBind("flatan", &proc_flatan_);
+  addBind("flcos", &proc_flcos_);
+  addBind("flexact", &proc_flexact_);
+  addBind("flexp", &proc_flexp_);
+  addBind("flexpt", &proc_flexpt_);
+  addBind("fllog", &proc_fllog_);
+  addBind("floor", &proc_floor_);
+  addBind("flsin", &proc_flsin_);
+  addBind("flsqrt", &proc_flsqrt_);
+  addBind("fltan", &proc_fltan_);
+  addBind(">", &proc_greater_than_);
+  addBind(">=", &proc_greater_than_equal_);
+  addBind("even?", &proc_even_q_);
+  addBind("finite?", &proc_finite_q_);
+  addBind("imag-part", &proc_imag_part_);
+  addBind("infinite?", &proc_infinite_q_);
+  addBind("inexact", &proc_inexact_);
+  addBind("inexact?", &proc_inexact_q_);
+  addBind("integer?", &proc_integer_q_);
+  addBind("integer-valued?", &proc_integer_valued_q_);
+  addBind("integer->char", &proc_integer_to_char_);
+  addBind("length", &proc_length_);
+  // addBind("length-check");
+  addBind("<", &proc_less_than_);
+  addBind("<=", &proc_less_than_equal_);
+  addBind("list", &proc_list_);
+  addBind("magnitude", &proc_magnitude_);
+  addBind("make-polar", &proc_make_polar_);
+  addBind("make-rectangular", &proc_make_rectangular_);
+  addBind("make-string", &proc_make_string_);
+  addBind("make-vector", &proc_make_vector_);
+  // addBind("map");
+  addBind("max", &proc_max_);
+  addBind("min", &proc_min_);
+  addBind("*", &proc_multiply_);
+  addBind("nan?", &proc_nan_q_);
+  addBind("negative?", &proc_negative_q_);
+  addBind("not", &proc_not_);
+  addBind("null?", &proc_null_q_);
+  addBind("number?", &proc_number_q_);
+  addBind("number->string", &proc_number_to_string_);
+  addBind("numerator", &proc_numerator_);
+  addBind("odd?", &proc_odd_q_);
+  addBind("pair?", &proc_pair_q_);
+  addBind("positive?", &proc_positive_q_);
+  addBind("procedure?", &proc_procedure_q_);
+  addBind("rational?", &proc_rational_q_);
+  addBind("rational-valued?", &proc_rational_valued_q_);
+  addBind("real-part", &proc_real_part_);
+  addBind("real?", &proc_real_q_);
+  addBind("real-valued?", &proc_real_valued_q_);
+  addBind("reverse", &proc_reverse_);
+  addBind("round", &proc_round_);
+  // addBind("separate-first-value");
+  addBind("string", &proc_string_);
+  // addBind("string-append");
+  addBind("string-copy", &proc_string_copy_);
+  addBind("string=?", &proc_string_eq_q_);
+  addBind("string>?", &proc_string_gt_q_);
+  addBind("string>=?", &proc_string_gte_q_);
+  addBind("string-length", &proc_string_length_);
+  addBind("string<?", &proc_string_lt_q_);
+  addBind("string<=?", &proc_string_lte_q_);
+  addBind("string?", &proc_string_q_);
+  addBind("string-ref", &proc_string_ref_);
+  addBind("string->list", &proc_string_to_list_);
+  addBind("string->number", &proc_string_to_number_);
+  addBind("string->symbol", &proc_string_to_symbol_);
+  addBind("substring", &proc_substring_);
+  addBind("-", &proc_subtract_);
+  addBind("symbol=?", &proc_symbol_eq_q_);
+  addBind("symbol?", &proc_symbol_q_);
+  addBind("symbol->string", &proc_symbol_to_string_);
+  // addBind("transpose");
+  addBind("truncate", &proc_truncate_);
+  addBind("values", &proc_values_);
+  addBind("vector", &proc_vector_);
+  addBind("vector-length", &proc_vector_length_);
+  addBind("vector?", &proc_vector_q_);
+  addBind("vector-ref", &proc_vector_ref_);
+  addBind("vector-set!", &proc_vector_set_e_);
+  addBind("vector->list", &proc_vector_to_list_);
+  addBind("list->vector", &proc_list_to_vector_);
+  addBind("zero?", &proc_zero_q_);
 
 }
 
 bool LibRnrsBase::IsNumber::func(KevesValue kev) {
-  return kev.IsNumber();
+  return kev.isNumber();
 }
 
 bool LibRnrsBase::IsReal::func(KevesValue kev) {
-  return kev.IsRealNumber();
+  return kev.isRealNumber();
 }
 
 bool LibRnrsBase::IsComplex::func(KevesValue kev) {
-  return kev.IsComplexNumber();
+  return kev.isComplexNumber();
 }
 
 bool LibRnrsBase::IsExact::func(KevesValue kev) {
-  return kev.IsExactNumber();
+  return kev.isExactNumber();
 }
 
 bool LibRnrsBase::IsInexact::func(KevesValue kev) {
-  return kev.IsInexactNumber();
+  return kev.isInexactNumber();
 }
 
 bool LibRnrsBase::IsLessThan::func(KevesValue num1, KevesValue num2) {
@@ -481,17 +484,17 @@ bool LibRnrsBase::IsNegative::func(KevesValue kev) {
 }
 
 bool LibRnrsBase::IsOdd::func(KevesValue kev) {
-  if (kev.IsFixnum()) {
+  if (kev.isFixnum()) {
     fx_int num(KevesFixnum { kev } );
     return num & 1;
   }
 
-  if (kev.Is<RationalNumberKev>()) {
+  if (kev.is<RationalNumberKev>()) {
     const RationalNumberKev* num(kev);
     return num->isOdd();
   }
 
-  if (kev.Is<FlonumKev>()) {
+  if (kev.is<FlonumKev>()) {
     const FlonumKev* num(kev);
     return num->isOdd();
   }
@@ -500,17 +503,17 @@ bool LibRnrsBase::IsOdd::func(KevesValue kev) {
 }
 
 bool LibRnrsBase::IsEven::func(KevesValue kev) {
-  if (kev.IsFixnum()) {
+  if (kev.isFixnum()) {
     fx_int num(KevesFixnum { kev } );
     return !(num & 1);
   }
 
-  if (kev.Is<RationalNumberKev>()) {
+  if (kev.is<RationalNumberKev>()) {
     const RationalNumberKev* num(kev);
     return num->isEven();
   }
 
-  if (kev.Is<FlonumKev>()) {
+  if (kev.is<FlonumKev>()) {
     const FlonumKev* num(kev);
     return num->isEven();
   }
@@ -520,8 +523,8 @@ bool LibRnrsBase::IsEven::func(KevesValue kev) {
 
 void LibRnrsBase::Flexact::func(KevesVM* vm, const_KevesIterator pc) {
   return
-    vm->acc_.IsExactNumber() ? KevesVM::ReturnValue(vm, pc) :
-    vm->acc_.Is<FlonumKev>() ? func_helper1(vm, pc) :
+    vm->acc_.isExactNumber() ? KevesVM::returnValue(vm, pc) :
+    vm->acc_.is<FlonumKev>() ? func_helper1(vm, pc) :
     func_helper2(vm, pc);
 }
 
@@ -529,16 +532,16 @@ void LibRnrsBase::Flexact::func_helper1(KevesVM* vm, const_KevesIterator pc) {
   const FlonumKev* num(vm->acc_);
 
   if (num->isNaN() || num->isInfinity())
-    return KevesVM::ReturnValue(vm, pc);
+    return KevesVM::returnValue(vm, pc);
 
   if (num->isZero()) {
     vm->acc_ = KevesFixnum(0);
-    return KevesVM::ReturnValue(vm, pc);
+    return KevesVM::returnValue(vm, pc);
   }
   
   RationalNumberKev rational(num->toExact(vm->gc()));
   vm->acc_ = &rational;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Flexact::func_helper2(KevesVM* vm, const_KevesIterator pc) {
@@ -547,83 +550,83 @@ void LibRnrsBase::Flexact::func_helper2(KevesVM* vm, const_KevesIterator pc) {
   FlonumKev imag(num->imag());
 
   if (real.isNaN() || real.isInfinity() || imag.isNaN() || imag.isInfinity())
-    return KevesVM::ReturnValue(vm, pc);
+    return KevesVM::returnValue(vm, pc);
 
   RationalNumberKev rational_real(real.toExact(vm->gc()));
   
-  vm->CheckStack(&rational_real, &func_helper2, pc);
+  vm->checkStack(&rational_real, &func_helper2, pc);
   
   if (imag.isZero()) {
     vm->acc_ = rational_real.optimize();
-    return KevesVM::ReturnValue(vm, pc);
+    return KevesVM::returnValue(vm, pc);
   }
 
   RationalNumberKev rational_imag(imag.toExact(vm->gc()));
   ExactComplexNumberKev complex(rational_real, rational_imag);
   vm->acc_ = &complex;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Inexact::func(KevesVM* vm, const_KevesIterator pc) {
-  if (vm->acc_.IsFixnum()) {
+  if (vm->acc_.isFixnum()) {
     KevesFixnum fixnum(vm->acc_);
     FlonumKev flonum(fixnum);
 
-    vm->CheckStack(&flonum, &func, pc);
+    vm->checkStack(&flonum, &func, pc);
     
     vm->acc_ = &flonum;
-    return KevesVM::ReturnValue(vm, pc);
+    return KevesVM::returnValue(vm, pc);
   }
 
-  if (vm->acc_.Is<RationalNumberKev>()) {
+  if (vm->acc_.is<RationalNumberKev>()) {
     const RationalNumberKev* num(vm->acc_);
     FlonumKev flonum(num->toInexact());
 
-    vm->CheckStack(&flonum, &func, pc);
+    vm->checkStack(&flonum, &func, pc);
 
     vm->acc_ = &flonum;
-    return KevesVM::ReturnValue(vm, pc);
+    return KevesVM::returnValue(vm, pc);
   }
 
-  if (vm->acc_.Is<ExactComplexNumberKev>()) {
+  if (vm->acc_.is<ExactComplexNumberKev>()) {
     const ExactComplexNumberKev* num(vm->acc_);
     InexactComplexNumberKev inexact(num->toInexact());
 
-    vm->CheckStack(&inexact, &func, pc);
+    vm->checkStack(&inexact, &func, pc);
 
     vm->acc_ = &inexact;
-    return KevesVM::ReturnValue(vm, pc);
+    return KevesVM::returnValue(vm, pc);
   }
 
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 KevesValue LibRnrsBase::IsNumber::message(KevesBase* base) {
-  return base->GetMesgText(KevesBuiltinValues::mesg_ReqNum);
+  return base->getMesgText(KevesBuiltinValues::mesg_ReqNum);
 }
 
 KevesValue LibRnrsBase::IsReal::message(KevesBase* base) {
-  return base->GetMesgText(KevesBuiltinValues::mesg_ReqRealNum);
+  return base->getMesgText(KevesBuiltinValues::mesg_ReqRealNum);
 }
 
 KevesValue LibRnrsBase::IsReal::message1(KevesBase* base) {
-  return base->GetMesgText(KevesBuiltinValues::mesg_ReqRealNumAs1st);
+  return base->getMesgText(KevesBuiltinValues::mesg_ReqRealNumAs1st);
 }
 
 KevesValue LibRnrsBase::IsReal::message2(KevesBase* base) {
-  return base->GetMesgText(KevesBuiltinValues::mesg_ReqRealNumAs2nd);
+  return base->getMesgText(KevesBuiltinValues::mesg_ReqRealNumAs2nd);
 }
 
 bool LibRnrsBase::IsRealValued::func(KevesValue kev) {
-  if (kev.IsRealNumber())
+  if (kev.isRealNumber())
     return true;
 
-  if (kev.Is<ExactComplexNumberKev>()) {
+  if (kev.is<ExactComplexNumberKev>()) {
     const ExactComplexNumberKev* exact(kev);
     return exact->isRealValued();
   }
 
-  if (kev.Is<InexactComplexNumberKev>()) {
+  if (kev.is<InexactComplexNumberKev>()) {
     const InexactComplexNumberKev* inexact(kev);
     return inexact->isRealValued();
   }
@@ -632,10 +635,10 @@ bool LibRnrsBase::IsRealValued::func(KevesValue kev) {
 }
 
 bool LibRnrsBase::IsRational::func(KevesValue kev) {
-  if (kev.IsRationalNumber())
+  if (kev.isRationalNumber())
     return true;
 
-  if (kev.Is<FlonumKev>()) {
+  if (kev.is<FlonumKev>()) {
     const FlonumKev* flonum(kev);
     return flonum->isInteger();
   }
@@ -644,15 +647,15 @@ bool LibRnrsBase::IsRational::func(KevesValue kev) {
 }
 
 bool LibRnrsBase::IsRationalValued::func(KevesValue kev) {
-  if (kev.IsRealNumber())
+  if (kev.isRealNumber())
     return true;
 
-  if (kev.Is<ExactComplexNumberKev>()) {
+  if (kev.is<ExactComplexNumberKev>()) {
     const ExactComplexNumberKev* exact(kev);
     return exact->isRealValued();
   }
 
-  if (kev.Is<InexactComplexNumberKev>()) {
+  if (kev.is<InexactComplexNumberKev>()) {
     const InexactComplexNumberKev* inexact(kev);
     return inexact->isRealValued();
   }
@@ -661,15 +664,15 @@ bool LibRnrsBase::IsRationalValued::func(KevesValue kev) {
 }
 
 bool LibRnrsBase::IsInteger::func(KevesValue kev) {
-  if (kev.IsFixnum())
+  if (kev.isFixnum())
     return true;
 
-  if (kev.Is<RationalNumberKev>()) {
+  if (kev.is<RationalNumberKev>()) {
     const RationalNumberKev* rational(kev);
     return rational->isInteger();
   }
 
-  if (kev.Is<FlonumKev>()) {
+  if (kev.is<FlonumKev>()) {
     const FlonumKev* flonum(kev);
     return flonum->isInteger();
   }
@@ -678,29 +681,29 @@ bool LibRnrsBase::IsInteger::func(KevesValue kev) {
 }
 
 KevesValue LibRnrsBase::IsInteger::message(KevesBase* base) {
-  return base->GetMesgText(KevesBuiltinValues::mesg_ReqIntNum);
+  return base->getMesgText(KevesBuiltinValues::mesg_ReqIntNum);
 }
 
 bool LibRnrsBase::IsIntegerValued::func(KevesValue kev) {
-  if (kev.IsFixnum())
+  if (kev.isFixnum())
     return true;
 
-  if (kev.Is<RationalNumberKev>()) {
+  if (kev.is<RationalNumberKev>()) {
     const RationalNumberKev* rational(kev);
     return rational->isInteger();
   }
 
-  if (kev.Is<FlonumKev>()) {
+  if (kev.is<FlonumKev>()) {
     const FlonumKev* flonum(kev);
     return flonum->isInteger();
   }
 
-  if (kev.Is<ExactComplexNumberKev>()) {
+  if (kev.is<ExactComplexNumberKev>()) {
     const ExactComplexNumberKev* exact(kev);
     return exact->isIntegerValued();
   }
 
-  if (kev.Is<InexactComplexNumberKev>()) {
+  if (kev.is<InexactComplexNumberKev>()) {
     const InexactComplexNumberKev* inexact(kev);
     return inexact->isIntegerValued();
   }
@@ -709,39 +712,39 @@ bool LibRnrsBase::IsIntegerValued::func(KevesValue kev) {
 }
 
 bool LibRnrsBase::IsEqualTo::func(KevesValue num1, KevesValue num2) {
-  if (num1.IsFixnum())
-    return num2.IsFixnum() && num1 == num2;
+  if (num1.isFixnum())
+    return num2.isFixnum() && num1 == num2;
 
-  if (num1.Is<RationalNumberKev>()) {
+  if (num1.is<RationalNumberKev>()) {
     const RationalNumberKev* real1(num1);
 
-    if (num2.Is<RationalNumberKev>()) {
+    if (num2.is<RationalNumberKev>()) {
       const RationalNumberKev* real2(num2);
       return real1->isEqualTo(*real2);
     }
     
-  } else if (num1.Is<FlonumKev>()) {
+  } else if (num1.is<FlonumKev>()) {
     const FlonumKev* real1(num1);
 
-    if (num2.Is<FlonumKev>()) {
+    if (num2.is<FlonumKev>()) {
       const FlonumKev* real2(num2);
       return real1->isEqualTo(*real2);
     }
 
-  } else if (num1.Is<ExactComplexNumberKev>()) {
+  } else if (num1.is<ExactComplexNumberKev>()) {
     const ExactComplexNumberKev* comple1(num1);
 
-    if (num2.Is<ExactComplexNumberKev>()) {
+    if (num2.is<ExactComplexNumberKev>()) {
       const ExactComplexNumberKev* complex2(num2);
 
       return comple1->real().isEqualTo(complex2->real()) &&
 	comple1->imag().isEqualTo(complex2->imag());
     }
 
-  } else if (num1.Is<InexactComplexNumberKev>()) {
+  } else if (num1.is<InexactComplexNumberKev>()) {
     const InexactComplexNumberKev* comple1(num1);
 
-    if (num2.Is<InexactComplexNumberKev>()) {
+    if (num2.is<InexactComplexNumberKev>()) {
       const InexactComplexNumberKev* complex2(num2);
       return comple1->isEqualTo(*complex2);
     }
@@ -752,10 +755,10 @@ bool LibRnrsBase::IsEqualTo::func(KevesValue num1, KevesValue num2) {
 }
 
 bool LibRnrsBase::IsFinite::func(KevesValue kev) {
-  if (kev.IsRationalNumber())
+  if (kev.isRationalNumber())
     return true;
 
-  if (kev.Is<FlonumKev>()) {
+  if (kev.is<FlonumKev>()) {
     const FlonumKev* num(kev);
     return num->isFinite();
   }
@@ -764,7 +767,7 @@ bool LibRnrsBase::IsFinite::func(KevesValue kev) {
 }
 
 bool LibRnrsBase::IsInfinite::func(KevesValue kev) {
-  if (kev.Is<FlonumKev>()) {
+  if (kev.is<FlonumKev>()) {
     const FlonumKev* num(kev);
     return num->isInfinity();
   }
@@ -773,7 +776,7 @@ bool LibRnrsBase::IsInfinite::func(KevesValue kev) {
 }
 
 bool LibRnrsBase::IsNaN::func(KevesValue kev) {
-  if (kev.Is<FlonumKev>()) {
+  if (kev.is<FlonumKev>()) {
     const FlonumKev* num(kev);
     return num->isNaN();
   }
@@ -782,23 +785,23 @@ bool LibRnrsBase::IsNaN::func(KevesValue kev) {
 }
 
 bool LibRnrsBase::IsProcedure::func(KevesValue kev) {
-  return kev.IsProcedure();
+  return kev.isProcedure();
 }
 
 KevesValue LibRnrsBase::IsProcedure::message(KevesBase* base) {
-  return base->GetMesgText(KevesBuiltinValues::mesg_ReqProc);
+  return base->getMesgText(KevesBuiltinValues::mesg_ReqProc);
 }
 
 KevesValue LibRnrsBase::IsProcedure::message1(KevesBase* base) {
-  return base->GetMesgText(KevesBuiltinValues::mesg_ReqProcAs1st);
+  return base->getMesgText(KevesBuiltinValues::mesg_ReqProcAs1st);
 }
 
 KevesValue LibRnrsBase::IsProcedure::message2(KevesBase* base) {
-  return base->GetMesgText(KevesBuiltinValues::mesg_ReqProcAs2nd);
+  return base->getMesgText(KevesBuiltinValues::mesg_ReqProcAs2nd);
 }
 
 KevesValue LibRnrsBase::IsProcedure::message3(KevesBase* base) {
-  return base->GetMesgText(KevesBuiltinValues::mesg_ReqProcAs3rd);
+  return base->getMesgText(KevesBuiltinValues::mesg_ReqProcAs3rd);
 }
 
 KevesValue LibRnrsBase::Max::func(KevesGC* gc, KevesValue num1, KevesValue num2) {
@@ -811,22 +814,22 @@ KevesValue LibRnrsBase::Min::func(KevesGC* gc, KevesValue num1, KevesValue num2)
 
 void LibRnrsBase::Add::func0(KevesVM* vm, const_KevesIterator pc) {
   vm->acc_ = KevesFixnum(0);
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Add::func1(KevesVM* vm, const_KevesIterator pc) {
   StackFrameKev* registers(&vm->registers_);
   KevesValue last(registers->lastArgument());
 
-  if (last.IsNumber()) {
+  if (last.isNumber()) {
     vm->acc_ = last;
-    return KevesVM::ReturnValue(vm, pc);
+    return KevesVM::returnValue(vm, pc);
   }
 
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqNum);
+  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqNum);
   vm->gr2_ = EMB_NULL;
-  return KevesVM::RaiseAssertCondition(vm, pc);
+  return KevesVM::raiseAssertCondition(vm, pc);
 }
 
 void LibRnrsBase::Add::funcFixnumFixnum(KevesVM* vm, const_KevesIterator pc) {
@@ -837,11 +840,11 @@ void LibRnrsBase::Add::funcFixnumFixnum(KevesVM* vm, const_KevesIterator pc) {
 
   if (fixnum == sum) {
     vm->acc_ = fixnum;
-    return KevesVM::ReturnValue(vm, pc);
+    return KevesVM::returnValue(vm, pc);
   }
 
   vm->acc_ = RationalNumberKev::makeFromInt(vm->gc(), sum);
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
   
 void LibRnrsBase::Add::funcRationalFixnum(KevesVM* vm, const_KevesIterator pc) {
@@ -849,10 +852,10 @@ void LibRnrsBase::Add::funcRationalFixnum(KevesVM* vm, const_KevesIterator pc) {
   KevesFixnum addend(vm->acc_);
   RationalNumberKev sum(augend->add(vm->gc(), addend));
 
-  vm->CheckStack(&sum, &funcRationalFixnum, pc);
+  vm->checkStack(&sum, &funcRationalFixnum, pc);
 
   vm->acc_ = &sum;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Add::funcFlonumFixnum(KevesVM* vm, const_KevesIterator pc) {
@@ -860,10 +863,10 @@ void LibRnrsBase::Add::funcFlonumFixnum(KevesVM* vm, const_KevesIterator pc) {
   KevesFixnum addend(vm->acc_);
   FlonumKev sum(augend->add(addend));
 
-  vm->CheckStack(&sum, &funcFlonumFixnum, pc);
+  vm->checkStack(&sum, &funcFlonumFixnum, pc);
 
   vm->acc_ = &sum;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Add::funcExactComplexFixnum(KevesVM* vm, const_KevesIterator pc) {
@@ -871,10 +874,10 @@ void LibRnrsBase::Add::funcExactComplexFixnum(KevesVM* vm, const_KevesIterator p
   KevesFixnum addend(vm->acc_);
   ExactComplexNumberKev sum(augend->add(vm->gc(), addend));
 
-  vm->CheckStack(&sum, &funcExactComplexFixnum, pc);
+  vm->checkStack(&sum, &funcExactComplexFixnum, pc);
 
   vm->acc_ = &sum;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Add::funcInexactComplexFixnum(KevesVM* vm, const_KevesIterator pc) {
@@ -882,10 +885,10 @@ void LibRnrsBase::Add::funcInexactComplexFixnum(KevesVM* vm, const_KevesIterator
   KevesFixnum addend(vm->acc_);
   InexactComplexNumberKev sum(augend->add(addend));
 
-  vm->CheckStack(&sum, &funcInexactComplexFixnum, pc);
+  vm->checkStack(&sum, &funcInexactComplexFixnum, pc);
 
   vm->acc_ = &sum;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Add::funcFixnumRational(KevesVM* vm, const_KevesIterator pc) {
@@ -893,10 +896,10 @@ void LibRnrsBase::Add::funcFixnumRational(KevesVM* vm, const_KevesIterator pc) {
   const RationalNumberKev* addend(vm->acc_);
   RationalNumberKev sum(addend->add(vm->gc(), augend));
 
-  vm->CheckStack(&sum, &funcFixnumRational, pc);
+  vm->checkStack(&sum, &funcFixnumRational, pc);
 
   vm->acc_ = &sum;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Add::funcRationalRational(KevesVM* vm, const_KevesIterator pc) {
@@ -920,10 +923,10 @@ void LibRnrsBase::Add::funcFixnumFlonum(KevesVM* vm, const_KevesIterator pc) {
   const FlonumKev* addend(vm->acc_);
   FlonumKev sum(addend->add(augend));
 
-  vm->CheckStack(&sum, &funcFixnumFlonum, pc);
+  vm->checkStack(&sum, &funcFixnumFlonum, pc);
 
   vm->acc_ = &sum;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Add::funcRationalFlonum(KevesVM* vm, const_KevesIterator pc) {
@@ -947,10 +950,10 @@ void LibRnrsBase::Add::funcFixnumExactComplex(KevesVM* vm, const_KevesIterator p
   const ExactComplexNumberKev* addend(vm->acc_);
   ExactComplexNumberKev sum(addend->add(vm->gc(), augend));
 
-  vm->CheckStack(&sum, &funcFixnumExactComplex, pc);
+  vm->checkStack(&sum, &funcFixnumExactComplex, pc);
 
   vm->acc_ = &sum;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Add::funcRationalExactComplex(KevesVM* vm, const_KevesIterator pc) {
@@ -974,10 +977,10 @@ void LibRnrsBase::Add::funcFixnumInexactComplex(KevesVM* vm, const_KevesIterator
   const InexactComplexNumberKev* addend(vm->acc_);
   InexactComplexNumberKev sum(addend->add(augend));
 
-  vm->CheckStack(&sum, &funcFixnumInexactComplex, pc);
+  vm->checkStack(&sum, &funcFixnumInexactComplex, pc);
 
   vm->acc_ = &sum;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Add::funcRationalInexactComplex(KevesVM* vm, const_KevesIterator pc) {
@@ -998,22 +1001,22 @@ void LibRnrsBase::Add::funcInexactComplexInexactComplex(KevesVM* vm, const_Keves
 
 void LibRnrsBase::Multiply::func0(KevesVM* vm, const_KevesIterator pc) {
   vm->acc_ = KevesFixnum(1);
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Multiply::func1(KevesVM* vm, const_KevesIterator pc) {
   StackFrameKev* registers(&vm->registers_);
   KevesValue last(registers->lastArgument());
 
-  if (last.IsNumber()) {
+  if (last.isNumber()) {
     vm->acc_ = last;
-    return KevesVM::ReturnValue(vm, pc);
+    return KevesVM::returnValue(vm, pc);
   }
 
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqNum);
+  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqNum);
   vm->gr2_ = EMB_NULL;
-  return KevesVM::RaiseAssertCondition(vm, pc);
+  return KevesVM::raiseAssertCondition(vm, pc);
 }
 
 void LibRnrsBase::Multiply::funcFixnumFixnum(KevesVM* vm, const_KevesIterator pc) {
@@ -1025,14 +1028,14 @@ void LibRnrsBase::Multiply::funcFixnumFixnum(KevesVM* vm, const_KevesIterator pc
   if (fixnum != product) {
     RationalNumberKevFromLong rational(product);
     
-    vm->CheckStack(&product, &funcFixnumFixnum, pc);
+    vm->checkStack(&product, &funcFixnumFixnum, pc);
     
     vm->acc_ = &rational;
-    return KevesVM::ReturnValue(vm, pc);
+    return KevesVM::returnValue(vm, pc);
   }
   
   vm->acc_ = fixnum;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Multiply::funcRationalFixnum(KevesVM* vm, const_KevesIterator pc) {
@@ -1040,10 +1043,10 @@ void LibRnrsBase::Multiply::funcRationalFixnum(KevesVM* vm, const_KevesIterator 
   KevesFixnum multiplier(vm->acc_);
   RationalNumberKev product(multiplicand->multiply(vm->gc(), multiplier));
 
-  vm->CheckStack(&product, &funcRationalFixnum, pc);
+  vm->checkStack(&product, &funcRationalFixnum, pc);
 
   vm->acc_ = &product;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Multiply::funcFlonumFixnum(KevesVM* vm, const_KevesIterator pc) {
@@ -1051,10 +1054,10 @@ void LibRnrsBase::Multiply::funcFlonumFixnum(KevesVM* vm, const_KevesIterator pc
   KevesFixnum multiplier(vm->acc_);
   FlonumKev product(multiplicand->multiply(multiplier));
 
-  vm->CheckStack(&product, &funcFlonumFixnum, pc);
+  vm->checkStack(&product, &funcFlonumFixnum, pc);
 
   vm->acc_ = &product;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Multiply::funcExactComplexFixnum(KevesVM* vm, const_KevesIterator pc) {
@@ -1062,10 +1065,10 @@ void LibRnrsBase::Multiply::funcExactComplexFixnum(KevesVM* vm, const_KevesItera
   KevesFixnum multiplier(vm->acc_);
   ExactComplexNumberKev product(multiplicand->multiply(vm->gc(), multiplier));
 
-  vm->CheckStack(&product, &funcExactComplexFixnum, pc);
+  vm->checkStack(&product, &funcExactComplexFixnum, pc);
 
   vm->acc_ = &product;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Multiply::funcInexactComplexFixnum(KevesVM* vm, const_KevesIterator pc) {
@@ -1073,10 +1076,10 @@ void LibRnrsBase::Multiply::funcInexactComplexFixnum(KevesVM* vm, const_KevesIte
   KevesFixnum multiplier(vm->acc_);
   InexactComplexNumberKev product(multiplicand->multiply(multiplier));
 
-  vm->CheckStack(&product, &funcInexactComplexFixnum, pc);
+  vm->checkStack(&product, &funcInexactComplexFixnum, pc);
 
   vm->acc_ = &product;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Multiply::funcFixnumRational(KevesVM* vm, const_KevesIterator pc) {
@@ -1084,10 +1087,10 @@ void LibRnrsBase::Multiply::funcFixnumRational(KevesVM* vm, const_KevesIterator 
   const RationalNumberKev* multiplier(vm->acc_);
   RationalNumberKev product(multiplier->multiply(vm->gc(), multiplicand));
 
-  vm->CheckStack(&product, &funcFixnumRational, pc);
+  vm->checkStack(&product, &funcFixnumRational, pc);
 
   vm->acc_ = &product;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Multiply::funcRationalRational(KevesVM* vm, const_KevesIterator pc) {
@@ -1111,10 +1114,10 @@ void LibRnrsBase::Multiply::funcFixnumFlonum(KevesVM* vm, const_KevesIterator pc
   const FlonumKev* multiplier(vm->acc_);
   FlonumKev product(multiplier->multiply(multiplicand));
 
-  vm->CheckStack(&product, &funcFixnumFlonum, pc);
+  vm->checkStack(&product, &funcFixnumFlonum, pc);
 
   vm->acc_ = &product;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Multiply::funcRationalFlonum(KevesVM* vm, const_KevesIterator pc) {
@@ -1138,10 +1141,10 @@ void LibRnrsBase::Multiply::funcFixnumExactComplex(KevesVM* vm, const_KevesItera
   const ExactComplexNumberKev* multiplier(vm->acc_);
   ExactComplexNumberKev product(multiplier->multiply(vm->gc(), multiplicand));
 
-  vm->CheckStack(&product, &funcFixnumExactComplex, pc);
+  vm->checkStack(&product, &funcFixnumExactComplex, pc);
 
   vm->acc_ = &product;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Multiply::funcRationalExactComplex(KevesVM* vm, const_KevesIterator pc) {
@@ -1165,10 +1168,10 @@ void LibRnrsBase::Multiply::funcFixnumInexactComplex(KevesVM* vm, const_KevesIte
   const FlonumKev* multiplier(vm->acc_);
   FlonumKev product(multiplier->multiply(multiplicand));
 
-  vm->CheckStack(&product, &funcFixnumInexactComplex, pc);
+  vm->checkStack(&product, &funcFixnumInexactComplex, pc);
 
   vm->acc_ = &product;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Multiply::funcRationalInexactComplex(KevesVM* vm, const_KevesIterator pc) {
@@ -1189,15 +1192,15 @@ void LibRnrsBase::Multiply::funcInexactComplexInexactComplex(KevesVM* vm, const_
 
 void LibRnrsBase::Subtract::func0(KevesVM* vm, const_KevesIterator pc) {
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_Req1OrMoreGot0);
+  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_Req1OrMoreGot0);
   vm->gr2_ = EMB_NULL;
-  return KevesVM::RaiseAssertCondition(vm, pc);
+  return KevesVM::raiseAssertCondition(vm, pc);
 }
 
 void LibRnrsBase::Subtract::func1(KevesVM* vm, const_KevesIterator pc) {
   KevesValue last(vm->registers_.lastArgument());
 
-  if (!last.IsFixnum())
+  if (!last.isFixnum())
     return func2(vm, pc);
   
   KevesFixnum num(last);
@@ -1206,82 +1209,82 @@ void LibRnrsBase::Subtract::func1(KevesVM* vm, const_KevesIterator pc) {
   if (KevesFixnum::isInRange(inverse)) {
     KevesFixnum fixnum(inverse);
     vm->acc_ = fixnum;
-    return KevesVM::ReturnValue(vm, pc);
+    return KevesVM::returnValue(vm, pc);
   }
   
   RationalNumberKevFromInt rational(inverse);
 
-  vm->CheckStack(&rational, &func1, pc);
+  vm->checkStack(&rational, &func1, pc);
 
   vm->acc_ = &rational;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Subtract::func2(KevesVM* vm, const_KevesIterator pc) {
   KevesValue last(vm->registers_.lastArgument());
 
-  if (!last.Is<RationalNumberKev>())
+  if (!last.is<RationalNumberKev>())
     return func3(vm, pc);
   
   const RationalNumberKev* num(last);
   RationalNumberKev inverse(num->inverse());
 
-  vm->CheckStack(&inverse, &func2, pc);
+  vm->checkStack(&inverse, &func2, pc);
 
   vm->acc_ = inverse.optimize();
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Subtract::func3(KevesVM* vm, const_KevesIterator pc) {
   KevesValue last(vm->registers_.lastArgument());
 
-  if (!last.Is<FlonumKev>())
+  if (!last.is<FlonumKev>())
     return func4(vm, pc);
   
   const FlonumKev* num(last);
   FlonumKev inverse(num->inverse());
 
-  vm->CheckStack(&inverse, &func3, pc);
+  vm->checkStack(&inverse, &func3, pc);
 
   vm->acc_ = &inverse;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Subtract::func4(KevesVM* vm, const_KevesIterator pc) {
   KevesValue last(vm->registers_.lastArgument());
 
-  if (!last.Is<ExactComplexNumberKev>())
+  if (!last.is<ExactComplexNumberKev>())
     return func5(vm, pc);
   
   const ExactComplexNumberKev* num(last);
   ExactComplexNumberKev inverse(num->inverse());
 
-  vm->CheckStack(&inverse, &func4, pc);
+  vm->checkStack(&inverse, &func4, pc);
 
   vm->acc_ = &inverse;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Subtract::func5(KevesVM* vm, const_KevesIterator pc) {
   KevesValue last(vm->registers_.lastArgument());
 
-  if (!last.Is<InexactComplexNumberKev>())
+  if (!last.is<InexactComplexNumberKev>())
     return func6(vm, pc);
   
   const InexactComplexNumberKev* num(last);
   InexactComplexNumberKev inverse(num->inverse());
 
-  vm->CheckStack(&inverse, &func5, pc);
+  vm->checkStack(&inverse, &func5, pc);
 
   vm->acc_ = &inverse;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Subtract::func6(KevesVM* vm, const_KevesIterator pc) {
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqNum);
+  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqNum);
   vm->gr2_ = EMB_NULL;
-  return KevesVM::RaiseAssertCondition(vm, pc);
+  return KevesVM::raiseAssertCondition(vm, pc);
 }
 
 void LibRnrsBase::Subtract::funcFixnumFixnum(KevesVM* vm, const_KevesIterator pc) {
@@ -1293,14 +1296,14 @@ void LibRnrsBase::Subtract::funcFixnumFixnum(KevesVM* vm, const_KevesIterator pc
   if (fixnum != difference) {
     RationalNumberKevFromInt rational(difference);
     
-    vm->CheckStack(&rational, &funcFixnumFixnum, pc);
+    vm->checkStack(&rational, &funcFixnumFixnum, pc);
     
     vm->acc_ = &rational;
-    return KevesVM::ReturnValue(vm, pc);
+    return KevesVM::returnValue(vm, pc);
   }
 
   vm->acc_ = fixnum;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Subtract::funcRationalFixnum(KevesVM* vm, const_KevesIterator pc) {
@@ -1308,10 +1311,10 @@ void LibRnrsBase::Subtract::funcRationalFixnum(KevesVM* vm, const_KevesIterator 
   KevesFixnum subtrahend(vm->acc_);
   RationalNumberKev difference(minuend->subtract(vm->gc(), subtrahend));
 
-  vm->CheckStack(&difference, &funcRationalFixnum, pc);
+  vm->checkStack(&difference, &funcRationalFixnum, pc);
 
   vm->acc_ = &difference;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Subtract::funcFlonumFixnum(KevesVM* vm, const_KevesIterator pc) {
@@ -1319,10 +1322,10 @@ void LibRnrsBase::Subtract::funcFlonumFixnum(KevesVM* vm, const_KevesIterator pc
   KevesFixnum subtrahend(vm->acc_);
   FlonumKev difference(minuend->subtract(subtrahend));
 
-  vm->CheckStack(&difference, &funcFlonumFixnum, pc);
+  vm->checkStack(&difference, &funcFlonumFixnum, pc);
 
   vm->acc_ = &difference;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Subtract::funcExactComplexFixnum(KevesVM* vm, const_KevesIterator pc) {
@@ -1330,10 +1333,10 @@ void LibRnrsBase::Subtract::funcExactComplexFixnum(KevesVM* vm, const_KevesItera
   KevesFixnum subtrahend(vm->acc_);
   ExactComplexNumberKev difference(minuend->subtract(vm->gc(), subtrahend));
 
-  vm->CheckStack(&difference, &funcExactComplexFixnum, pc);
+  vm->checkStack(&difference, &funcExactComplexFixnum, pc);
 
   vm->acc_ = &difference;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Subtract::funcInexactComplexFixnum(KevesVM* vm, const_KevesIterator pc) {
@@ -1341,17 +1344,17 @@ void LibRnrsBase::Subtract::funcInexactComplexFixnum(KevesVM* vm, const_KevesIte
   KevesFixnum subtrahend(vm->acc_);
   InexactComplexNumberKev difference(minuend->subtract(subtrahend));
 
-  vm->CheckStack(&difference, &funcInexactComplexFixnum, pc);
+  vm->checkStack(&difference, &funcInexactComplexFixnum, pc);
 
   vm->acc_ = &difference;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Subtract::funcFixnumRational(KevesVM* vm, const_KevesIterator pc) {
   KevesFixnum minuend(vm->gr1_);
   const RationalNumberKev* subtrahend(vm->acc_);
   vm->acc_ = NumberKev::difference(vm->gc(), minuend, *subtrahend);
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Subtract::funcRationalRational(KevesVM* vm, const_KevesIterator pc) {
@@ -1375,10 +1378,10 @@ void LibRnrsBase::Subtract::funcFixnumFlonum(KevesVM* vm, const_KevesIterator pc
   const FlonumKev* subtrahend(vm->acc_);
   FlonumKev difference(NumberKev::difference(minuend, *subtrahend));
 
-  vm->CheckStack(&difference, &funcFixnumFlonum, pc);
+  vm->checkStack(&difference, &funcFixnumFlonum, pc);
 
   vm->acc_ = &difference;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Subtract::funcRationalFlonum(KevesVM* vm, const_KevesIterator pc) {
@@ -1402,10 +1405,10 @@ void LibRnrsBase::Subtract::funcFixnumExactComplex(KevesVM* vm, const_KevesItera
   const ExactComplexNumberKev* subtrahend(vm->acc_);
   ExactComplexNumberKev difference(NumberKev::difference(vm->gc(), minuend, *subtrahend));
 
-  vm->CheckStack(&difference, &funcFixnumExactComplex, pc);
+  vm->checkStack(&difference, &funcFixnumExactComplex, pc);
 
   vm->acc_ = &difference;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Subtract::funcRationalExactComplex(KevesVM* vm, const_KevesIterator pc) {
@@ -1429,10 +1432,10 @@ void LibRnrsBase::Subtract::funcFixnumInexactComplex(KevesVM* vm, const_KevesIte
   const FlonumKev* subtrahend(vm->acc_);
   FlonumKev difference(NumberKev::difference(minuend, *subtrahend));
 
-  vm->CheckStack(&difference, &funcFixnumInexactComplex, pc);
+  vm->checkStack(&difference, &funcFixnumInexactComplex, pc);
 
   vm->acc_ = &difference;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Subtract::funcRationalInexactComplex(KevesVM* vm, const_KevesIterator pc) {
@@ -1453,68 +1456,68 @@ void LibRnrsBase::Subtract::funcInexactComplexInexactComplex(KevesVM* vm, const_
 
 void LibRnrsBase::Divide::func0(KevesVM* vm, const_KevesIterator pc) {
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_Req1OrMoreGot0);
+  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_Req1OrMoreGot0);
   vm->gr2_ = EMB_NULL;
-  return KevesVM::RaiseAssertCondition(vm, pc);
+  return KevesVM::raiseAssertCondition(vm, pc);
 }
 
 void LibRnrsBase::Divide::func1(KevesVM* vm, const_KevesIterator pc) {
   StackFrameKev* registers(&vm->registers_);
   KevesValue last(registers->lastArgument());
 
-  if (last.IsFixnum()) {
+  if (last.isFixnum()) {
     fx_int numerator(1);
     fx_int denominator(KevesFixnum { last } );
 
     if (denominator == 0) {
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_Div0);
+      vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_Div0);
       vm->gr2_ = EMB_NULL;
-      return KevesVM::RaiseAssertCondition(vm, pc);
+      return KevesVM::raiseAssertCondition(vm, pc);
     }
 
     if (denominator == 1 || denominator == -1) {
       vm->acc_ = KevesFixnum(denominator);
-      return KevesVM::ReturnValue(vm, pc);
+      return KevesVM::returnValue(vm, pc);
     }
 
     RationalNumberKevFromInt quotient(numerator, denominator);
     vm->acc_ = &quotient;
-    return KevesVM::ReturnValueSafe(vm, pc);
+    return KevesVM::returnValueSafe(vm, pc);
   }
 
-  if (last.Is<RationalNumberKev>()) {
+  if (last.is<RationalNumberKev>()) {
     const RationalNumberKev* num(last);
     RationalNumberKev reciprocal(num->reciprocal());
     vm->acc_ = reciprocal.optimize();
-    return KevesVM::ReturnValueSafe(vm, pc);
+    return KevesVM::returnValueSafe(vm, pc);
   }
 
-  if (last.Is<FlonumKev>()) {
+  if (last.is<FlonumKev>()) {
     const FlonumKev* divisor(last);
     FlonumKev quotient(divisor->reciprocal());
     vm->acc_ = &quotient;
-    return KevesVM::ReturnValueSafe(vm, pc);
+    return KevesVM::returnValueSafe(vm, pc);
   }
 
-  if (last.Is<ExactComplexNumberKev>()) {
+  if (last.is<ExactComplexNumberKev>()) {
     const ExactComplexNumberKev* divisor(last);
     ExactComplexNumberKev reciprocal(divisor->reciprocal(vm->gc()));
     vm->acc_ = &reciprocal;
     return KevesVM::returnExactComplexNumberKev(vm, pc);
   }
 
-  if (last.Is<InexactComplexNumberKev>()) {
+  if (last.is<InexactComplexNumberKev>()) {
     const InexactComplexNumberKev* divisor(last);
     InexactComplexNumberKev quotient(divisor->reciprocal());
     vm->acc_ = &quotient;
-    return KevesVM::ReturnValueSafe(vm, pc);
+    return KevesVM::returnValueSafe(vm, pc);
   }
 
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqNum);
+  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqNum);
   vm->gr2_ = EMB_NULL;
-  return KevesVM::RaiseAssertCondition(vm, pc);
+  return KevesVM::raiseAssertCondition(vm, pc);
 }
 
 void LibRnrsBase::Divide::funcFixnumFixnum(KevesVM* vm, const_KevesIterator pc) {
@@ -1522,7 +1525,7 @@ void LibRnrsBase::Divide::funcFixnumFixnum(KevesVM* vm, const_KevesIterator pc) 
   KevesFixnum divisor(vm->acc_);
   RationalNumberKevFromInt quotient(dividend, divisor);
   vm->acc_ = quotient.optimize();
-  return KevesVM::ReturnValueSafe(vm, pc);
+  return KevesVM::returnValueSafe(vm, pc);
 }
 
 void LibRnrsBase::Divide::funcRationalFixnum(KevesVM* vm, const_KevesIterator pc) {
@@ -1530,7 +1533,7 @@ void LibRnrsBase::Divide::funcRationalFixnum(KevesVM* vm, const_KevesIterator pc
   KevesFixnum divisor(vm->acc_);
   RationalNumberKev quotient(dividend->divide(vm->gc(), divisor));
   vm->acc_ = quotient.optimize();
-  return KevesVM::ReturnValueSafe(vm, pc);
+  return KevesVM::returnValueSafe(vm, pc);
 }
 
 void LibRnrsBase::Divide::funcFlonumFixnum(KevesVM* vm, const_KevesIterator pc) {
@@ -1538,7 +1541,7 @@ void LibRnrsBase::Divide::funcFlonumFixnum(KevesVM* vm, const_KevesIterator pc) 
   KevesFixnum divisor(vm->acc_);
   FlonumKev quotient(dividend->divide(divisor));
   vm->acc_ = &quotient;
-  return KevesVM::ReturnValueSafe(vm, pc);
+  return KevesVM::returnValueSafe(vm, pc);
 }
 
 void LibRnrsBase::Divide::funcExactComplexFixnum(KevesVM* vm, const_KevesIterator pc) {
@@ -1554,7 +1557,7 @@ void LibRnrsBase::Divide::funcInexactComplexFixnum(KevesVM* vm, const_KevesItera
   KevesFixnum divisor(vm->acc_);
   InexactComplexNumberKev quotient(dividend->divide(divisor));
   vm->acc_ = &quotient;
-  return KevesVM::ReturnValueSafe(vm, pc);
+  return KevesVM::returnValueSafe(vm, pc);
 }
 
 void LibRnrsBase::Divide::funcFixnumRational(KevesVM* vm, const_KevesIterator pc) {
@@ -1562,7 +1565,7 @@ void LibRnrsBase::Divide::funcFixnumRational(KevesVM* vm, const_KevesIterator pc
   const RationalNumberKev* divisor(vm->acc_);
   RationalNumberKev quotient(NumberKev::quotient(vm->gc(), dividend, *divisor));
   vm->acc_ = quotient.optimize();
-  return KevesVM::ReturnValueSafe(vm, pc);
+  return KevesVM::returnValueSafe(vm, pc);
 }
 
 void LibRnrsBase::Divide::funcRationalRational(KevesVM* vm, const_KevesIterator pc) {
@@ -1586,7 +1589,7 @@ void LibRnrsBase::Divide::funcFixnumFlonum(KevesVM* vm, const_KevesIterator pc) 
   const FlonumKev* divisor(vm->acc_);
   FlonumKev quotient(NumberKev::quotient(dividend, *divisor));
   vm->acc_ = &quotient;
-  return KevesVM::ReturnValueSafe(vm, pc);
+  return KevesVM::returnValueSafe(vm, pc);
 }
 
 void LibRnrsBase::Divide::funcRationalFlonum(KevesVM* vm, const_KevesIterator pc) {
@@ -1634,7 +1637,7 @@ void LibRnrsBase::Divide::funcFixnumInexactComplex(KevesVM* vm, const_KevesItera
   const InexactComplexNumberKev* divisor(vm->acc_);
   InexactComplexNumberKev quotient(NumberKev::quotient(dividend, *divisor));
   vm->acc_ = &quotient;
-  return KevesVM::ReturnValueSafe(vm, pc);
+  return KevesVM::returnValueSafe(vm, pc);
 }
 
 void LibRnrsBase::Divide::funcRationalInexactComplex(KevesVM* vm, const_KevesIterator pc) {
@@ -1654,192 +1657,192 @@ void LibRnrsBase::Divide::funcInexactComplexInexactComplex(KevesVM* vm, const_Ke
 }
 
 void LibRnrsBase::Abs::func(KevesVM* vm, const_KevesIterator pc) {
-  if (vm->acc_.IsFixnum()) {
+  if (vm->acc_.isFixnum()) {
     KevesFixnum num(vm->acc_);
     vm->acc_ = KevesFixnum(abs(num));
-    return KevesVM::ReturnValue(vm, pc);
+    return KevesVM::returnValue(vm, pc);
   }
 
-  if (vm->acc_.Is<RationalNumberKev>()) {
+  if (vm->acc_.is<RationalNumberKev>()) {
     const RationalNumberKev* num(vm->acc_);
     RationalNumberKev abs_num(num->abs());
     vm->acc_ = &abs_num;
-    return KevesVM::ReturnValueSafe(vm, pc);
+    return KevesVM::returnValueSafe(vm, pc);
   }
 
-  if (vm->acc_.Is<FlonumKev>()) {
+  if (vm->acc_.is<FlonumKev>()) {
     const FlonumKev* org(vm->acc_);
     FlonumKev abs_num(org->abs());
     vm->acc_ = &abs_num;
-    return KevesVM::ReturnValueSafe(vm, pc);
+    return KevesVM::returnValueSafe(vm, pc);
   }
 
   vm->acc_ = EMB_UNDEF;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Numerator::func(KevesVM* vm, const_KevesIterator pc) {
-  if (vm->acc_.IsFixnum())
-    return KevesVM::ReturnValue(vm, pc);
+  if (vm->acc_.isFixnum())
+    return KevesVM::returnValue(vm, pc);
   
-  if (vm->acc_.Is<RationalNumberKev>()) {
+  if (vm->acc_.is<RationalNumberKev>()) {
     const RationalNumberKev* rational(vm->acc_);
     const Bignum* numerator(rational->numerator());
     BignumInt one(1);
     RationalNumberKev num(rational->isNegative(), numerator, &one);
     vm->acc_ = num.optimize();
-    return KevesVM::ReturnValueSafe(vm, pc);
+    return KevesVM::returnValueSafe(vm, pc);
   }
   
-  if (vm->acc_.Is<FlonumKev>()) {
+  if (vm->acc_.is<FlonumKev>()) {
     const FlonumKev* num(vm->acc_);
 
     if (num->isNaN() || num->isInfinity()) {
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqRealNum);
+      vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqRealNum);
       vm->gr2_ = EMB_NULL;
-      return KevesVM::RaiseAssertCondition(vm, pc);
+      return KevesVM::raiseAssertCondition(vm, pc);
     }
     
     if (num->isZero()) {
       vm->acc_ = KevesFixnum(0);
-      return KevesVM::ReturnValue(vm, pc);
+      return KevesVM::returnValue(vm, pc);
     }
     
     RationalNumberKev rational(num->toExact(vm->gc()));
     FlonumKev flonum(rational.makeMPQ().get_num().get_d());
     vm->acc_ = &flonum;
-    return KevesVM::ReturnValueSafe(vm, pc);
+    return KevesVM::returnValueSafe(vm, pc);
   }
   
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Denominator::func(KevesVM* vm, const_KevesIterator pc) {
-  if (vm->acc_.IsFixnum()) {
+  if (vm->acc_.isFixnum()) {
     vm->acc_ = KevesFixnum(1);
-    return KevesVM::ReturnValue(vm, pc);
+    return KevesVM::returnValue(vm, pc);
   }
 
-  if (vm->acc_.Is<RationalNumberKev>()) {
+  if (vm->acc_.is<RationalNumberKev>()) {
     const RationalNumberKev* rational(vm->acc_);
     const Bignum* denominator(rational->denominator());
     BignumInt one(1);
     RationalNumberKev den(false, denominator, &one);
     vm->acc_ = den.optimize();
-    return KevesVM::ReturnValueSafe(vm, pc);
+    return KevesVM::returnValueSafe(vm, pc);
   }
 
-  if (vm->acc_.Is<FlonumKev>()) {
+  if (vm->acc_.is<FlonumKev>()) {
     const FlonumKev* num(vm->acc_);
     
     if (num->isNaN() || num->isInfinity()) {
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqRealNum);
+      vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqRealNum);
       vm->gr2_ = EMB_NULL;
-      return KevesVM::RaiseAssertCondition(vm, pc);
+      return KevesVM::raiseAssertCondition(vm, pc);
     }
     
     if (num->isZero()) {
       vm->acc_ = KevesFixnum(1);
-      return KevesVM::ReturnValue(vm, pc);
+      return KevesVM::returnValue(vm, pc);
     }
     
     RationalNumberKev rational(num->toExact(vm->gc()));
     FlonumKev flonum(rational.makeMPQ().get_den().get_d());
     vm->acc_ = &flonum;
-    return KevesVM::ReturnValueSafe(vm, pc);
+    return KevesVM::returnValueSafe(vm, pc);
   }
   
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Floor::func(KevesVM* vm, const_KevesIterator pc) {
-  if (vm->acc_.IsFixnum())
-    return KevesVM::ReturnValue(vm, pc);
+  if (vm->acc_.isFixnum())
+    return KevesVM::returnValue(vm, pc);
   
-  if (vm->acc_.Is<RationalNumberKev>()) {
+  if (vm->acc_.is<RationalNumberKev>()) {
     const RationalNumberKev* rational(vm->acc_);
     RationalNumberKev floor_num(rational->floor(vm->gc()));
     vm->acc_ = floor_num.optimize();
-    return KevesVM::ReturnValueSafe(vm, pc);
+    return KevesVM::returnValueSafe(vm, pc);
   }
 
-  if (vm->acc_.Is<FlonumKev>()) {
+  if (vm->acc_.is<FlonumKev>()) {
     const FlonumKev* flonum(vm->acc_);
     FlonumKev floor_num(flonum->floor());
     vm->acc_ = &floor_num;
-    return KevesVM::ReturnValueSafe(vm, pc);
+    return KevesVM::returnValueSafe(vm, pc);
   }
   
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Ceiling::func(KevesVM* vm, const_KevesIterator pc) {
-  if (vm->acc_.IsFixnum())
-    return KevesVM::ReturnValue(vm, pc);
+  if (vm->acc_.isFixnum())
+    return KevesVM::returnValue(vm, pc);
   
-  if (vm->acc_.Is<RationalNumberKev>()) {
+  if (vm->acc_.is<RationalNumberKev>()) {
     const RationalNumberKev* rational(vm->acc_);
     RationalNumberKev ceiling_num(rational->ceiling(vm->gc()));
     vm->acc_ = ceiling_num.optimize();
-    return KevesVM::ReturnValueSafe(vm, pc);
+    return KevesVM::returnValueSafe(vm, pc);
   }
 
-  if (vm->acc_.Is<FlonumKev>()) {
+  if (vm->acc_.is<FlonumKev>()) {
     const FlonumKev* flonum(vm->acc_);
     FlonumKev ceiling_num(flonum->ceiling());
     vm->acc_ = &ceiling_num;
-    return KevesVM::ReturnValueSafe(vm, pc);
+    return KevesVM::returnValueSafe(vm, pc);
   }
 
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Truncate::func(KevesVM* vm, const_KevesIterator pc) {
-  if (vm->acc_.IsFixnum())
-    return KevesVM::ReturnValue(vm, pc);
+  if (vm->acc_.isFixnum())
+    return KevesVM::returnValue(vm, pc);
   
-  if (vm->acc_.Is<RationalNumberKev>()) {
+  if (vm->acc_.is<RationalNumberKev>()) {
     const RationalNumberKev* rational(vm->acc_);
     RationalNumberKev truncate_num(rational->truncate(vm->gc()));
     vm->acc_ = truncate_num.optimize();
-    return KevesVM::ReturnValueSafe(vm, pc);
+    return KevesVM::returnValueSafe(vm, pc);
   }
 
-  if (vm->acc_.Is<FlonumKev>()) {
+  if (vm->acc_.is<FlonumKev>()) {
     const FlonumKev* flonum(vm->acc_);
     FlonumKev truncate_num(flonum->truncate());
     vm->acc_ = &truncate_num;
-    return KevesVM::ReturnValueSafe(vm, pc);
+    return KevesVM::returnValueSafe(vm, pc);
   }
 
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Round::func(KevesVM* vm, const_KevesIterator pc) {
-  if (vm->acc_.IsFixnum())
-    return KevesVM::ReturnValue(vm, pc);
+  if (vm->acc_.isFixnum())
+    return KevesVM::returnValue(vm, pc);
   
-  if (vm->acc_.Is<RationalNumberKev>()) {
+  if (vm->acc_.is<RationalNumberKev>()) {
     const RationalNumberKev* rational(vm->acc_);
     RationalNumberKev round_num(rational->round(vm->gc()));
     vm->acc_ = round_num.optimize();
-    return KevesVM::ReturnValueSafe(vm, pc);
+    return KevesVM::returnValueSafe(vm, pc);
   }
 
-  if (vm->acc_.Is<FlonumKev>()) {
+  if (vm->acc_.is<FlonumKev>()) {
     const FlonumKev* flonum(vm->acc_);
     FlonumKev round_num(flonum->round());
     vm->acc_ = &round_num;
-    return KevesVM::ReturnValueSafe(vm, pc);
+    return KevesVM::returnValueSafe(vm, pc);
   }
 
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::MakeRectangular::func(KevesVM* vm, const_KevesIterator pc) {
-  return KevesVM::MakeRectangular(vm, pc);
+  return KevesVM::makeRectangular(vm, pc);
 }
 
 void LibRnrsBase::MakePolar::func(KevesVM* vm, const_KevesIterator pc) {
@@ -1849,64 +1852,64 @@ void LibRnrsBase::MakePolar::func(KevesVM* vm, const_KevesIterator pc) {
   FlonumKev imag_part(mag.multiply(ang.sin()));
   vm->acc_ = &real_part;
   vm->gr1_ = &imag_part;
-  return KevesVM::MakeRectangular(vm, pc);
+  return KevesVM::makeRectangular(vm, pc);
 }
 
 void LibRnrsBase::RealPart::func(KevesVM* vm, const_KevesIterator pc) {
-  if (vm->acc_.IsRationalNumber() || vm->acc_.Is<FlonumKev>())
-    return KevesVM::ReturnValue(vm, pc);
+  if (vm->acc_.isRationalNumber() || vm->acc_.is<FlonumKev>())
+    return KevesVM::returnValue(vm, pc);
   
-  if (vm->acc_.Is<ExactComplexNumberKev>()) {
+  if (vm->acc_.is<ExactComplexNumberKev>()) {
     const ExactComplexNumberKev* complex(vm->acc_);
     RationalNumberKev real(complex->real());
     vm->acc_ = &real;
-    return KevesVM::ReturnValueSafe(vm, pc);
+    return KevesVM::returnValueSafe(vm, pc);
   }
   
-  if (vm->acc_.Is<InexactComplexNumberKev>()) {
+  if (vm->acc_.is<InexactComplexNumberKev>()) {
     const InexactComplexNumberKev* complex(vm->acc_);
     FlonumKev real(complex->real());
     vm->acc_ = &real;
-    return KevesVM::ReturnValueSafe(vm, pc);
+    return KevesVM::returnValueSafe(vm, pc);
   }
   
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::ImagPart::func(KevesVM* vm, const_KevesIterator pc) {
-  if (vm->acc_.IsRationalNumber()) {
+  if (vm->acc_.isRationalNumber()) {
     vm->acc_ = KevesFixnum(0);
-    return KevesVM::ReturnValue(vm, pc);
+    return KevesVM::returnValue(vm, pc);
   }
 
-  if (vm->acc_.Is<FlonumKev>()) {
+  if (vm->acc_.is<FlonumKev>()) {
     FlonumKev nan(std::numeric_limits<double>::quiet_NaN());
     vm->acc_ = &nan;
-    return KevesVM::ReturnValueSafe(vm, pc);
+    return KevesVM::returnValueSafe(vm, pc);
   }
 
-  if (vm->acc_.Is<ExactComplexNumberKev>()) {
+  if (vm->acc_.is<ExactComplexNumberKev>()) {
     const ExactComplexNumberKev* complex(vm->acc_);
     RationalNumberKev imag(complex->imag());
     vm->acc_ = &imag;
-    return KevesVM::ReturnValueSafe(vm, pc);
+    return KevesVM::returnValueSafe(vm, pc);
   }
 
-  if (vm->acc_.Is<InexactComplexNumberKev>()) {
+  if (vm->acc_.is<InexactComplexNumberKev>()) {
     const InexactComplexNumberKev* complex(vm->acc_);
     FlonumKev imag(complex->imag());
     vm->acc_ = &imag;
-    return KevesVM::ReturnValueSafe(vm, pc);
+    return KevesVM::returnValueSafe(vm, pc);
   }
   
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Magnitude::func(KevesVM* vm, const_KevesIterator pc) {
-  if (!vm->acc_.IsNumber())
-    return KevesVM::ReturnValue(vm, pc);
+  if (!vm->acc_.isNumber())
+    return KevesVM::returnValue(vm, pc);
   
-  if (vm->acc_.IsRealNumber())
+  if (vm->acc_.isRealNumber())
     return Abs::func(vm, pc);
   
   auto mangitude = [&](const FlonumKev& real_part, const FlonumKev& imag_part) -> void {
@@ -1914,10 +1917,10 @@ void LibRnrsBase::Magnitude::func(KevesVM* vm, const_KevesIterator pc) {
     FlonumKev imag_part2(imag_part.multiply(imag_part));
     FlonumKev mag(real_part2.add(imag_part2).sqrt());
     vm->acc_ = &mag;
-    return KevesVM::ReturnValueSafe(vm, pc);
+    return KevesVM::returnValueSafe(vm, pc);
   };
 
-  if (vm->acc_.Is<ExactComplexNumberKev>()) {
+  if (vm->acc_.is<ExactComplexNumberKev>()) {
     const ExactComplexNumberKev* complex(vm->acc_);
     RationalNumberKev rational_real_part(complex->real());
     RationalNumberKev rational_imag_part(complex->imag());
@@ -1931,17 +1934,17 @@ void LibRnrsBase::Magnitude::func(KevesVM* vm, const_KevesIterator pc) {
 }
 
 void LibRnrsBase::Angle::func(KevesVM* vm, const_KevesIterator pc) {
-  if (vm->acc_.IsRealNumber()) {
+  if (vm->acc_.isRealNumber()) {
     FlonumKev ang(NumberKev::isNegative(vm->acc_) ? acos(-1.0) : 0.0);
     vm->acc_ = &ang;
-    return KevesVM::ReturnValueSafe(vm, pc);
+    return KevesVM::returnValueSafe(vm, pc);
   }
   
   auto angle = [&](const FlonumKev& real_part, const FlonumKev& imag_part) {
     if (real_part.isZero()) {
       FlonumKev r(imag_part.isNegative() ? -acos(0.0) : acos(0.0));
       vm->acc_ = &r;
-      return KevesVM::ReturnValueSafe(vm, pc);
+      return KevesVM::returnValueSafe(vm, pc);
     }
     
     if (real_part.isNegative()) {
@@ -1949,15 +1952,15 @@ void LibRnrsBase::Angle::func(KevesVM* vm, const_KevesIterator pc) {
       FlonumKev pi(acos(-1.0));
       FlonumKev r2(r.isNegative() ? r.add(pi) : r.subtract(pi));
       vm->acc_ = &r2;
-      return KevesVM::ReturnValueSafe(vm, pc);
+      return KevesVM::returnValueSafe(vm, pc);
     }
     
     FlonumKev r(imag_part.divide(real_part).atan());
     vm->acc_ = &r;
-    return KevesVM::ReturnValueSafe(vm, pc);
+    return KevesVM::returnValueSafe(vm, pc);
   };
 
-  if (vm->acc_.Is<ExactComplexNumberKev>()) {
+  if (vm->acc_.is<ExactComplexNumberKev>()) {
     const ExactComplexNumberKev* complex(vm->acc_);
     RationalNumberKev rational_real_part(complex->real());
     RationalNumberKev rational_imag_part(complex->imag());
@@ -1978,7 +1981,7 @@ void LibRnrsBase::procNumberToString(KevesVM* vm, const_KevesIterator pc) {
 
   switch (argn) {
   case 4: {
-    if (!registers->argument(3).IsFixnum())
+    if (!registers->argument(3).isFixnum())
       return procNumberToString_err1(vm, pc);
     
     int arg3(KevesFixnum(registers->argument(3)));
@@ -1990,7 +1993,7 @@ void LibRnrsBase::procNumberToString(KevesVM* vm, const_KevesIterator pc) {
   }
     
   case 3: {
-    if (!registers->argument(2).IsFixnum())
+    if (!registers->argument(2).isFixnum())
       return procNumberToString_err1(vm, pc);
     
     int arg2(KevesFixnum(registers->argument(2)));
@@ -2009,13 +2012,13 @@ void LibRnrsBase::procNumberToString(KevesVM* vm, const_KevesIterator pc) {
   }
     
   case 2:
-    if (registers->argument(1).IsNumber()) {
+    if (registers->argument(1).isNumber()) {
       KevesValue z(registers->argument(1));
       vm->acc_ = NumberKev::makeStringFromNumber(vm->gc(),
 						 z,
 						 radix,
 						 precision);
-      return KevesVM::ReturnValueSafe(vm, pc);
+      return KevesVM::returnValueSafe(vm, pc);
     }
     
     return procNumberToString_err2(vm, pc);
@@ -2027,23 +2030,23 @@ void LibRnrsBase::procNumberToString(KevesVM* vm, const_KevesIterator pc) {
 
 void LibRnrsBase::procNumberToString_err1(KevesVM* vm, const_KevesIterator pc) {
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqIntNum);
+  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqIntNum);
   vm->gr2_ = EMB_NULL;
-  return KevesVM::RaiseAssertCondition(vm, pc);
+  return KevesVM::raiseAssertCondition(vm, pc);
 }
 
 void LibRnrsBase::procNumberToString_err2(KevesVM* vm, const_KevesIterator pc) {
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqNum);
+  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqNum);
   vm->gr2_ = EMB_NULL;
-  return KevesVM::RaiseAssertCondition(vm, pc);
+  return KevesVM::raiseAssertCondition(vm, pc);
 }
 
 void LibRnrsBase::procNumberToString_err3(KevesVM* vm, const_KevesIterator pc) {
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_Req2GotMore);
+  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_Req2GotMore);
   vm->gr2_ = EMB_NULL;
-  return KevesVM::RaiseAssertCondition(vm, pc);
+  return KevesVM::raiseAssertCondition(vm, pc);
 }
 
 void LibRnrsBase::procStringToNumber(KevesVM* vm, const_KevesIterator pc) {
@@ -2054,21 +2057,21 @@ void LibRnrsBase::procStringToNumber(KevesVM* vm, const_KevesIterator pc) {
   switch (argn) {
 
   case 3:
-    if (!registers->lastArgument().IsFixnum()) {
+    if (!registers->lastArgument().isFixnum()) {
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_Req2GotMore);
+      vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_Req2GotMore);
       vm->gr2_ = EMB_NULL;
-      return KevesVM::RaiseAssertCondition(vm, pc);
+      return KevesVM::raiseAssertCondition(vm, pc);
     }
     
     radix = KevesFixnum(registers->lastArgument());
     
   case 2: {
-    if (!registers->argument(1).IsString()) {
+    if (!registers->argument(1).isString()) {
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqStr);
+      vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqStr);
       vm->gr2_ = EMB_NULL;
-      return KevesVM::RaiseAssertCondition(vm, pc);
+      return KevesVM::raiseAssertCondition(vm, pc);
     }
     
     const StringKev* str(registers->argument(1));
@@ -2079,11 +2082,11 @@ void LibRnrsBase::procStringToNumber(KevesVM* vm, const_KevesIterator pc) {
     
   default:
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = vm->base()->GetMesgText(argn > 3 ?
+    vm->gr1_ = vm->base()->getMesgText(argn > 3 ?
 				       KevesBuiltinValues::mesg_Req1Or2GotMore :
 				       KevesBuiltinValues::mesg_Req1Or2Got0);
     vm->gr2_ = EMB_NULL;
-    return KevesVM::RaiseAssertCondition(vm, pc);
+    return KevesVM::raiseAssertCondition(vm, pc);
   }
 }
   
@@ -2096,17 +2099,17 @@ void LibRnrsBase::procStringToNumber_helper1(KevesVM* vm, const_KevesIterator pc
 
   if (pos < 0) {
     vm->acc_ = EMB_FALSE;
-    return KevesVM::ReturnValueSafe(vm, pc);
+    return KevesVM::returnValueSafe(vm, pc);
   }
 
   KevesValue number1;
-  StringKev str1(str->Right(str->size() - pos));
+  StringKev str1(str->right(str->size() - pos));
   int pos1(0);
 
-  if (str1.Equals("+i")) {
+  if (str1.equals("+i")) {
     number1 = KevesFixnum(1);
     pos1 = 1;
-  } else if (str1.Equals("-i")) {
+  } else if (str1.equals("-i")) {
     number1 = KevesFixnum(-1);
     pos1 = 1;
   } else if (radix == 2 || radix == 8 || radix == 16) {
@@ -2115,50 +2118,50 @@ void LibRnrsBase::procStringToNumber_helper1(KevesVM* vm, const_KevesIterator pc
     number1 = NumberKev::makeRealNumberFromDecimal(vm->gc(), str1, &pos1, &radix, &exact);
   } else {
     vm->acc_ = EMB_FALSE;
-    return KevesVM::ReturnValueSafe(vm, pc);
+    return KevesVM::returnValueSafe(vm, pc);
   }
 
-  if (!number1.IsNumber()) {
+  if (!number1.isNumber()) {
     vm->acc_ = EMB_FALSE;
-    return KevesVM::ReturnValueSafe(vm, pc);
+    return KevesVM::returnValueSafe(vm, pc);
   }
 
   // no imaginary part
   if (pos1 == str1.size()) {
     if (exact) {
       vm->acc_ = number1;
-      return KevesVM::ReturnValueSafe(vm, pc);
+      return KevesVM::returnValueSafe(vm, pc);
     }
     
     FlonumKev flonum(NumberKev::makeFlonum(number1));
     vm->acc_ = &flonum;
-    return KevesVM::ReturnValueSafe(vm, pc);
+    return KevesVM::returnValueSafe(vm, pc);
   }
 
   // no real part
-  if(pos1 == str1.size() - 1 && str1.At(pos1) == QChar('i')) {
-    if (str1.At(0) == QChar('+') || str1.At(0) == QChar('-')) {
+  if(pos1 == str1.size() - 1 && str1.at(pos1) == QChar('i')) {
+    if (str1.at(0) == QChar('+') || str1.at(0) == QChar('-')) {
       if (exact) {
 	vm->acc_ = KevesFixnum(0);
 	vm->gr1_ = number1;
-	return KevesVM::MakeRectangular(vm, pc);
+	return KevesVM::makeRectangular(vm, pc);
       }
       
       FlonumKev flonum(NumberKev::makeFlonum(number1));
       vm->acc_ = KevesFixnum(0);
       vm->gr1_ = &flonum;
-      return KevesVM::MakeRectangular(vm, pc);
+      return KevesVM::makeRectangular(vm, pc);
     }
     
     vm->acc_ = EMB_FALSE;
-    return KevesVM::ReturnValueSafe(vm, pc);
+    return KevesVM::returnValueSafe(vm, pc);
   }
 
   KevesValue number2;
-  QChar chr(str1.At(pos1));
+  QChar chr(str1.at(pos1));
 
   if (chr == QChar('+') || chr == QChar('-')) {
-    const StringKev str2(str1.Right(str1.size() - pos1));
+    const StringKev str2(str1.right(str1.size() - pos1));
     int pos2(0);
     if (radix == 2 || radix == 8 || radix == 16) {
       number2 = NumberKev::makeRealNumberFromBinary(vm->gc(), str2, &pos2, radix);
@@ -2166,28 +2169,28 @@ void LibRnrsBase::procStringToNumber_helper1(KevesVM* vm, const_KevesIterator pc
       number2 = NumberKev::makeRealNumberFromDecimal(vm->gc(), str2, &pos2, &radix, &exact);
     }
 
-    if (!number2.IsNumber()) {
+    if (!number2.isNumber()) {
       vm->acc_ = EMB_FALSE;
-      return KevesVM::ReturnValueSafe(vm, pc);
+      return KevesVM::returnValueSafe(vm, pc);
     }
     
-    if (pos2 == str2.size() - 1 && str2.At(pos2) == QChar('i')) {
+    if (pos2 == str2.size() - 1 && str2.at(pos2) == QChar('i')) {
       if (exact) {
 	vm->acc_ = number1;
 	vm->gr1_ = number2;
-	return KevesVM::MakeRectangular(vm, pc);
+	return KevesVM::makeRectangular(vm, pc);
       }
       
       FlonumKev flonum1(NumberKev::makeFlonum(number1));
       FlonumKev flonum2(NumberKev::makeFlonum(number2));
       vm->acc_ = &flonum1;
       vm->gr1_ = &flonum2;
-      return KevesVM::MakeRectangular(vm, pc);
+      return KevesVM::makeRectangular(vm, pc);
     }
   }
 
   if (chr == QChar('@')) {
-    const StringKev str2(str1.Right(str1.size() - pos1 - 1));
+    const StringKev str2(str1.right(str1.size() - pos1 - 1));
     int pos2(0);
 
     if (radix == 2 || radix == 8 || radix == 16) {
@@ -2196,77 +2199,77 @@ void LibRnrsBase::procStringToNumber_helper1(KevesVM* vm, const_KevesIterator pc
       number2 = NumberKev::makeRealNumberFromDecimal(vm->gc(), str2, &pos2, &radix, &exact);
     }
     
-    if (number2.IsNumber() && pos2 == str2.size()) {
-      if (number1.IsRealNumber() && number2.IsRealNumber()) {
+    if (number2.isNumber() && pos2 == str2.size()) {
+      if (number1.isRealNumber() && number2.isRealNumber()) {
 	FlonumKev mag(NumberKev::makeFlonum(number1));
 	FlonumKev ang(NumberKev::makeFlonum(number2));
 	FlonumKev real_part(mag.multiply(ang.cos()));
 	FlonumKev imag_part(mag.multiply(ang.sin()));
 	vm->acc_ = &real_part;
 	vm->gr1_ = &imag_part;
-	return KevesVM::MakeRectangular(vm, pc);
+	return KevesVM::makeRectangular(vm, pc);
       }
     }
   }
   
   vm->acc_ = EMB_FALSE;
-  return KevesVM::ReturnValueSafe(vm, pc);
+  return KevesVM::returnValueSafe(vm, pc);
 }
 
 void LibRnrsBase::Flexp::func(KevesVM* vm, const_KevesIterator pc) {
   FlonumKev flonum(NumberKev::makeFlonum(vm->acc_));
   FlonumKev r(flonum.exp());
   vm->acc_ = &r;
-  return KevesVM::ReturnValueSafe(vm, pc);
+  return KevesVM::returnValueSafe(vm, pc);
 }
 
 void LibRnrsBase::Fllog::func(KevesVM* vm, const_KevesIterator pc) {
   FlonumKev flonum(NumberKev::makeFlonum(vm->acc_));
   FlonumKev r(flonum.log());
   vm->acc_ = &r;
-  return KevesVM::ReturnValueSafe(vm, pc);
+  return KevesVM::returnValueSafe(vm, pc);
 }
 
 void LibRnrsBase::Flsin::func(KevesVM* vm, const_KevesIterator pc) {
   FlonumKev flonum(NumberKev::makeFlonum(vm->acc_));
   FlonumKev r(flonum.sin());
   vm->acc_ = &r;
-  return KevesVM::ReturnValueSafe(vm, pc);
+  return KevesVM::returnValueSafe(vm, pc);
 }
 
 void LibRnrsBase::Flcos::func(KevesVM* vm, const_KevesIterator pc) {
   FlonumKev flonum(NumberKev::makeFlonum(vm->acc_));
   FlonumKev r(flonum.cos());
   vm->acc_ = &r;
-  return KevesVM::ReturnValueSafe(vm, pc);
+  return KevesVM::returnValueSafe(vm, pc);
 }
 
 void LibRnrsBase::Fltan::func(KevesVM* vm, const_KevesIterator pc) {
   FlonumKev flonum(NumberKev::makeFlonum(vm->acc_));
   FlonumKev r(flonum.tan());
   vm->acc_ = &r;
-  return KevesVM::ReturnValueSafe(vm, pc);
+  return KevesVM::returnValueSafe(vm, pc);
 }
 
 void LibRnrsBase::Flasin::func(KevesVM* vm, const_KevesIterator pc) {
   FlonumKev flonum(NumberKev::makeFlonum(vm->acc_));
   FlonumKev r(flonum.asin());
   vm->acc_ = &r;
-  return KevesVM::ReturnValueSafe(vm, pc);
+  return KevesVM::returnValueSafe(vm, pc);
 }
 
 void LibRnrsBase::Flacos::func(KevesVM* vm, const_KevesIterator pc) {
   FlonumKev flonum(NumberKev::makeFlonum(vm->acc_));
   FlonumKev r(flonum.acos());
   vm->acc_ = &r;
-  return KevesVM::ReturnValueSafe(vm, pc);
+  return KevesVM::returnValueSafe(vm, pc);
 }
 
 void LibRnrsBase::Flatan::func(KevesVM* vm, const_KevesIterator pc) {
   FlonumKev flonum(NumberKev::makeFlonum(vm->acc_));
   FlonumKev r(flonum.atan());
   vm->acc_ = &r;
-  return KevesVM::ReturnValueSafe(vm, pc);
+  return KevesVM::returnValueSafe(vm, pc);
 }
 
 void LibRnrsBase::Flsqrt::func(KevesVM* vm, const_KevesIterator pc) {
@@ -2274,14 +2277,14 @@ void LibRnrsBase::Flsqrt::func(KevesVM* vm, const_KevesIterator pc) {
 
   if (flonum.isNegative()) {
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqRealNum);
+    vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqRealNum);
     vm->gr2_ = EMB_NULL;
-    return KevesVM::RaiseAssertCondition(vm, pc);
+    return KevesVM::raiseAssertCondition(vm, pc);
   }
 
   FlonumKev r(flonum.sqrt());
   vm->acc_ = &r;
-  return KevesVM::ReturnValueSafe(vm, pc);
+  return KevesVM::returnValueSafe(vm, pc);
 }
 
 void LibRnrsBase::procFlexpt(KevesVM* vm, const_KevesIterator pc) {
@@ -2290,280 +2293,280 @@ void LibRnrsBase::procFlexpt(KevesVM* vm, const_KevesIterator pc) {
     KevesValue x1(registers->lastArgument(1));
     KevesValue x2(registers->lastArgument());
 
-    if (x1.IsRealNumber() && x2.IsRealNumber()) {
+    if (x1.isRealNumber() && x2.isRealNumber()) {
       FlonumKev fl_x1(NumberKev::makeFlonum(x1));
       FlonumKev fl_x2(NumberKev::makeFlonum(x2));
       FlonumKev r(fl_x1.expt(fl_x2));
       vm->acc_ = &r;
-      return KevesVM::ReturnValueSafe(vm, pc);
+      return KevesVM::returnValueSafe(vm, pc);
     }
 
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqRealNum);
+    vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqRealNum);
     vm->gr2_ = EMB_NULL;
-    return KevesVM::RaiseAssertCondition(vm, pc);
+    return KevesVM::raiseAssertCondition(vm, pc);
   }
 
   if (registers->argn() == 1) {
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_Req2Got0);
+    vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_Req2Got0);
     vm->gr2_ = EMB_NULL;
-    return KevesVM::RaiseAssertCondition(vm, pc);
+    return KevesVM::raiseAssertCondition(vm, pc);
   }
 
   if (registers->argn() == 2) {
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_Req2Got1);
+    vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_Req2Got1);
     vm->gr2_ = EMB_NULL;
-    return KevesVM::RaiseAssertCondition(vm, pc);
+    return KevesVM::raiseAssertCondition(vm, pc);
   }
   
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_Req2GotMore);
+  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_Req2GotMore);
   vm->gr2_ = EMB_NULL;
-  return KevesVM::RaiseAssertCondition(vm, pc);
+  return KevesVM::raiseAssertCondition(vm, pc);
 }
 
 bool LibRnrsBase::IsBoolean::func(KevesValue kev) {
-  return kev.IsBool();
+  return kev.isBool();
 }
 
 void LibRnrsBase::Not::func(KevesVM* vm, const_KevesIterator pc) {
   vm->acc_ = vm->acc_ == EMB_FALSE ? EMB_TRUE : EMB_FALSE;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Cons::func(KevesVM* vm, const_KevesIterator pc) {
   PairKev pair(vm->acc_, vm->gr1_);
 
-  vm->CheckStack(&pair, &func, pc);
+  vm->checkStack(&pair, &func, pc);
 
   vm->acc_ = &pair;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Car::func(KevesVM* vm, const_KevesIterator pc) {
   const PairKev* pair(vm->acc_);
   vm->acc_ = pair->car();
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Cdr::func(KevesVM* vm, const_KevesIterator pc) {
   const PairKev* pair(vm->acc_);
   vm->acc_ = pair->cdr();
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Cadr::func(KevesVM* vm, const_KevesIterator pc) {
   const PairKev* pair(vm->acc_);
   KevesValue cdr(pair->cdr());
-  if (cdr.IsPair()) {
+  if (cdr.isPair()) {
     const PairKev* pair(cdr);
     vm->acc_ = pair->car();
-    return KevesVM::ReturnValue(vm, pc);
+    return KevesVM::returnValue(vm, pc);
   }
   
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqPair);
+  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqPair);
   vm->gr2_ = EMB_NULL;
-  return KevesVM::RaiseAssertCondition(vm, pc);
+  return KevesVM::raiseAssertCondition(vm, pc);
 }
 
 void LibRnrsBase::Cddr::func(KevesVM* vm, const_KevesIterator pc) {
   const PairKev* pair(vm->acc_);
   KevesValue cdr(pair->cdr());
-  if (cdr.IsPair()) {
+  if (cdr.isPair()) {
     const PairKev* pair(cdr);
     vm->acc_ = pair->cdr();
-    return KevesVM::ReturnValue(vm, pc);
+    return KevesVM::returnValue(vm, pc);
   }
   
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqPair);
+  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqPair);
   vm->gr2_ = EMB_NULL;
-  return KevesVM::RaiseAssertCondition(vm, pc);
+  return KevesVM::raiseAssertCondition(vm, pc);
 }
 
 void LibRnrsBase::Caaar::func(KevesVM* vm, const_KevesIterator pc) {
   const PairKev* pair(vm->acc_);
   KevesValue car(pair->car());
-  if (car.IsPair()) {
+  if (car.isPair()) {
     const PairKev* pair(car);
     KevesValue caar(pair->car());
-    if (caar.IsPair()) {
+    if (caar.isPair()) {
       const PairKev* pair(caar);
       vm->acc_ = pair->car();
-      return KevesVM::ReturnValue(vm, pc);
+      return KevesVM::returnValue(vm, pc);
     }
   }
   
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqPair);
+  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqPair);
   vm->gr2_ = EMB_NULL;
-  return KevesVM::RaiseAssertCondition(vm, pc);
+  return KevesVM::raiseAssertCondition(vm, pc);
 }
 
 void LibRnrsBase::Caadr::func(KevesVM* vm, const_KevesIterator pc) {
   const PairKev* pair(vm->acc_);
   KevesValue cdr(pair->cdr());
-  if (cdr.IsPair()) {
+  if (cdr.isPair()) {
     const PairKev* pair(cdr);
     KevesValue cadr(pair->car());
-    if (cadr.IsPair()) {
+    if (cadr.isPair()) {
       const PairKev* pair(cadr);
       vm->acc_ = pair->car();
-      return KevesVM::ReturnValue(vm, pc);
+      return KevesVM::returnValue(vm, pc);
     }
   }
   
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqPair);
+  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqPair);
   vm->gr2_ = EMB_NULL;
-  return KevesVM::RaiseAssertCondition(vm, pc);
+  return KevesVM::raiseAssertCondition(vm, pc);
 }
 
 void LibRnrsBase::Cadar::func(KevesVM* vm, const_KevesIterator pc) {
   const PairKev* pair(vm->acc_);
   KevesValue car(pair->car());
-  if (car.IsPair()) {
+  if (car.isPair()) {
     const PairKev* pair(car);
     KevesValue cdar(pair->cdr());
-    if (cdar.IsPair()) {
+    if (cdar.isPair()) {
       const PairKev* pair(cdar);
       vm->acc_ = pair->car();
-      return KevesVM::ReturnValue(vm, pc);
+      return KevesVM::returnValue(vm, pc);
     }
   }
 
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqPair);
+  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqPair);
   vm->gr2_ = EMB_NULL;
-  return KevesVM::RaiseAssertCondition(vm, pc);
+  return KevesVM::raiseAssertCondition(vm, pc);
 }
 
 void LibRnrsBase::Caddr::func(KevesVM* vm, const_KevesIterator pc) {
   const PairKev* pair(vm->acc_);
   KevesValue cdr(pair->cdr());
-  if (cdr.IsPair()) {
+  if (cdr.isPair()) {
     const PairKev* pair(cdr);
     KevesValue cddr(pair->cdr());
-    if (cddr.IsPair()) {
+    if (cddr.isPair()) {
       const PairKev* pair(cddr);
       vm->acc_ = pair->car();
-      return KevesVM::ReturnValue(vm, pc);
+      return KevesVM::returnValue(vm, pc);
     }
   }
 
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqPair);
+  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqPair);
   vm->gr2_ = EMB_NULL;
-  return KevesVM::RaiseAssertCondition(vm, pc);
+  return KevesVM::raiseAssertCondition(vm, pc);
 }
 
 void LibRnrsBase::Caar::func(KevesVM* vm, const_KevesIterator pc) {
   const PairKev* pair(vm->acc_);
   KevesValue car(pair->car());
-  if (car.IsPair()) {
+  if (car.isPair()) {
     const PairKev* pair(car);
     vm->acc_ = pair->car();
-    return KevesVM::ReturnValue(vm, pc);
+    return KevesVM::returnValue(vm, pc);
   }
 
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqPair);
+  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqPair);
   vm->gr2_ = EMB_NULL;
-  return KevesVM::RaiseAssertCondition(vm, pc);
+  return KevesVM::raiseAssertCondition(vm, pc);
 }
 
 void LibRnrsBase::Cdar::func(KevesVM* vm, const_KevesIterator pc) {
   const PairKev* pair(vm->acc_);
   KevesValue car(pair->car());
-  if (car.IsPair()) {
+  if (car.isPair()) {
     const PairKev* pair(car);
     vm->acc_ = pair->cdr();
-    return KevesVM::ReturnValue(vm, pc);
+    return KevesVM::returnValue(vm, pc);
   }
 
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqPair);
+  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqPair);
   vm->gr2_ = EMB_NULL;
-  return KevesVM::RaiseAssertCondition(vm, pc);
+  return KevesVM::raiseAssertCondition(vm, pc);
 }
 
 void LibRnrsBase::Cdaar::func(KevesVM* vm, const_KevesIterator pc) {
   const PairKev* pair(vm->acc_);
   KevesValue car(pair->car());
-  if (car.IsPair()) {
+  if (car.isPair()) {
     const PairKev* pair(car);
     KevesValue caar(pair->car());
-    if (caar.IsPair()) {
+    if (caar.isPair()) {
       const PairKev* pair(caar);
       vm->acc_ = pair->cdr();
-      return KevesVM::ReturnValue(vm, pc);
+      return KevesVM::returnValue(vm, pc);
     }
   }
   
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqPair);
+  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqPair);
   vm->gr2_ = EMB_NULL;
-  return KevesVM::RaiseAssertCondition(vm, pc);
+  return KevesVM::raiseAssertCondition(vm, pc);
 }
 
 void LibRnrsBase::Cdadr::func(KevesVM* vm, const_KevesIterator pc) {
   const PairKev* pair(vm->acc_);
   KevesValue cdr(pair->cdr());
-  if (cdr.IsPair()) {
+  if (cdr.isPair()) {
     const PairKev* pair(cdr);
     KevesValue cadr(pair->car());
-    if (cadr.IsPair()) {
+    if (cadr.isPair()) {
       const PairKev* pair(cadr);
       vm->acc_ = pair->cdr();
-      return KevesVM::ReturnValue(vm, pc);
+      return KevesVM::returnValue(vm, pc);
     }
   }
 
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqPair);
+  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqPair);
   vm->gr2_ = EMB_NULL;
-  return KevesVM::RaiseAssertCondition(vm, pc);
+  return KevesVM::raiseAssertCondition(vm, pc);
 }
 
 void LibRnrsBase::Cddar::func(KevesVM* vm, const_KevesIterator pc) {
   const PairKev* pair(vm->acc_);
   KevesValue car(pair->car());
-  if (car.IsPair()) {
+  if (car.isPair()) {
     const PairKev* pair(car);
     KevesValue cdar(pair->cdr());
-    if (cdar.IsPair()) {
+    if (cdar.isPair()) {
       const PairKev* pair(cdar);
       vm->acc_ = pair->cdr();
-      return KevesVM::ReturnValue(vm, pc);
+      return KevesVM::returnValue(vm, pc);
     }
   }
   
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqPair);
+  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqPair);
   vm->gr2_ = EMB_NULL;
-  return KevesVM::RaiseAssertCondition(vm, pc);
+  return KevesVM::raiseAssertCondition(vm, pc);
 }
 
 void LibRnrsBase::Cdddr::func(KevesVM* vm, const_KevesIterator pc) {
   const PairKev* pair(vm->acc_);
   KevesValue cdr(pair->cdr());
-  if (cdr.IsPair()) {
+  if (cdr.isPair()) {
     const PairKev* pair(cdr);
     KevesValue cddr(pair->cdr());
-    if (cddr.IsPair()) {
+    if (cddr.isPair()) {
       const PairKev* pair(cddr);
       vm->acc_ = pair->cdr();
-      return KevesVM::ReturnValue(vm, pc);
+      return KevesVM::returnValue(vm, pc);
     }
   }
 
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqPair);
+  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqPair);
   vm->gr2_ = EMB_NULL;
-  return KevesVM::RaiseAssertCondition(vm, pc);
+  return KevesVM::raiseAssertCondition(vm, pc);
 }
 
 bool LibRnrsBase::IsNull::func(KevesValue kev) {
@@ -2573,14 +2576,14 @@ bool LibRnrsBase::IsNull::func(KevesValue kev) {
 void LibRnrsBase::procList(KevesVM* vm, const_KevesIterator pc) {
   int argn(vm->registers_.argn());
   vm->acc_ = EMB_NULL;
-  return (argn > 1 ? procList_helper : KevesVM::ReturnValue)(vm, pc);
+  return (argn > 1 ? procList_helper : KevesVM::returnValue)(vm, pc);
 }
 
 void LibRnrsBase::procList_helper(KevesVM* vm, const_KevesIterator pc) {
   StackFrameKev* registers(&vm->registers_);
   PairKev pair(registers->lastArgument(), vm->acc_);
   
-  vm->CheckStack(&pair, &procList_helper, pc);
+  vm->checkStack(&pair, &procList_helper, pc);
   
   vm->acc_ = &pair;
   
@@ -2589,21 +2592,21 @@ void LibRnrsBase::procList_helper(KevesVM* vm, const_KevesIterator pc) {
     return procList_helper(vm, pc);
   }
   
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::Length::func(KevesVM* vm, const_KevesIterator pc) {
-  int length(KevesVM::GetListLength(vm->acc_));
+  int length(KevesVM::getListLength(vm->acc_));
 
   if (length >= 0) {
     vm->acc_ = KevesFixnum(length);
-    return KevesVM::ReturnValue(vm, pc);
+    return KevesVM::returnValue(vm, pc);
   }
   
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqProperList);
+  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqProperList);
   vm->gr2_ = EMB_NULL;
-  return KevesVM::RaiseAssertCondition(vm, pc);
+  return KevesVM::raiseAssertCondition(vm, pc);
 }
 
 void LibRnrsBase::Reverse::func(KevesVM* vm, const_KevesIterator pc) {
@@ -2613,11 +2616,11 @@ void LibRnrsBase::Reverse::func(KevesVM* vm, const_KevesIterator pc) {
 }
 
 void LibRnrsBase::Reverse::func_helper(KevesVM* vm, const_KevesIterator pc) {
-  if (vm->gr1_.IsPair()) {
+  if (vm->gr1_.isPair()) {
     const PairKev* last_pair(vm->gr1_);
     PairKev new_pair(last_pair->car(), vm->acc_);
     
-    vm->CheckStack(&new_pair, &func_helper, pc);
+    vm->checkStack(&new_pair, &func_helper, pc);
     
     vm->acc_ = &new_pair;
     vm->gr1_ = last_pair->cdr();
@@ -2625,44 +2628,44 @@ void LibRnrsBase::Reverse::func_helper(KevesVM* vm, const_KevesIterator pc) {
   }
 
   if (vm->gr1_ == EMB_NULL)
-    return KevesVM::ReturnValue(vm, pc);
+    return KevesVM::returnValue(vm, pc);
 
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqProperList);
+  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqProperList);
   vm->gr2_ = EMB_NULL;
-  return KevesVM::RaiseAssertCondition(vm, pc);
+  return KevesVM::raiseAssertCondition(vm, pc);
 }
 
 bool LibRnrsBase::IsSymbolEqual::func(KevesValue kev1, KevesValue kev2) {
   const SymbolKev* sym1(kev1);
   const SymbolKev* sym2(kev2);
-  return sym1->Equals(*sym2);
+  return sym1->equals(*sym2);
 }
 
 void LibRnrsBase::SymbolToString::func(KevesVM* vm, const_KevesIterator pc) {
   const SymbolKev* sym(vm->acc_);
-  StringKev str(sym->GetKevesString());
+  StringKev str(sym->getKevesString());
 
-  vm->CheckStack(&str, &func, pc);
+  vm->checkStack(&str, &func, pc);
 
   vm->acc_ = &str;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::StringToSymbol::func(KevesVM* vm, const_KevesIterator pc) {
   const StringKev* str(vm->acc_);
   SymbolKev sym(*str);
 
-  vm->CheckStack(&sym, &func, pc);
+  vm->checkStack(&sym, &func, pc);
 
   vm->acc_ = &sym;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::CharToInteger::func(KevesVM* vm, const_KevesIterator pc) {
   KevesChar chr(vm->acc_);
-  vm->acc_ = KevesFixnum(static_cast<fx_int>(chr.Unicode()));
-  return KevesVM::ReturnValue(vm, pc);
+  vm->acc_ = KevesFixnum(static_cast<fx_int>(chr.unicode()));
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::IntegerToChar::func(KevesVM* vm, const_KevesIterator pc) {
@@ -2670,7 +2673,7 @@ void LibRnrsBase::IntegerToChar::func(KevesVM* vm, const_KevesIterator pc) {
   QChar chr(fixnum);
   vm->gr1_ = vm->acc_;
   vm->acc_ = KevesChar(chr);
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 bool LibRnrsBase::IsCharEqual::func(KevesValue kev1, KevesValue kev2) {
@@ -2680,25 +2683,25 @@ bool LibRnrsBase::IsCharEqual::func(KevesValue kev1, KevesValue kev2) {
 bool LibRnrsBase::IsCharLT::func(KevesValue kev1, KevesValue kev2) {
   KevesChar chr1(kev1);
   KevesChar chr2(kev2);
-  return chr1.Compare(chr2) < 0;
+  return chr1.compare(chr2) < 0;
 }
 
 bool LibRnrsBase::IsCharGT::func(KevesValue kev1, KevesValue kev2) {
   KevesChar chr1(kev1);
   KevesChar chr2(kev2);
-  return chr1.Compare(chr2) > 0;
+  return chr1.compare(chr2) > 0;
 }
 
 bool LibRnrsBase::IsCharLTE::func(KevesValue kev1, KevesValue kev2) {
   KevesChar chr1(kev1);
   KevesChar chr2(kev2);
-  return chr1.Compare(chr2) <= 0;
+  return chr1.compare(chr2) <= 0;
 }
 
 bool LibRnrsBase::IsCharGTE::func(KevesValue kev1, KevesValue kev2) {
   KevesChar chr1(kev1);
   KevesChar chr2(kev2);
-  return chr1.Compare(chr2) >= 0;
+  return chr1.compare(chr2) >= 0;
 }
 
 void LibRnrsBase::procMakeString(KevesVM* vm, const_KevesIterator pc) {
@@ -2708,11 +2711,11 @@ void LibRnrsBase::procMakeString(KevesVM* vm, const_KevesIterator pc) {
 
   switch (argn) {
   case 3:
-    if (!registers->lastArgument().IsChar()) {
+    if (!registers->lastArgument().isChar()) {
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqChar);
+      vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqChar);
       vm->gr2_ = EMB_NULL;
-      return KevesVM::RaiseAssertCondition(vm, pc);
+      return KevesVM::raiseAssertCondition(vm, pc);
     }
     
     chr = KevesChar(registers->lastArgument());
@@ -2721,33 +2724,33 @@ void LibRnrsBase::procMakeString(KevesVM* vm, const_KevesIterator pc) {
     {
       KevesValue first(registers->argument(1));
       
-      if (!first.IsFixnum()) {
+      if (!first.isFixnum()) {
 	vm->acc_ = vm->gr2_;
-	vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqIntNum);
+	vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqIntNum);
 	vm->gr2_ = EMB_NULL;
-	return KevesVM::RaiseAssertCondition(vm, pc);
+	return KevesVM::raiseAssertCondition(vm, pc);
       }
       
       int size(KevesFixnum { first } );
 
       if (size < 0) {
 	vm->acc_ = vm->gr2_;
-	vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_OutOfRange);
+	vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_OutOfRange);
 	vm->gr2_ = EMB_NULL;
-	return KevesVM::RaiseAssertCondition(vm, pc);
+	return KevesVM::raiseAssertCondition(vm, pc);
       }
       
-      vm->acc_ = vm->MakeString(size, chr);
-      return KevesVM::ReturnValueSafe(vm, pc);
+      vm->acc_ = vm->makeString(size, chr);
+      return KevesVM::returnValueSafe(vm, pc);
     }
 
   default:
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = vm->base()->GetMesgText(registers->argn() > 3 ?
+    vm->gr1_ = vm->base()->getMesgText(registers->argn() > 3 ?
 				       KevesBuiltinValues::mesg_Req1Or2GotMore :
 				       KevesBuiltinValues::mesg_Req1Or2Got0);
     vm->gr2_ = EMB_NULL;
-    return KevesVM::RaiseAssertCondition(vm, pc);
+    return KevesVM::raiseAssertCondition(vm, pc);
   }
 }
 
@@ -2755,17 +2758,17 @@ void LibRnrsBase::procString(KevesVM* vm, const_KevesIterator pc) {
   StackFrameKev* registers(&vm->registers_);
   int argn(registers->argn());
   int size(argn - 1);
-  StringKev* string(vm->MakeString(size));
+  StringKev* string(vm->makeString(size));
   QChar* iter(string->data());
 
   for (int idx(1); idx < argn; ++idx, ++iter) {
     KevesValue current(registers->argument(idx));
 
-    if (!current.IsChar()) {
+    if (!current.isChar()) {
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqChar);
+      vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqChar);
       vm->gr2_ = EMB_NULL;
-      return KevesVM::RaiseAssertCondition(vm, pc);
+      return KevesVM::raiseAssertCondition(vm, pc);
     }
 
     KevesChar chr(current);
@@ -2773,13 +2776,13 @@ void LibRnrsBase::procString(KevesVM* vm, const_KevesIterator pc) {
   }
 
   vm->acc_ = string;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::StringLength::func(KevesVM* vm, const_KevesIterator pc) {
   const StringKev* str(vm->acc_);
   vm->acc_ = KevesFixnum(str->size());
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::StringRef::func(KevesVM* vm, const_KevesIterator pc) {
@@ -2788,43 +2791,43 @@ void LibRnrsBase::StringRef::func(KevesVM* vm, const_KevesIterator pc) {
 
   if (k < 0 || k >= string->size()) {
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_OutOfRange);
+    vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_OutOfRange);
     vm->gr2_ = EMB_NULL;
-    return KevesVM::RaiseAssertCondition(vm, pc);
+    return KevesVM::raiseAssertCondition(vm, pc);
   }
 
-  vm->acc_ = KevesChar(string->At(k));
-  return KevesVM::ReturnValue(vm, pc);
+  vm->acc_ = KevesChar(string->at(k));
+  return KevesVM::returnValue(vm, pc);
 }
 
 bool LibRnrsBase::IsStringEqual::func(KevesValue kev1, KevesValue kev2) {
   const StringKev* str1(kev1);
   const StringKev* str2(kev2);
-  return str1->Equals(*str2);
+  return str1->equals(*str2);
 }
 
 bool LibRnrsBase::IsStringLT::func(KevesValue kev1, KevesValue kev2) {
   const StringKev* str1(kev1);
   const StringKev* str2(kev2);
-  return str1->IsLT(*str2);
+  return str1->isLT(*str2);
 }
 
 bool LibRnrsBase::IsStringGT::func(KevesValue kev1, KevesValue kev2) {
   const StringKev* str1(kev1);
   const StringKev* str2(kev2);
-  return str1->IsGT(*str2);
+  return str1->isGT(*str2);
 }
 
 bool LibRnrsBase::IsStringLTE::func(KevesValue kev1, KevesValue kev2) {
   const StringKev* str1(kev1);
   const StringKev* str2(kev2);
-  return str1->IsLTE(*str2);
+  return str1->isLTE(*str2);
 }
 
 bool LibRnrsBase::IsStringGTE::func(KevesValue kev1, KevesValue kev2) {
   const StringKev* str1(kev1);
   const StringKev* str2(kev2);
-  return str1->IsGTE(*str2);
+  return str1->isGTE(*str2);
 }
 
 void LibRnrsBase::Substring::func(KevesVM* vm, const_KevesIterator pc) {
@@ -2836,15 +2839,15 @@ void LibRnrsBase::Substring::func(KevesVM* vm, const_KevesIterator pc) {
     
   if (start < 0 || start > end || end > len) {
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_OutOfRange);
+    vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_OutOfRange);
     vm->gr2_ = EMB_NULL;
-    return KevesVM::RaiseAssertCondition(vm, pc);
+    return KevesVM::raiseAssertCondition(vm, pc);
   }
   
-  // vm->acc_ = vm->keves_gc_.make(StringKev::MakeSubstring(str, start, end));
-  vm->acc_ = StringKev::MakeSubstring(vm->gc(), str, start, end);
+  // vm->acc_ = vm->keves_gc_.make(StringKev::makeSubstring(str, start, end));
+  vm->acc_ = StringKev::makeSubstring(vm->gc(), str, start, end);
 
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::StringToList::func(KevesVM* vm, const_KevesIterator pc) {
@@ -2853,7 +2856,7 @@ void LibRnrsBase::StringToList::func(KevesVM* vm, const_KevesIterator pc) {
 
   if (last_index < 0) {
     vm->acc_ = EMB_NULL;
-    return KevesVM::ReturnValue(vm, pc);
+    return KevesVM::returnValue(vm, pc);
   }
   
   vm->gr1_ = EMB_NULL;
@@ -2864,15 +2867,15 @@ void LibRnrsBase::StringToList::func(KevesVM* vm, const_KevesIterator pc) {
 void LibRnrsBase::StringToList::func_helper(KevesVM* vm, const_KevesIterator pc) {
   PairKev pair(EMB_NULL, EMB_NULL);
 
-  vm->CheckStack(&pair, &func_helper, pc);
+  vm->checkStack(&pair, &func_helper, pc);
 
   int index(KevesFixnum(vm->gr2_));
   const StringKev* string(vm->acc_);
-  pair.Set(KevesChar(string->At(index)), vm->gr1_);
+  pair.set(KevesChar(string->at(index)), vm->gr1_);
 
   if (index == 0) {
     vm->acc_ = &pair;
-    return KevesVM::ReturnValue(vm, pc);
+    return KevesVM::returnValue(vm, pc);
   }
   
   vm->gr1_ = &pair;
@@ -2882,24 +2885,24 @@ void LibRnrsBase::StringToList::func_helper(KevesVM* vm, const_KevesIterator pc)
 
 void LibRnrsBase::StringCopy::func(KevesVM* vm, const_KevesIterator pc) {
   const StringKev* original(vm->acc_);
-  StringKev copy(original->Copy(vm->gc()));
+  StringKev copy(original->copy(vm->gc()));
 
-  vm->CheckStack(&copy, &func, pc);
+  vm->checkStack(&copy, &func, pc);
 
   vm->acc_ = &copy;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 bool LibRnrsBase::IsVector::func(KevesValue kev) {
-  return kev.IsVector();
+  return kev.isVector();
 }
 
 KevesValue LibRnrsBase::IsVector::message(KevesBase* base) {
-  return base->GetMesgText(KevesBuiltinValues::mesg_ReqVector);
+  return base->getMesgText(KevesBuiltinValues::mesg_ReqVector);
 }
 
 KevesValue LibRnrsBase::IsVector::message1(KevesBase* base) {
-  return base->GetMesgText(KevesBuiltinValues::mesg_ReqVectorAs1st);
+  return base->getMesgText(KevesBuiltinValues::mesg_ReqVectorAs1st);
 }
 
 void LibRnrsBase::procMakeVector(KevesVM* vm, const_KevesIterator pc) {
@@ -2914,33 +2917,33 @@ void LibRnrsBase::procMakeVector(KevesVM* vm, const_KevesIterator pc) {
   case 2: {
     KevesValue first(registers->argument(1));
     
-    if (!first.IsFixnum()) {
+    if (!first.isFixnum()) {
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqIntNum);
+      vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqIntNum);
       vm->gr2_ = EMB_NULL;
-      return KevesVM::RaiseAssertCondition(vm, pc);
+      return KevesVM::raiseAssertCondition(vm, pc);
     }
     
     int size(KevesFixnum { first } );
     
     if (size < 0) {
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_OutOfRange);
+      vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_OutOfRange);
       vm->gr2_ = EMB_NULL;
-      return KevesVM::RaiseAssertCondition(vm, pc);
+      return KevesVM::raiseAssertCondition(vm, pc);
     }
     
-    vm->acc_ = vm->MakeVector(size, obj);
-    return KevesVM::ReturnValue(vm, pc);
+    vm->acc_ = vm->makeVector(size, obj);
+    return KevesVM::returnValue(vm, pc);
   }
     
   default:
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = vm->base()->GetMesgText(registers->argn() > 3 ?
+    vm->gr1_ = vm->base()->getMesgText(registers->argn() > 3 ?
 				       KevesBuiltinValues::mesg_Req1Or2GotMore :
 				       KevesBuiltinValues::mesg_Req1Or2Got0);
     vm->gr2_ = EMB_NULL;
-    return KevesVM::RaiseAssertCondition(vm, pc);
+    return KevesVM::raiseAssertCondition(vm, pc);
   }
 }
 
@@ -2948,7 +2951,7 @@ void LibRnrsBase::procVector(KevesVM* vm, const_KevesIterator pc) {
   StackFrameKev* registers(&vm->registers_);
   int argn(registers->argn());
   int size(argn - 1);
-  VectorKev* vector(vm->MakeVector(size));
+  VectorKev* vector(vm->makeVector(size));
   KevesIterator iter(vector->begin());
 
   for (int idx(1); idx < argn; ++idx, ++iter) {
@@ -2956,13 +2959,13 @@ void LibRnrsBase::procVector(KevesVM* vm, const_KevesIterator pc) {
   }
 
   vm->acc_ = vector;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::VectorLength::func(KevesVM* vm, const_KevesIterator pc) {
   const VectorKev* vector(vm->acc_);
   vm->acc_ = KevesFixnum(vector->size());
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::VectorRef::func(KevesVM* vm, const_KevesIterator pc) {
@@ -2971,13 +2974,13 @@ void LibRnrsBase::VectorRef::func(KevesVM* vm, const_KevesIterator pc) {
 
   if (k < 0 || k >= vector->size()) {
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_OutOfRange);
+    vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_OutOfRange);
     vm->gr2_ = EMB_NULL;
-    return KevesVM::RaiseAssertCondition(vm, pc);
+    return KevesVM::raiseAssertCondition(vm, pc);
   }
   
-  vm->acc_ = vector->At(k);
-  return KevesVM::ReturnValue(vm, pc);
+  vm->acc_ = vector->at(k);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::VectorSetE::func(KevesVM* vm, const_KevesIterator pc) {
@@ -2987,9 +2990,9 @@ void LibRnrsBase::VectorSetE::func(KevesVM* vm, const_KevesIterator pc) {
 
   if (k < 0 || k >= vector->size()) {
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_OutOfRange);
+    vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_OutOfRange);
     vm->gr2_ = EMB_NULL;
-    return KevesVM::RaiseAssertCondition(vm, pc);
+    return KevesVM::raiseAssertCondition(vm, pc);
   }
 
   KevesIterator iter(vector->begin());
@@ -2997,8 +3000,8 @@ void LibRnrsBase::VectorSetE::func(KevesVM* vm, const_KevesIterator pc) {
   // if (vm->keves_gc_.isInTenuredWithoutMark(vector)) {
   //   vm->keves_gc_.pushToMarkedList(vector);
   // }
-  vm->gc()->MarkLive(vector);
-  return KevesVM::ReturnValue(vm, pc);
+  vm->gc()->markLive(vector);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::VectorToList::func(KevesVM* vm, const_KevesIterator pc) {
@@ -3007,7 +3010,7 @@ void LibRnrsBase::VectorToList::func(KevesVM* vm, const_KevesIterator pc) {
 
   if (last_index < 0) {
     vm->acc_ = EMB_NULL;
-    return KevesVM::ReturnValue(vm, pc);
+    return KevesVM::returnValue(vm, pc);
   }
 
   vm->gr1_ = EMB_NULL;
@@ -3018,13 +3021,13 @@ void LibRnrsBase::VectorToList::func(KevesVM* vm, const_KevesIterator pc) {
 void LibRnrsBase::VectorToList::func_helper(KevesVM* vm, const_KevesIterator pc) {
   const VectorKev* vector(vm->acc_);
   int index(KevesFixnum(vm->gr2_));
-  PairKev pair(vector->At(index), vm->gr1_);
+  PairKev pair(vector->at(index), vm->gr1_);
   
-  vm->CheckStack(&pair, &func_helper, pc);
+  vm->checkStack(&pair, &func_helper, pc);
   
   if (index == 0) {
     vm->acc_ = &pair;
-    return KevesVM::ReturnValue(vm, pc);
+    return KevesVM::returnValue(vm, pc);
   }
 
   vm->gr1_ = &pair;
@@ -3040,16 +3043,16 @@ void LibRnrsBase::procListToVector(KevesVM* vm, const_KevesIterator pc) {
     return Function::raiseNotGet1Arg(vm, pc);
   
   KevesValue temp(registers->lastArgument());
-  int size(KevesVM::GetListLength(temp));
+  int size(KevesVM::getListLength(temp));
   
   if (size < 0) {
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqProperList);
+    vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqProperList);
     vm->gr2_ = EMB_NULL;
-    return KevesVM::RaiseAssertCondition(vm, pc);
+    return KevesVM::raiseAssertCondition(vm, pc);
   }
   
-  VectorKev* vector(vm->MakeVector(size));
+  VectorKev* vector(vm->makeVector(size));
   
   for (KevesValue& elem : *vector) {
     const PairKev* pair(temp);
@@ -3058,14 +3061,14 @@ void LibRnrsBase::procListToVector(KevesVM* vm, const_KevesIterator pc) {
   }
   
   vm->acc_ = vector;
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsBase::CallWithCC::func(KevesVM* vm, const_KevesIterator pc) {
   StackFrameKev* registers(&vm->registers_);
   ArgumentFrameKevWithArray<04> arg_frame;
   
-  vm->CheckStack(&arg_frame, &func, pc);
+  vm->checkStack(&arg_frame, &func, pc);
   
   pc = registers->unwind();
   
@@ -3084,7 +3087,7 @@ void LibRnrsBase::CallWithValues::func(KevesVM* vm, const_KevesIterator pc) {
   ArgumentFrameKevWithArray<04> arg_frame1;
   ArgumentFrameKevWithArray<04> arg_frame2;
   
-  vm->CheckStack(&arg_frame1, &func, pc);
+  vm->checkStack(&arg_frame1, &func, pc);
   
   pc = registers->unwind();
   
@@ -3116,7 +3119,7 @@ void LibRnrsBase::procValues(KevesVM* vm, const_KevesIterator pc) {
     vm->acc_ = EMB_UNDEF;
   }
 
-  return KevesVM::ReturnValue(vm, pc);
+  return KevesVM::returnValue(vm, pc);
 
 }
 
@@ -3124,7 +3127,7 @@ void LibRnrsBase::DynamicWind::func(KevesVM* vm, const_KevesIterator pc) {
   StackFrameKev* registers(&vm->registers_);
   ArgumentFrameKevWithArray<04> arg_frame;
   
-  vm->CheckStack(&arg_frame, &func, pc);
+  vm->checkStack(&arg_frame, &func, pc);
   
   KevesValue before(registers->argument(1));
   pc = vm->base()->builtin()->code_SET_DYNAMIC_WIND();
@@ -3140,11 +3143,11 @@ void LibRnrsBase::procAssertionViolation(KevesVM* vm, const_KevesIterator pc) {
 
   if (registers->argn() < 3) {
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = vm->base()->GetMesgText(registers->argn() == 2 ?
+    vm->gr1_ = vm->base()->getMesgText(registers->argn() == 2 ?
 				       KevesBuiltinValues::mesg_Req2Got1 :
 				       KevesBuiltinValues::mesg_Req2Got0);
     vm->gr2_ = EMB_NULL;
-    return KevesVM::RaiseAssertCondition(vm, pc);
+    return KevesVM::raiseAssertCondition(vm, pc);
   }
   
   return procAssertionViolation_helper(vm, pc);
@@ -3154,7 +3157,7 @@ void LibRnrsBase::procAssertionViolation_helper(KevesVM* vm, const_KevesIterator
   StackFrameKev* registers(&vm->registers_);
   PairKev pair(registers->lastArgument(), vm->acc_);
   
-  vm->CheckStack(&pair, &procAssertionViolation_helper, pc);
+  vm->checkStack(&pair, &procAssertionViolation_helper, pc);
   
   if (registers->argn() > 3) {
     registers->popArgument();
@@ -3165,7 +3168,7 @@ void LibRnrsBase::procAssertionViolation_helper(KevesVM* vm, const_KevesIterator
   vm->gr1_ = registers->lastArgument();
   vm->gr2_ = vm->acc_;
   vm->acc_ = registers->lastArgument(1);
-  return KevesVM::RaiseAssertCondition(vm, pc);
+  return KevesVM::raiseAssertCondition(vm, pc);
 }
 
 void LibRnrsBase::procApply(KevesVM* vm, const_KevesIterator pc) {
@@ -3174,34 +3177,34 @@ void LibRnrsBase::procApply(KevesVM* vm, const_KevesIterator pc) {
   if (registers->argn() < 3) {
     vm->acc_ = vm->gr2_;
 
-    vm->gr1_ = vm->base()->GetMesgText(registers->argn() == 2 ?
+    vm->gr1_ = vm->base()->getMesgText(registers->argn() == 2 ?
 				       KevesBuiltinValues::mesg_Req2Got1 :
 				       KevesBuiltinValues::mesg_Req2Got0);
 
     vm->gr2_ = EMB_NULL;
-    return KevesVM::RaiseAssertCondition(vm, pc);
+    return KevesVM::raiseAssertCondition(vm, pc);
   }
 
   int argn(registers->argn());
   KevesValue last(registers->lastArgument());
 
-  if (!last.IsPair() && last != EMB_NULL) {
+  if (!last.isPair() && last != EMB_NULL) {
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqListAsLast);
+    vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqListAsLast);
     vm->gr2_ = EMB_NULL;
-    return vm->RaiseAssertCondition(vm, pc);
+    return vm->raiseAssertCondition(vm, pc);
   }
 
-  if (!registers->argument(1).IsProcedure()) {
+  if (!registers->argument(1).isProcedure()) {
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqProcAs1st);
+    vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqProcAs1st);
     vm->gr2_ = EMB_NULL;
-    return vm->RaiseAssertCondition(vm, pc);
+    return vm->raiseAssertCondition(vm, pc);
   }
   
   int num_args(argn - 2);
-  int final_num_args(num_args + KevesVM::GetListLength(last));
-  ArgumentFrameKev* new_arg_frame(ArgumentFrameKev::Make(vm->gc(), final_num_args));
+  int final_num_args(num_args + KevesVM::getListLength(last));
+  ArgumentFrameKev* new_arg_frame(ArgumentFrameKev::make(vm->gc(), final_num_args));
   
   for (int i(0); i < num_args; ++i) {
     new_arg_frame->assign(i, registers->argument(i + 1));
@@ -3216,7 +3219,7 @@ void LibRnrsBase::procApply_helper(KevesVM* vm, const_KevesIterator pc) {
   StackFrameKev* registers(&vm->registers_);
   KevesValue temp(vm->acc_);
 
-  while (temp.IsPair()) {
+  while (temp.isPair()) {
     const PairKev* pair(temp);
     KevesValue car(pair->car());
     registers->pushArgument(car);
@@ -3225,13 +3228,13 @@ void LibRnrsBase::procApply_helper(KevesVM* vm, const_KevesIterator pc) {
 
   if (temp != EMB_NULL) {
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = vm->base()->GetMesgText(KevesBuiltinValues::mesg_ReqProperList);
+    vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqProperList);
     vm->gr2_ = EMB_NULL;
-    return vm->RaiseAssertCondition(vm, pc);
+    return vm->raiseAssertCondition(vm, pc);
   }
 
   vm->gr1_ = registers->argument(0);
-  return KevesVM::ApplyProcedure(vm, pc);
+  return KevesVM::applyProcedure(vm, pc);
 }
 
 
@@ -3240,9 +3243,9 @@ void LibRnrsBase::procApply_helper(KevesVM* vm, const_KevesIterator pc) {
 ////////////////////////////////////////////////////////////////
 
 extern "C" {
-  KevesLibrary* Make(KevesBase* base) {
+  KevesLibrary* make(KevesBase* base) {
     LibRnrsBase* library(new LibRnrsBase());
-    library->Init(base);
+    library->init(base);
     return library;
   }
 }

@@ -21,15 +21,15 @@
 
 
 template<class ZONE>
-SymbolKev* SymbolKev::Make(ZONE* zone, StringCoreKev* core, int idx, int len) {
+SymbolKev* SymbolKev::make(ZONE* zone, StringCoreKev* core, int idx, int len) {
   auto ctor = [core, idx, len](void* ptr) {
     return new(ptr) SymbolKev(core, idx, len);
   };
     
-  return zone->Make(ctor, alloc_size(nullptr));
+  return zone->make(ctor, alloc_size(nullptr));
 }
 
 template<class ZONE>
-SymbolKev* SymbolKev::Make(ZONE* zone, const QString& str) {
-  return zone->Make(ctor(zone, str), alloc_size(nullptr));
+SymbolKev* SymbolKev::make(ZONE* zone, const QString& str) {
+  return zone->make(ctor(zone, str), alloc_size(nullptr));
 }

@@ -48,16 +48,16 @@ public:
 
   void run(); // for QRunnable
   
-  int Execute(const QString& arg);
+  int execute(const QString& arg);
   
   ////////////////////////////////////////////////////////////////
   // General                                                    //
   ////////////////////////////////////////////////////////////////
 public:
-  int Execute_helper(const QString& arg);
+  int execute_helper(const QString& arg);
   
-  static KevesVM* Make(KevesBase* base);
-  static KevesVM* Make(KevesBase* base, KevesTextualOutputPort* result_field);
+  static KevesVM* make(KevesBase* base);
+  static KevesVM* make(KevesBase* base, KevesTextualOutputPort* result_field);
   
   KevesBase* base() {
     return base_;
@@ -76,63 +76,63 @@ public:
   ////////////////////////////////////////////////////////////////
 
   // Push and Return Values
-  void PushToArgument(KevesValue);
-  static void PushAccToArgument(KevesVM*, const_KevesIterator);
-  static void PushAccToArgumentSafe(KevesVM*, const_KevesIterator);
-  void PushAccToArgument();
-  static void PushGr1ToArgument(KevesVM*, const_KevesIterator);
-  static void PushGr1ToArgumentSafe(KevesVM*, const_KevesIterator);
-  void PushGr1ToArgument();
-  static void ReturnVoid(KevesVM*, const_KevesIterator);
-  static void ReturnValueSafe(KevesVM*, const_KevesIterator);
-  static void ReturnValue(KevesVM*, const_KevesIterator);
-  static void ReturnTwoValues(KevesVM*, const_KevesIterator);
+  void pushToArgument(KevesValue);
+  static void pushAccToArgument(KevesVM*, const_KevesIterator);
+  static void pushAccToArgumentSafe(KevesVM*, const_KevesIterator);
+  void pushAccToArgument();
+  static void pushGr1ToArgument(KevesVM*, const_KevesIterator);
+  static void pushGr1ToArgumentSafe(KevesVM*, const_KevesIterator);
+  void pushGr1ToArgument();
+  static void returnVoid(KevesVM*, const_KevesIterator);
+  static void returnValueSafe(KevesVM*, const_KevesIterator);
+  static void returnValue(KevesVM*, const_KevesIterator);
+  static void returnTwoValues(KevesVM*, const_KevesIterator);
 
   // Make and Raise Exceptions
-  static void MakeLexicalException(KevesVM*, const_KevesIterator);
-  static void RaiseAssertFirstObjNotProc(KevesVM*, const_KevesIterator);
-  static void RaiseAssertLambdaReqLess(KevesVM*, const_KevesIterator);
-  static void RaiseAssertLambdaReqMore(KevesVM*, const_KevesIterator);
-  static void RaiseAssertReqRealNum(KevesVM*, const_KevesIterator);
-  static void RaiseAssertCondition(KevesVM*, const_KevesIterator);
+  static void makeLexicalException(KevesVM*, const_KevesIterator);
+  static void raiseAssertFirstObjNotProc(KevesVM*, const_KevesIterator);
+  static void raiseAssertLambdaReqLess(KevesVM*, const_KevesIterator);
+  static void raiseAssertLambdaReqMore(KevesVM*, const_KevesIterator);
+  static void raiseAssertReqRealNum(KevesVM*, const_KevesIterator);
+  static void raiseAssertCondition(KevesVM*, const_KevesIterator);
 
 
   // for Numbers
-  static void ContinueRationalNumberKev(KevesVM* vm,
+  static void continueRationalNumberKev(KevesVM* vm,
 					const_KevesIterator pc,
 					const RationalNumberKev* real,
 					vm_func for_fixnum,
 					vm_func for_real);
 
-  static void ContinueExactComplexNumberKev(KevesVM* vm,
+  static void continueExactComplexNumberKev(KevesVM* vm,
 					    const_KevesIterator pc,
 					    const ExactComplexNumberKev* complex,
 					    vm_func for_fixnum,
 					    vm_func for_real,
 					    vm_func for_complex);
 
-  static void MakeRectangular(KevesVM*, const_KevesIterator);
-  static void TestNumber(KevesVM*, const_KevesIterator);
+  static void makeRectangular(KevesVM*, const_KevesIterator);
+  static void testNumber(KevesVM*, const_KevesIterator);
   static void returnExactComplexNumberKev(KevesVM*, const_KevesIterator);
 
   // for list
-  static int GetListLength(KevesValue);
+  static int getListLength(KevesValue);
 
   // for string
-  StringKev* MakeString(int);
-  const StringKev* MakeString(int, QChar);
+  StringKev* makeString(int);
+  const StringKev* makeString(int, QChar);
 
   // for vector
-  VectorKev* MakeVector(int);
-  const VectorKev* MakeVector(int, KevesValue);
+  VectorKev* makeVector(int);
+  const VectorKev* makeVector(int, KevesValue);
 
   // for procedures
-  static void ApplyProcedure(KevesVM*, const_KevesIterator);
+  static void applyProcedure(KevesVM*, const_KevesIterator);
 
   // for others
-  void ToString(KevesValue, QString*);
-  static void DisplayCode(KevesVM*, const_KevesIterator);
-  static void RevertDynamicWind(KevesVM*, const_KevesIterator);
+  void toString(KevesValue, QString*);
+  static void displayCode(KevesVM*, const_KevesIterator);
+  static void revertDynamicWind(KevesVM*, const_KevesIterator);
 
 
   static void cmd_NOP(KevesVM*, const_KevesIterator);
@@ -259,10 +259,10 @@ public:
   // for GC                                                     //
   ////////////////////////////////////////////////////////////////
 
-  void CheckStack(size_t*, vm_func, const_KevesIterator);
-  void CheckStack(const void*, vm_func, const_KevesIterator);
-  void ExecuteGC(vm_func, const_KevesIterator);
-  KevesValue FindConditionValue(KevesValue, RecordKev*);
+  void checkStack(size_t*, vm_func, const_KevesIterator);
+  void checkStack(const void*, vm_func, const_KevesIterator);
+  void executeGC(vm_func, const_KevesIterator);
+  KevesValue findConditionValue(KevesValue, RecordKev*);
 
   void* stack_lower_limit() {
     return &stack_lower_limit_;

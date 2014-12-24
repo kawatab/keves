@@ -157,7 +157,7 @@ public:
 
   explicit KevesInstruct(KevesValue kev)
   : val(static_cast<keves_instruct>(kev.toUIntPtr() >> 8)) {
-    Q_ASSERT(kev.IsInstruct());
+    Q_ASSERT(kev.isInstruct());
   }
 
   operator KevesValue() const {
@@ -181,7 +181,7 @@ public:
   KevesInstructTable& operator=(KevesInstructTable&&) = delete;
   ~KevesInstructTable() = default;
 
-  const char* GetLabel(KevesInstruct n) const {
+  const char* getLabel(KevesInstruct n) const {
     return array[n];
   }
 

@@ -22,6 +22,6 @@
 #include <iostream>
 #include <QString>
 
-void KevesTextualOutputPort::Append(const QString& str) {
+void KevesTextualOutputPort::append(const QString& str) {
   std::cout << qPrintable(str) << std::flush;
 }

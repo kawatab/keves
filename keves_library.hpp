@@ -50,17 +50,17 @@ public:
 		     const QStringList& id,
 		     const QList<ver_num_t> ver_num);
 
-  void AddBind(const char* id);
-  int CountBinds() const;
-  void DisplayProperty() const;
-  KevesValue NominateBind(const char* id);
-  const QStringList& GetBindList() const;
-  QString GetFullName() const;
-  const QStringList& GetID() const;
-  const QList<ver_num_t>& GetVerNum() const;
-  bool IsAvailable() const;
-  bool LoadLibrary(KevesBase* base);
-  void SetID(const QStringList& id, const QList<ver_num_t>& ver_num);
+  void addBind(const char* id);
+  int countBinds() const;
+  void displayProperty() const;
+  KevesValue nominateBind(const char* id);
+  const QStringList& getBindList() const;
+  QString getFullName() const;
+  const QStringList& getID() const;
+  const QList<ver_num_t>& getVerNum() const;
+  bool isAvailable() const;
+  bool loadLibrary(KevesBase* base);
+  void setID(const QStringList& id, const QList<ver_num_t>& ver_num);
     
 private:
   KevesLibrary* library_;
@@ -81,9 +81,9 @@ public:
 
   KevesImportLibraryList(KevesBase* base);
 
-  KevesValue NominateBind(const char* id);
-  const QList<KevesImportLibrary>& GetList() const;
-  bool SetLibrary(const QStringList& id, const QList<ver_num_t>& ver_num);
+  KevesValue nominateBind(const char* id);
+  const QList<KevesImportLibrary>& getList() const;
+  bool setLibrary(const QStringList& id, const QList<ver_num_t>& ver_num);
 
 private:
   KevesBase* base_;
@@ -103,44 +103,44 @@ public:
 
   KevesLibrary(const QStringList& id, const QList<ver_num_t>& ver_num);
   
-  void AddBind(const char* id, KevesValue kev);
-  void DisplayProperty(KevesBase* base) const;
-  KevesValue FindBind(const QString& id) const;
-  const QList<QPair<QString, uioword> >* GetBindList() const;
-  QString GetFullName() const;
-  QList<QPair<QString, uioword> > IndexBinds(const QList<const Kev*>& object_list) const;
-  bool Match(const QStringList& id) const;
-  void SetID(const QStringList& id, const QList<ver_num_t>& ver_num);
+  void addBind(const char* id, KevesValue kev);
+  void displayProperty(KevesBase* base) const;
+  KevesValue findBind(const QString& id) const;
+  const QList<QPair<QString, uioword> >* getBindList() const;
+  QString getFullName() const;
+  QList<QPair<QString, uioword> > indexBinds(const QList<const Kev*>& object_list) const;
+  bool match(const QStringList& id) const;
+  void setID(const QStringList& id, const QList<ver_num_t>& ver_num);
 
-  bool WriteToFile(KevesBase* base,
+  bool writeToFile(KevesBase* base,
 		   const QString& file_name,
 		   const KevesImportLibraryList& import_binds) const;
 
-  static void ErrorOfMissingLibrary(const QString& name);
+  static void errorOfMissingLibrary(const QString& name);
 
-  static void ErrorOfMissingLibrary(const QStringList& id,
+  static void errorOfMissingLibrary(const QStringList& id,
 				    const QList<ver_num_t>& ver_num);
 
-  static KevesLibrary* ReadFromFile(const QString& file_name, KevesBase* base);
+  static KevesLibrary* readFromFile(const QString& file_name, KevesBase* base);
 
-  static QString MakeFullName(const QStringList& id,
+  static QString makeFullName(const QStringList& id,
 			      const QList<ver_num_t>& ver_num);
 
 private:
-  int GetImportBinds(KevesBase* base,
+  int getImportBinds(KevesBase* base,
 		     QList<const Kev*>* object_list,
 		     const QList<KevesImportLibrary>& import_libs) const;
 
-  void ErrorOfFailedToSave(const QFile& file) const;
+  void errorOfFailedToSave(const QFile& file) const;
 
-  void ErrorOfMissingBind(const KevesImportLibrary& import_lib,
+  void errorOfMissingBind(const KevesImportLibrary& import_lib,
 			  const QString& bind) const;
 
-  void SetExportBinds(const QList<const Kev*>& object_list);
+  void setExportBinds(const QList<const Kev*>& object_list);
 
-  static void ErrorOfFailedToOpen(const QFile& file);
-  static void ErrorOfMissingLibraryFile(const QString& file_name);
-  static const char* GetErrorMessage(QFile::FileError error_code);
+  static void errorOfFailedToOpen(const QFile& file);
+  static void errorOfMissingLibraryFile(const QString& file_name);
+  static const char* getErrorMessage(QFile::FileError error_code);
 
   QStringList id_;
   QList<ver_num_t> ver_num_;

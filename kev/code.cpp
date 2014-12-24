@@ -25,7 +25,7 @@ CodeKev::CodeKev(int size)
   clear();
 }
 
-void CodeKev::CopyArray(const CodeKev* org) {
+void CodeKev::copyArray(const CodeKev* org) {
   const quintptr* org_begin(reinterpret_cast<const quintptr*>(org + 1));
   const quintptr* org_end(org_begin + size_);
   quintptr* this_begin(reinterpret_cast<quintptr*>(this + 1));

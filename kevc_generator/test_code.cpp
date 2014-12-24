@@ -46,13 +46,13 @@
 #include "value/char.hpp"
 
 
-void TestCode::Code02::Write(KevesBase* base, const char* file_name) {
-  StringKev* str(StringKev::Make(base, "abdefgh"));
-  SymbolKev* sym(SymbolKev::Make(base, "sYmbOl"));
+void TestCode::Code02::write(KevesBase* base, const char* file_name) {
+  StringKev* str(StringKev::make(base, "abdefgh"));
+  SymbolKev* sym(SymbolKev::make(base, "sYmbOl"));
 
-  PairKev* pair2(PairKev::Make(base, KevesChar('a'), str)); 
+  PairKev* pair2(PairKev::make(base, KevesChar('a'), str)); 
 
-  VectorKev* vector1(VectorKev::Make(base, 3));
+  VectorKev* vector1(VectorKev::make(base, 3));
   {
     KevesIterator iter(vector1->begin());
     *iter++ = EMB_FALSE;
@@ -60,26 +60,26 @@ void TestCode::Code02::Write(KevesBase* base, const char* file_name) {
     *iter++ = EMB_NULL;
   }
 
-  PairKev* pair1(PairKev::Make(base, EMB_TRUE, vector1)); 
-  PairKev* pair3(PairKev::Make(base, pair1, KevesFixnum(100)));
-  PairKev* pair4(PairKev::Make(base, pair2, pair3));
-  PairKev* pair5(PairKev::Make(base, sym, pair4));
-  ReferenceKev* ref(ReferenceKev::Make(base, pair5));
+  PairKev* pair1(PairKev::make(base, EMB_TRUE, vector1)); 
+  PairKev* pair3(PairKev::make(base, pair1, KevesFixnum(100)));
+  PairKev* pair4(PairKev::make(base, pair2, pair3));
+  PairKev* pair5(PairKev::make(base, sym, pair4));
+  ReferenceKev* ref(ReferenceKev::make(base, pair5));
   pair1->set_car(pair5);
   
   Bignum* bignum(Bignum::makeFromString(base,
 					"12334242342342431233424234234243"));
 
-  StringKev* str_num(StringKev::Make(base,
+  StringKev* str_num(StringKev::make(base,
 				     "123423423414127897/8907807843218742"));
 
   RationalNumberKev*
     rational(RationalNumberKev::makeFromString(base, *str_num));
 
-  FlonumKev* flonum(FlonumKev::Make(base, 1.2345678));
+  FlonumKev* flonum(FlonumKev::make(base, 1.2345678));
   
   ExactComplexNumberKev*
-    exact_complex(ExactComplexNumberKev::Make(base));
+    exact_complex(ExactComplexNumberKev::make(base));
 
   exact_complex->set_real(*rational);
   exact_complex->set_imag(*rational);
@@ -89,7 +89,7 @@ void TestCode::Code02::Write(KevesBase* base, const char* file_name) {
 							     FlonumKev(1.234),
 							     FlonumKev(-3.234)));
 
-  CodeKev* code(CodeKev::Make(base, 12));
+  CodeKev* code(CodeKev::make(base, 12));
   {
     KevesIterator iter(code->begin());
     *iter++ = pair1;
@@ -106,45 +106,45 @@ void TestCode::Code02::Write(KevesBase* base, const char* file_name) {
     Q_ASSERT(iter <= code->end());
   }
     
-  FreeVarFrameKev* clsr(FreeVarFrameKev::Make(base, 3, nullptr));
-  LambdaKev* lambda(LambdaKev::Make(base, clsr, code, 2));
+  LocalVarFrameKev* clsr(LocalVarFrameKev::make(base, 3, nullptr));
+  LambdaKev* lambda(LambdaKev::make(base, clsr, code, 2));
 
   QStringList id;
   QList<ver_num_t> ver_num; // empty list
   id << "main";
   KevesLibrary this_lib(id, ver_num);
-  this_lib.AddBind("my-code", lambda);
+  this_lib.addBind("my-code", lambda);
   KevesImportLibraryList import_libs(base); // empty list
-  this_lib.WriteToFile(base, file_name, import_libs);
+  this_lib.writeToFile(base, file_name, import_libs);
 }
 
-void TestCode::Code02::Read(KevesBase* base, const char* file_name) {
+void TestCode::Code02::read(KevesBase* base, const char* file_name) {
   std::cout << file_name << ":" << std::endl;
   
-  KevesLibrary* lib(KevesLibrary::ReadFromFile(file_name, base));
+  KevesLibrary* lib(KevesLibrary::readFromFile(file_name, base));
 
-  lib->DisplayProperty(base);
+  lib->displayProperty(base);
   
-  KevesValue value(lib->FindBind("my-code"));
-  std::cout << qPrintable(base->ToString(value)) << std::endl;
+  KevesValue value(lib->findBind("my-code"));
+  std::cout << qPrintable(base->toString(value)) << std::endl;
 
   if (value.type() == LAMBDA) {
     std::cout << "  lambda :" << std::endl;
     const LambdaKev* lambda(value);
-    std::cout << qPrintable(base->ToString(lambda->code())) << std::endl;
+    std::cout << qPrintable(base->toString(lambda->code())) << std::endl;
   }
 
   delete lib;
 }
 
-void TestCode::Code03::Write(KevesBase* base, const char* file_name) {
-  ArgumentFrameKev* argp(ArgumentFrameKev::Make(base, 5)); 
-  LocalVarFrameKev* envp(LocalVarFrameKev::Make(base, 5)); 
-  FreeVarFrameKev* clsr1(FreeVarFrameKev::Make(base, 5, nullptr)); 
-  FreeVarFrameKev* clsr2(FreeVarFrameKev::Make(base, 5, clsr1)); 
+void TestCode::Code03::write(KevesBase* base, const char* file_name) {
+  ArgumentFrameKev* argp(ArgumentFrameKev::make(base, 5)); 
+  LocalVarFrameKev* envp(LocalVarFrameKev::make(base, 5, nullptr)); 
+  LocalVarFrameKev* clsr1(LocalVarFrameKev::make(base, 5, nullptr)); 
+  LocalVarFrameKev* clsr2(LocalVarFrameKev::make(base, 5, clsr1)); 
   KevesIterator pc;
 
-  StackFrameKev* fp(StackFrameKev::Make(base));
+  StackFrameKev* fp(StackFrameKev::make(base));
   fp->set_fp(nullptr);
   fp->set_pc(pc);
   fp->set_arg(argp, 3);
@@ -156,19 +156,19 @@ void TestCode::Code03::Write(KevesBase* base, const char* file_name) {
   QList<ver_num_t> ver_num;
   id << "main";
   KevesLibrary this_lib(id, ver_num);
-  this_lib.AddBind("my-code", fp);
+  this_lib.addBind("my-code", fp);
   KevesImportLibraryList import_libs(base);
-  this_lib.WriteToFile(base, file_name, import_libs);
+  this_lib.writeToFile(base, file_name, import_libs);
 }
 
-void TestCode::Code03::Read(KevesBase* base, const char* file_name) {
+void TestCode::Code03::read(KevesBase* base, const char* file_name) {
   std::cout << file_name << ":" << std::endl;
-  KevesLibrary* lib(KevesLibrary::ReadFromFile(file_name, base));
-  lib->DisplayProperty(base);
+  KevesLibrary* lib(KevesLibrary::readFromFile(file_name, base));
+  lib->displayProperty(base);
   delete lib;
 }
 
-void TestCode::KevesBaseCode::Write(KevesBase* base, const char* file_name) {
+void TestCode::KevesBaseCode::write(KevesBase* base, const char* file_name) {
   // Library Header
   QStringList id;
   QList<ver_num_t> ver_num;
@@ -185,13 +185,13 @@ void TestCode::KevesBaseCode::Write(KevesBase* base, const char* file_name) {
   QList<ver_num_t> ver_keves_base_bin;
   ver_keves_base_bin << 6;
 
-  if (!import_libs.SetLibrary(id_keves_base_bin, ver_keves_base_bin)) {
+  if (!import_libs.setLibrary(id_keves_base_bin, ver_keves_base_bin)) {
     std::cerr << "Import is failed\n";
     return;
   }
 
-  KevesValue proc_display(import_libs.NominateBind("display"));
-  KevesValue proc_newline(import_libs.NominateBind("newline"));
+  KevesValue proc_display(import_libs.nominateBind("display"));
+  KevesValue proc_newline(import_libs.nominateBind("newline"));
  
   // from (rnrs base)
   QStringList id_rnrs_base;
@@ -199,18 +199,20 @@ void TestCode::KevesBaseCode::Write(KevesBase* base, const char* file_name) {
   QList<ver_num_t> ver_rnrs_base;
   ver_rnrs_base << 6;
 
-  if (!import_libs.SetLibrary(id_rnrs_base, ver_rnrs_base)) {
+  if (!import_libs.setLibrary(id_rnrs_base, ver_rnrs_base)) {
     std::cerr << "Aborted writing the file: " << file_name << ".\n";
     return;
   }
 
-  KevesValue proc_car(import_libs.NominateBind("car"));
-  KevesValue proc_cadr(import_libs.NominateBind("cadr"));
-  KevesValue proc_append(import_libs.NominateBind("append"));
-  KevesValue proc_eqv_q(import_libs.NominateBind("eqv?"));
-  KevesValue proc_eq_q(import_libs.NominateBind("eq?"));
-  KevesValue proc_string_append(import_libs.NominateBind("string-append"));
-  KevesValue proc_list(import_libs.NominateBind("list"));
+  KevesValue proc_car(import_libs.nominateBind("car"));
+  KevesValue proc_cadr(import_libs.nominateBind("cadr"));
+  KevesValue proc_append(import_libs.nominateBind("append"));
+  KevesValue proc_cons(import_libs.nominateBind("cons"));
+  KevesValue proc_eqv_q(import_libs.nominateBind("eqv?"));
+  KevesValue proc_eq_q(import_libs.nominateBind("eq?"));
+  KevesValue proc_list(import_libs.nominateBind("list"));
+  KevesValue proc_map(import_libs.nominateBind("map"));
+  KevesValue proc_string_append(import_libs.nominateBind("string-append"));
  
   // from (rnrs unicode)
   QStringList id_rnrs_unicode;
@@ -218,22 +220,23 @@ void TestCode::KevesBaseCode::Write(KevesBase* base, const char* file_name) {
   QList<ver_num_t> ver_rnrs_unicode;
   ver_rnrs_unicode << 6;
 
-  if (!import_libs.SetLibrary(id_rnrs_unicode, ver_rnrs_unicode)) {
+  if (!import_libs.setLibrary(id_rnrs_unicode, ver_rnrs_unicode)) {
     std::cerr << "Aborted writing the file: " << file_name << ".\n";
     return;
   }
 
-  KevesValue proc_char_upcase(import_libs.NominateBind("char-upcase"));
-  KevesValue proc_char_downcase(import_libs.NominateBind("char-downcase"));
+  KevesValue proc_char_upcase(import_libs.nominateBind("char-upcase"));
+  KevesValue proc_char_upper_case_q(import_libs.nominateBind("char-upper-case?"));
+  KevesValue proc_char_downcase(import_libs.nominateBind("char-downcase"));
  
   // values
-  KevesValue list1(PairKev::Make(base, KevesChar('B'), EMB_NULL));
-  KevesValue list2(PairKev::Make(base, KevesChar('a'), list1));
-  KevesValue str1(StringKev::Make(base, "ABC"));
-  KevesValue str2(StringKev::Make(base, "def"));
-  KevesValue str3(StringKev::Make(base, "xyz"));
+  KevesValue list1(PairKev::make(base, KevesChar('B'), EMB_NULL));
+  KevesValue list2(PairKev::make(base, KevesChar('a'), list1));
+  KevesValue str1(StringKev::make(base, "ABC"));
+  KevesValue str2(StringKev::make(base, "def"));
+  KevesValue str3(StringKev::make(base, "xyz"));
 
-  CodeKev* code(CodeKev::Make(base, 106));
+  CodeKev* code(CodeKev::make(base, 125));
   {
     KevesIterator iter(code->begin());
     {
@@ -344,6 +347,34 @@ void TestCode::KevesBaseCode::Write(KevesBase* base, const char* file_name) {
 	*iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
 	*iter++ = str1;
 	*iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+	*iter++ = str1;
+	*iter++ = KevesInstruct(CMD_APPLY);
+      }
+      *iter++ = KevesInstruct(CMD_APPLY);
+    }
+
+    {
+      *iter++ = KevesInstruct(CMD_FRAME_R);
+      *iter++ = KevesFixnum(3);
+      *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+      *iter++ = proc_newline;
+      *iter++ = KevesInstruct(CMD_APPLY);
+    }
+
+    {
+      *iter++ = KevesInstruct(CMD_FRAME_R);
+      *iter++ = KevesFixnum(12);
+      *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+      *iter++ = proc_display;
+      {
+	*iter++ = KevesInstruct(CMD_FRAME_R);
+	*iter++ = KevesFixnum(7);
+	*iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+	// *iter++ = proc_eq_q;
+	*iter++ = proc_cons;
+	*iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+	*iter++ = str1;
+	*iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
 	*iter++ = str2;
 	*iter++ = KevesInstruct(CMD_APPLY);
       }
@@ -367,11 +398,11 @@ void TestCode::KevesBaseCode::Write(KevesBase* base, const char* file_name) {
 	*iter++ = KevesInstruct(CMD_FRAME_R);
 	*iter++ = KevesFixnum(7);
 	*iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
-	*iter++ = proc_eq_q;
+	*iter++ = proc_map;
 	*iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
-	*iter++ = str1;
+	*iter++ = proc_char_upper_case_q;
 	*iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
-	*iter++ = str1;
+	*iter++ = list2;
 	*iter++ = KevesInstruct(CMD_APPLY);
       }
       *iter++ = KevesInstruct(CMD_APPLY);
@@ -391,20 +422,20 @@ void TestCode::KevesBaseCode::Write(KevesBase* base, const char* file_name) {
   }
 
   // export binds
-  this_lib.AddBind("my-code", code);
+  this_lib.addBind("my-code", code);
 
-  this_lib.WriteToFile(base, file_name, import_libs);
+  this_lib.writeToFile(base, file_name, import_libs);
 }
 
-void TestCode::KevesBaseCode::Read(KevesBase* base, const char* file_name) {
+void TestCode::KevesBaseCode::read(KevesBase* base, const char* file_name) {
   std::cout << file_name << ":" << std::endl;
   
-  KevesLibrary* lib(KevesLibrary::ReadFromFile(file_name, base));
+  KevesLibrary* lib(KevesLibrary::readFromFile(file_name, base));
 
-  lib->DisplayProperty(base);
+  lib->displayProperty(base);
   
-  KevesValue value(lib->FindBind("my-code"));
-  std::cout << qPrintable(base->ToString(value)) << std::endl;
+  KevesValue value(lib->findBind("my-code"));
+  std::cout << qPrintable(base->toString(value)) << std::endl;
 
   delete lib;
 }

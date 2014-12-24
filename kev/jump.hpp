@@ -46,13 +46,13 @@ public:
   }
 
   template<class T>
-  static MutableKev* CopyTo(T* zone, MutableKev* kev) {
-    return FixedLengthKev<JumpKev>::From(kev)->CopyTo(zone);
+  static MutableKev* copyTo(T* zone, MutableKev* kev) {
+    return FixedLengthKev<JumpKev>::from(kev)->copyTo(zone);
   }
 
   template<class T>
-  static quintptr* CopyContents(T*, MutableKev* kev) {
-    return FixedLengthKev<JumpKev>::From(kev)->border();
+  static quintptr* copyContents(T*, MutableKev* kev) {
+    return FixedLengthKev<JumpKev>::from(kev)->border();
   }
 
   //////// Section For GC end !!! ////////////////////////////
@@ -68,7 +68,7 @@ public:
   }
 
   template<class ZONE>
-  static JumpKev* Make(ZONE* zone);
+  static JumpKev* make(ZONE* zone);
 
 protected:
   KevesIterator destination_;
@@ -97,15 +97,15 @@ public:
   }
 
   template<class T>
-  static MutableKev* CopyTo(T* zone, MutableKev* kev) {
-    return FixedLengthKev<DestinationKev>::From(kev)->CopyTo(zone);
+  static MutableKev* copyTo(T* zone, MutableKev* kev) {
+    return FixedLengthKev<DestinationKev>::from(kev)->copyTo(zone);
   }
 
   template<class T>
-  static quintptr* CopyContents(T* zone, MutableKev* kev) {
-    FixedLengthKev<DestinationKev>* dest(FixedLengthKev<DestinationKev>::From(kev));
-    FixedLengthKev<JumpKev>* label(FixedLengthKev<JumpKev>::From(dest->label_));
-    dest->label_ = zone->Copy(label);
+  static quintptr* copyContents(T* zone, MutableKev* kev) {
+    FixedLengthKev<DestinationKev>* dest(FixedLengthKev<DestinationKev>::from(kev));
+    FixedLengthKev<JumpKev>* label(FixedLengthKev<JumpKev>::from(dest->label_));
+    dest->label_ = zone->copy(label);
     return dest->border();
   }
   

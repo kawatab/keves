@@ -18,8 +18,9 @@
 
 
 #include <iostream>
-#include "code_rnrs-unicode.hpp"
 #include "code_rnrs-base.hpp"
+#include "code_rnrs-exceptions.hpp"
+#include "code_rnrs-unicode.hpp"
 #include "keves_base.hpp"
 #include "test_code.hpp"
 
@@ -27,22 +28,25 @@
 int main() {
   KevesBase base;
 
-  TestCode::Code02::Write(&base, "test02.kevc");
-  TestCode::Code02::Read(&base, "test02.kevc");
+  TestCode::Code02::write(&base, "test02.kevc");
+  TestCode::Code02::read(&base, "test02.kevc");
 
   std::cout << std::endl;
   
-  TestCode::Code03::Write(&base, "test03.kevc");
-  TestCode::Code03::Read(&base, "test03.kevc");
+  TestCode::Code03::write(&base, "test03.kevc");
+  TestCode::Code03::read(&base, "test03.kevc");
 
-  Code_RnrsUnicode::Write(&base, "lib/rnrs/unicode.kevc");
-  Code_RnrsUnicode::Read(&base, "lib/rnrs/unicode.kevc");
+  Code_RnrsExceptions::write(&base, "lib/rnrs/exceptions.kevc");
+  Code_RnrsExceptions::read(&base, "lib/rnrs/exceptions.kevc");
 
-  Code_RnrsBase::Write(&base, "lib/rnrs/base.kevc");
-  Code_RnrsBase::Read(&base, "lib/rnrs/base.kevc");
+  Code_RnrsUnicode::write(&base, "lib/rnrs/unicode.kevc");
+  Code_RnrsUnicode::read(&base, "lib/rnrs/unicode.kevc");
 
-  TestCode::KevesBaseCode::Write(&base, "lib/keves/base.kevc");
-  TestCode::KevesBaseCode::Read(&base, "lib/keves/base.kevc");
+  Code_RnrsBase::write(&base, "lib/rnrs/base.kevc");
+  Code_RnrsBase::read(&base, "lib/rnrs/base.kevc");
+
+  TestCode::KevesBaseCode::write(&base, "lib/keves/base.kevc");
+  TestCode::KevesBaseCode::read(&base, "lib/keves/base.kevc");
 
   return 0;
 }

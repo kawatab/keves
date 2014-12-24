@@ -42,7 +42,7 @@ public:
   }
 
   template<class ZONE>
-  const RecordKev* Make(ZONE zone, const char* name);
+  const RecordKev* make(ZONE zone, const char* name);
 
 private:
   const char* name_;
@@ -58,13 +58,13 @@ public:
   }
 
   template<class T>
-  static MutableKev* CopyTo(T* zone, MutableKev* kev) {
-    return FixedLengthKev<RecordKev>::From(kev)->CopyTo(zone);
+  static MutableKev* copyTo(T* zone, MutableKev* kev) {
+    return FixedLengthKev<RecordKev>::from(kev)->copyTo(zone);
   }
 
   template<class T>
-  static quintptr* CopyContents(T*, MutableKev* kev) {
-    return FixedLengthKev<RecordKev>::From(kev)->border();
+  static quintptr* copyContents(T*, MutableKev* kev) {
+    return FixedLengthKev<RecordKev>::from(kev)->border();
   }
 
 
@@ -74,26 +74,26 @@ public:
 
 public:
   template<class IO, class STACK>
-  static void PushChildren(STACK* /*pending*/, KevesValue /*value*/) {
+  static void pushChildren(STACK* /*pending*/, KevesValue /*value*/) {
     std::cerr << "RecordKev cannot be serialize!!!\n";
     Q_ASSERT(0);
   }
 
   template<class IO, class LIST, class STREAM>
-  static void WriteObject(const LIST& /*list*/, STREAM& /*out*/, KevesValue /*value*/) {
+  static void writeObject(const LIST& /*list*/, STREAM& /*out*/, KevesValue /*value*/) {
     std::cerr << "RecordKev cannot be serialize!!!\n";
     Q_ASSERT(0);
   }
 
   template<class IO, class STREAM, class GC>
-  static Kev* ReadObject(STREAM& /*in*/, GC* /*gc*/) {
+  static Kev* readObject(STREAM& /*in*/, GC* /*gc*/) {
     std::cerr << "RecordKev cannot be serialize!!!\n";
     Q_ASSERT(0);
     return nullptr;
   }
   
   template<class IO, class LIST>
-  static void RevertObject(const LIST& /*object_list*/, MutableKevesValue /*value*/) {
+  static void revertObject(const LIST& /*object_list*/, MutableKevesValue /*value*/) {
     std::cerr << "RecordKev cannot be serialize!!!\n";
     Q_ASSERT(0);
   }

@@ -31,5 +31,5 @@ public:
   KevesTextualOutputPort& operator=(KevesTextualOutputPort&&) = delete;
   virtual ~KevesTextualOutputPort() = default;
 
-  virtual void Append(const QString& str);
+  virtual void append(const QString& str);
 };

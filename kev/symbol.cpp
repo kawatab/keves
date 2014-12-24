@@ -27,30 +27,30 @@ SymbolKev::SymbolKev(KevesString str)
   : MutableKev(TYPE), KevesString(str) {}
 
 SymbolKev::SymbolKev(const StringKev& str)
-  : SymbolKev(str.GetKevesString()) {}
+  : SymbolKev(str.getKevesString()) {}
 
 SymbolKev::SymbolKev(StringKev&& str)
-  : SymbolKev(str.GetKevesString()) {}
+  : SymbolKev(str.getKevesString()) {}
 
 SymbolKev::SymbolKev(StringCoreKev* core, int idx, int len)
   : SymbolKev(KevesString(core, idx, len)) {}
 
-void SymbolKev::CopyFrom(const SymbolKev& org) {
-  this->KevesString::operator=(org.GetKevesString());
+void SymbolKev::copyFrom(const SymbolKev& org) {
+  this->KevesString::operator=(org.getKevesString());
 }
 
-void SymbolKev::CopyFrom(SymbolKev&& org) {
-  this->KevesString::operator=(org.GetKevesString());
+void SymbolKev::copyFrom(SymbolKev&& org) {
+  this->KevesString::operator=(org.getKevesString());
 }
 
-void SymbolKev::Set(StringCoreKev* core, int idx, int len) {
-  this->KevesString::Set(core, idx, len);
+void SymbolKev::set(StringCoreKev* core, int idx, int len) {
+  this->KevesString::set(core, idx, len);
 }
 
-StringKev SymbolKev::ToStringKev() const {
-  return StringKev(this->GetKevesString());
+StringKev SymbolKev::toStringKev() const {
+  return StringKev(this->getKevesString());
 }
 
-KevesString SymbolKev::GetKevesString() const {
+KevesString SymbolKev::getKevesString() const {
   return static_cast<KevesString>(*this);
 }

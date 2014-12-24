@@ -21,11 +21,11 @@
 
 
 template<class ZONE>
-WindKev* WindKev::Make(ZONE* zone, KevesValue before, KevesValue thunk,
+WindKev* WindKev::make(ZONE* zone, KevesValue before, KevesValue thunk,
 		       KevesValue after) {
   auto ctor = [before, thunk, after](void* ptr) {
     return new(ptr) WindKev(before, thunk, after);
   };
 
-  return zone->Make(ctor, alloc_size(nullptr));
+  return zone->make(ctor, alloc_size(nullptr));
 }

@@ -67,32 +67,32 @@ KevesBase::KevesBase()
     ft_ReadObject_(),
     ft_WriteObject_(),
     mutex_(QMutex::Recursive) {
-  InitCMDTable();
-  InitLibraryList();
-  builtin_.Init(this);
+  initCMDTable();
+  initLibraryList();
+  builtin_.init(this);
   thread_pool_.setMaxThreadCount(4);
 
-  SetFunctionTable<CodeKev>();
-  SetFunctionTable<Bignum>();
-  SetFunctionTable<RationalNumberKev>();
-  SetFunctionTable<FlonumKev>();
-  SetFunctionTable<ExactComplexNumberKev>();
-  SetFunctionTable<InexactComplexNumberKev>();
-  SetFunctionTable<StringCoreKev>();
-  SetFunctionTable<StringKev>();
-  SetFunctionTable<SymbolKev>();
-  SetFunctionTable<VectorKev>();
-  SetFunctionTable<WindKev>();
-  SetFunctionTable<ReferenceKev>();
-  SetFunctionTable<RecordKev>();
-  SetFunctionTable<SimpleConditionKev>();
-  SetFunctionTable<CompoundConditionKev>();
-  SetFunctionTable<LambdaKev>();
-  SetFunctionTable<ArgumentFrameKev>();
-  SetFunctionTable<LocalVarFrameKev>();
-  SetFunctionTable<FreeVarFrameKev>();
-  SetFunctionTable<StackFrameKev>();
-  SetFunctionTable<PairKev>();
+  setFunctionTable<CodeKev>();
+  setFunctionTable<Bignum>();
+  setFunctionTable<RationalNumberKev>();
+  setFunctionTable<FlonumKev>();
+  setFunctionTable<ExactComplexNumberKev>();
+  setFunctionTable<InexactComplexNumberKev>();
+  setFunctionTable<StringCoreKev>();
+  setFunctionTable<StringKev>();
+  setFunctionTable<SymbolKev>();
+  setFunctionTable<VectorKev>();
+  setFunctionTable<WindKev>();
+  setFunctionTable<ReferenceKev>();
+  setFunctionTable<RecordKev>();
+  setFunctionTable<SimpleConditionKev>();
+  setFunctionTable<CompoundConditionKev>();
+  setFunctionTable<LambdaKev>();
+  setFunctionTable<ArgumentFrameKev>();
+  setFunctionTable<LocalVarFrameKev>();
+  // setFunctionTable<FreeVarFrameKev>();
+  setFunctionTable<StackFrameKev>();
+  setFunctionTable<PairKev>();
 }
 
 KevesBase::~KevesBase() {
@@ -100,12 +100,12 @@ KevesBase::~KevesBase() {
   for (auto library : library_list_) delete library;
 }
 
-void KevesBase::RunThread() {
-  KevesVM* vm(KevesVM::Make(this, default_result_field()));
+void KevesBase::runThread() {
+  KevesVM* vm(KevesVM::make(this, default_result_field()));
   thread_pool_.start(vm);
 }
 
-void KevesBase::InitCMDTable() {
+void KevesBase::initCMDTable() {
 #define INIT_CHECK_SUM() int check_sum(0);
 #define CHECK_SUM(x) Q_ASSERT(check_sum == (CMD_##x + 1) * CMD_##x / 2);
 
@@ -241,7 +241,7 @@ void KevesBase::InitCMDTable() {
 #undef INIT_CHECK_SUM
 }
 
-void KevesBase::InitLibraryList() {
+void KevesBase::initLibraryList() {
   QFile library_list_file("conf/library.conf");
 
   if (!library_list_file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -287,11 +287,11 @@ void KevesBase::InitLibraryList() {
   library_list_file.close();
 }
 
-const StringKev* KevesBase::GetMesgText(const QString& key) const {
-  return builtin_.GetMesgText(key);
+const StringKev* KevesBase::getMesgText(const QString& key) const {
+  return builtin_.getMesgText(key);
 }
 
-void KevesBase::AppendObjectList(QList<const Kev*>* list, const Kev* kev) {
+void KevesBase::appendObjectList(QList<const Kev*>* list, const Kev* kev) {
   QStack<const Kev*> pending;
   pending.push(kev);
 
@@ -305,11 +305,11 @@ void KevesBase::AppendObjectList(QList<const Kev*>* list, const Kev* kev) {
   }
 }
       
-void KevesBase::AddLibrary(KevesLibrary* library) {
+void KevesBase::addLibrary(KevesLibrary* library) {
   library_list_.append(library);
 }
 
-bool KevesBase::Match(const QStringList& list1, const QStringList& list2) {
+bool KevesBase::match(const QStringList& list1, const QStringList& list2) {
   int size(list1.size());
 
   if (list2.size() != size) return false;
@@ -320,27 +320,27 @@ bool KevesBase::Match(const QStringList& list1, const QStringList& list2) {
   return true;
 }
 
-KevesLibrary* KevesBase::GetLibrary(const QStringList& id,
+KevesLibrary* KevesBase::getLibrary(const QStringList& id,
 				    const QList<ver_num_t>& ver_num) {
   Q_ASSERT(id.size() > 0);
 
   QMutexLocker locker(&mutex_);
   
   for (auto lib : library_list_)
-    if (lib->Match(id)) return lib;
+    if (lib->match(id)) return lib;
 
-  return LoadLibrary(id, ver_num);
+  return loadLibrary(id, ver_num);
 }
 
-KevesLibrary* KevesBase::LoadLibrary(const QStringList& id,
+KevesLibrary* KevesBase::loadLibrary(const QStringList& id,
 				     const QList<ver_num_t>& ver_num) {
   for (auto pair : library_name_list_) {
-    if (Match(id, pair.first)) {
+    if (match(id, pair.first)) {
       QString file_name("lib/");
       file_name += pair.second;
       QLibrary lib_bin(file_name);
       typedef KevesLibrary*(*FuncMakeLib)(KevesBase*);
-      auto make_lib = reinterpret_cast<FuncMakeLib>(lib_bin.resolve("Make"));
+      auto make_lib = reinterpret_cast<FuncMakeLib>(lib_bin.resolve("make"));
       
       if (!make_lib) {
 	std::cerr << "file name: " << qPrintable(file_name)
@@ -351,15 +351,16 @@ KevesLibrary* KevesBase::LoadLibrary(const QStringList& id,
       }
 
       KevesLibrary* library(make_lib(this));
-      library->SetID(pair.first, ver_num);
-      AddLibrary(library);
+      library->setID(pair.first, ver_num);
+      addLibrary(library);
       return library;
     }
   }
       
-  return LoadCompiledLibrary(id, ver_num);
+  return loadCompiledLibrary(id, ver_num);
 }
-KevesLibrary* KevesBase::LoadCompiledLibrary(const QStringList& id,
+
+KevesLibrary* KevesBase::loadCompiledLibrary(const QStringList& id,
 					     const QList<ver_num_t>& ver_num) {
   QString file_name("lib");
   for (auto str : id) file_name += QString('/') + str;
@@ -370,59 +371,59 @@ KevesLibrary* KevesBase::LoadCompiledLibrary(const QStringList& id,
   if (!file.exists()) return nullptr;
 
   std::cout << "find library: " << qPrintable(file_name) << std::endl;
-  KevesLibrary* library(KevesLibrary::ReadFromFile(file_name, this));
-  AddLibrary(library);
+  KevesLibrary* library(KevesLibrary::readFromFile(file_name, this));
+  addLibrary(library);
   return library;
 }
 
 void* KevesBase::Alloc(size_t alloc_size) {
   KevesBaseNode node(new char[((alloc_size + sizeof(quintptr) - 1) & ~(sizeof(quintptr) - 1)) + sizeof(KevesPrefix)]);
-  shared_list_.Push(node);
-  return node.ToPtr();
+  shared_list_.push(node);
+  return node.toPtr();
 }
 
-void KevesBase::PushToSharedList(MutableKev* kev) {
-  kev->MarkPermanent();
-  shared_list_.Push(kev);
+void KevesBase::pushToSharedList(MutableKev* kev) {
+  kev->markPermanent();
+  shared_list_.push(kev);
 }
 
-uioword KevesBase::IndexAddress(const QList<const Kev*>& table,
+uioword KevesBase::indexAddress(const QList<const Kev*>& table,
 				KevesValue value) {
-  if (!value.IsPtr()) return value.toUIntPtr();
+  if (!value.isPtr()) return value.toUIntPtr();
   
-  int index(table.indexOf(value.ToPtr()));
+  int index(table.indexOf(value.toPtr()));
 
   return index < 0 ?
     value.toUIntPtr() : (static_cast<quintptr>(index) << 2 | INDEX);
 }
 
-void KevesBase::PushValue(QStack<const Kev*>* pending, KevesValue value) {
-  if (value.IsPtr()) pending->push(value.ToPtr());
+void KevesBase::pushValue(QStack<const Kev*>* pending, KevesValue value) {
+  if (value.isPtr()) pending->push(value.toPtr());
 }
 
-void KevesBase::RevertObjects(const QList<const Kev*>& object_list, int start_pos) {
+void KevesBase::revertObjects(const QList<const Kev*>& object_list, int start_pos) {
   for (int i(start_pos); i < object_list.size(); ++i) {
     MutableKevesValue kev(object_list.at(i));
-    if (kev.IsPtr()) (*ft_RevertObject_[kev.type()])(object_list, kev);
+    if (kev.isPtr()) (*ft_RevertObject_[kev.type()])(object_list, kev);
   }   
 }
 
-void KevesBase::RevertValue(const QList<const Kev*>& object_list,
+void KevesBase::revertValue(const QList<const Kev*>& object_list,
 			    KevesValue* value) {
-  if (IsIndex(*value)) *value = object_list.at(value->toUIntPtr() >> 2);
+  if (isIndex(*value)) *value = object_list.at(value->toUIntPtr() >> 2);
 }
 
-QString KevesBase::ToString(KevesValue value) const {
+QString KevesBase::toString(KevesValue value) const {
   QString str;
 
-  if (value.IsPtr()) ToString_list(&str, value, 0);
-  else ToString_element(&str, value);
+  if (value.isPtr()) toString_list(&str, value, 0);
+  else toString_element(&str, value);
 
   return str;
 }
 
-void KevesBase::ToString_list(QString* str, KevesValue value, int nest) const {
-  if (value.IsPair()) {
+void KevesBase::toString_list(QString* str, KevesValue value, int nest) const {
+  if (value.isPair()) {
     if (nest > 8) {
       str->append("(...)");
       return;
@@ -434,16 +435,16 @@ void KevesBase::ToString_list(QString* str, KevesValue value, int nest) const {
     for (;;) {
       const PairKev* pair(temp);
       KevesValue car(pair->car());
-      ToString_list(str, car, nest + 1);
+      toString_list(str, car, nest + 1);
       temp = pair->cdr();
 
-      if (!temp.IsPair()) {
+      if (!temp.isPair()) {
 	if (temp != EMB_NULL) {
 	  str->append(" . ");
 
-	  if (temp.IsVector()) ToString_vector(str, temp, nest + 1);
-	  else if (temp.IsCode()) ToString_code(str, temp, nest + 1);
-	  else ToString_element(str, temp);
+	  if (temp.isVector()) toString_vector(str, temp, nest + 1);
+	  else if (temp.isCode()) toString_code(str, temp, nest + 1);
+	  else toString_element(str, temp);
 	}
 
 	str->append(")");
@@ -452,16 +453,16 @@ void KevesBase::ToString_list(QString* str, KevesValue value, int nest) const {
 
       str->append(" ");
     }
-  } else if (value.IsVector()) {
-    ToString_vector(str, value, nest);
-  } else if (value.IsCode()) {
-    ToString_code(str, value, nest);
+  } else if (value.isVector()) {
+    toString_vector(str, value, nest);
+  } else if (value.isCode()) {
+    toString_code(str, value, nest);
   } else {
-    ToString_element(str, value);
+    toString_element(str, value);
   }
 }
 
-void KevesBase::ToString_vector(QString* str, KevesValue value, int nest) const {
+void KevesBase::toString_vector(QString* str, KevesValue value, int nest) const {
   const VectorKev* vector(value);
 
   if (vector->size() == 0) {
@@ -479,17 +480,17 @@ void KevesBase::ToString_vector(QString* str, KevesValue value, int nest) const 
 
   str->append("#(");
 
-  ToString_list(str, *iter++, nest + 1);
+  toString_list(str, *iter++, nest + 1);
 
   while (iter != end) {
     str->append(" ");
-    ToString_list(str, *iter++, nest + 1);
+    toString_list(str, *iter++, nest + 1);
   }
 
   str->append(")");
 }
 
-void KevesBase::ToString_code(QString* str, KevesValue value, int nest) const {
+void KevesBase::toString_code(QString* str, KevesValue value, int nest) const {
   const CodeKev* code(value);
 
   if (code->size() == 0) {
@@ -507,31 +508,31 @@ void KevesBase::ToString_code(QString* str, KevesValue value, int nest) const {
 
   str->append("#code(");
 
-  ToString_list(str, *iter++, nest + 1);
+  toString_list(str, *iter++, nest + 1);
 
   while (iter != end) {
     str->append("\n      ");
-    ToString_list(str, *iter++, nest + 1);
+    toString_list(str, *iter++, nest + 1);
   }
 
   str->append(")");
 }
 
-void KevesBase::ToString_element(QString* str, KevesValue value) const {
-  if (value.IsBool()) {
+void KevesBase::toString_element(QString* str, KevesValue value) const {
+  if (value.isBool()) {
     str->append(value == EMB_TRUE ? "#t" : "#f");
   } else if (value == EMB_NULL) {
     str->append("'()");
-  } else if (value.IsInstruct()) {
+  } else if (value.isInstruct()) {
     KevesInstruct inst(value);
-    str->append(instruct_table()->GetLabel(inst));
-  } else if (value.IsFixnum()) {
+    str->append(instruct_table()->getLabel(inst));
+  } else if (value.isFixnum()) {
     KevesFixnum num(value);
     str->append(QString::number(num));
-  } else if (value.IsChar()) {
+  } else if (value.isChar()) {
     KevesChar chr(value);
     str->append("#\\").append(chr);
-  } else if (value.IsPtr()) {
+  } else if (value.isPtr()) {
     switch (value.type()) {
     case BIGNUM: {
       const Bignum* bignum(value);
@@ -565,13 +566,13 @@ void KevesBase::ToString_element(QString* str, KevesValue value) const {
       
     case STRING: {
       const StringKev* string(value);
-      str->append('"').append(string->ToQString()).append('"');
+      str->append('"').append(string->toQString()).append('"');
       break;
     }
       
     case SYMBOL: {
       const SymbolKev* symbol(value);
-      str->append(symbol->ToQString());
+      str->append(symbol->toQString());
       break;
     }
       
@@ -590,11 +591,30 @@ void KevesBase::ToString_element(QString* str, KevesValue value) const {
     }
       
     case LOCAL_FRAME: {
+      /*
       const LocalVarFrameKev* envp(value);
       str->append("<envp: ").append(QString::number(envp->size())).append('>');
       break;
+      */
+      const LocalVarFrameKev* envp(value);
+      int cnt_var(0);
+      int cnt_frame(0);
+
+      do {
+	++cnt_frame;
+	cnt_var += envp->size();
+      } while ((envp = envp->next()));
+
+      str->append("<envp: ")
+	.append(QString::number(cnt_var))
+	.append(", ")
+	.append(QString::number(cnt_frame))
+	.append('>');
+
+      break;
     }
       
+      /*
     case FREE_FRAME: {
       const FreeVarFrameKev* clsr(value);
       int cnt_var(0);
@@ -613,13 +633,14 @@ void KevesBase::ToString_element(QString* str, KevesValue value) const {
 
       break;
     }
+      */
       
     case CPS: {
       const CPSKev* cps(value);
-      if (cps->who().IsPtr() && cps->who().IsString()) {
+      if (cps->who().isPtr() && cps->who().isString()) {
 	const StringKev* who(cps->who());
 	str->append("<procedure: cps (")
-	  .append(who->ToQString())
+	  .append(who->toQString())
 	  .append(")>");
       } else {
 	str->append("<procedure: cps>");
@@ -640,7 +661,7 @@ void KevesBase::ToString_element(QString* str, KevesValue value) const {
       int cnt_clsr(0);
       int cnt_fp(0);
 
-      for (const FreeVarFrameKev* clsr(stack->clsr()); clsr; clsr = clsr->next())
+      for (const LocalVarFrameKev* clsr(stack->clsr()); clsr; clsr = clsr->next())
 	++cnt_clsr;
 	
       for (const StackFrameKev* fp(stack->fp()); fp; fp = fp->fp())
@@ -672,7 +693,7 @@ void KevesBase::ToString_element(QString* str, KevesValue value) const {
       break;
       
     default:
-      str->append(QString::number(reinterpret_cast<quintptr>(value.ToPtr()), 16));
+      str->append(QString::number(reinterpret_cast<quintptr>(value.toPtr()), 16));
     }
   } else if (value == EMB_UNDEF) {
     str->append("<undef>");
@@ -681,14 +702,14 @@ void KevesBase::ToString_element(QString* str, KevesValue value) const {
   }
 }
 
-KevesValue KevesBase::MakeAssertCondition(KevesValue a,
+KevesValue KevesBase::makeAssertCondition(KevesValue a,
 					  KevesValue b,
 					  KevesValue c) {
-  VectorKev* values(VectorKev::Make(this, 4));
+  VectorKev* values(VectorKev::make(this, 4));
   KevesIterator iter(values->begin());
-  *iter++ = SimpleConditionKev::Make(this, builtin()->amp_assert(), EMB_NULL);
-  *iter++ = SimpleConditionKev::Make(this, builtin()->amp_who(), a);
-  *iter++ = SimpleConditionKev::Make(this, builtin()->amp_message(), b);
-  *iter++ = SimpleConditionKev::Make(this, builtin()->amp_irritants(), c);
-  return CompoundConditionKev::Make(this, values);
+  *iter++ = SimpleConditionKev::make(this, builtin()->amp_assert(), EMB_NULL);
+  *iter++ = SimpleConditionKev::make(this, builtin()->amp_who(), a);
+  *iter++ = SimpleConditionKev::make(this, builtin()->amp_message(), b);
+  *iter++ = SimpleConditionKev::make(this, builtin()->amp_irritants(), c);
+  return CompoundConditionKev::make(this, values);
 }

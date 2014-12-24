@@ -21,7 +21,7 @@
 
 
 template<class ZONE>
-JumpKev* JumpKev::Make(ZONE* zone) {
+JumpKev* JumpKev::make(ZONE* zone) {
   auto ctor = [](void *ptr) { return new(ptr) JumpKev(); };
-  return zone->Make(ctor, alloc_size(nullptr));
+  return zone->make(ctor, alloc_size(nullptr));
 }

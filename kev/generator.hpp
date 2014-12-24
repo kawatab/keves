@@ -44,21 +44,21 @@ public:
   }
 
   template<class T>
-  static MutableKev* CopyTo(T* zone, MutableKev* kev) {
-    return FixedLengthKev<GeneratorKev>::From(kev)->CopyTo(zone);
+  static MutableKev* copyTo(T* zone, MutableKev* kev) {
+    return FixedLengthKev<GeneratorKev>::from(kev)->copyTo(zone);
   }
 
   template<class T>
-  static quintptr* CopyContents(T*, MutableKev* kev) {
-    return FixedLengthKev<GeneratorKev>::From(kev)->border();
+  static quintptr* copyContents(T*, MutableKev* kev) {
+    return FixedLengthKev<GeneratorKev>::from(kev)->border();
   }
 
   //////// Section For GC end !!! ////////////////////////////
   ////////////////////////////////////////////////////////////
   ////////////////////////////////////////////////////////////
 
-  void CopyFrom(const GeneratorKev&);
-  void CopyFrom(GeneratorKev&&);
+  void copyFrom(const GeneratorKev&);
+  void copyFrom(GeneratorKev&&);
 
   void set(LambdaKev* proc) {
     this->proc_ = proc;

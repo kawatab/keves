@@ -21,11 +21,11 @@
 
 
 template<class ZONE>
-WrappedKev* WrappedKev::Make(ZONE* zone, KevesValue form, KevesValue local_vars,
+WrappedKev* WrappedKev::make(ZONE* zone, KevesValue form, KevesValue local_vars,
 			     KevesValue free_vars, KevesValue global_vars) {
   auto ctor = [form, local_vars, free_vars, global_vars](void *ptr) {
     return new(ptr) WrappedKev(form, local_vars, free_vars, global_vars);
   };
 
-  return zone->Make(ctor, alloc_size(nullptr));
+  return zone->make(ctor, alloc_size(nullptr));
 }

@@ -40,7 +40,7 @@ public:
   KevesBuiltinValues& operator=(const KevesBuiltinValues&&) = delete;
   ~KevesBuiltinValues() = default;
 
-  void Init(KevesBase* base);
+  void init(KevesBase* base);
 
   // for messages
   static const char mesg_Req0[];
@@ -88,7 +88,7 @@ public:
   static const char mesg_OutOfRange[];
   static const char mesg_Div0[];
 
-  const StringKev* GetMesgText(const QString& key) const;
+  const StringKev* getMesgText(const QString& key) const;
 
   SymbolKev* sym_eval() {
     return sym_eval_;
@@ -153,7 +153,7 @@ public:
   
 
 private:
-  void InitMesgList(const QString& file_name, KevesBase* base);
+  void initMesgList(const QString& file_name, KevesBase* base);
 
   QHash<QString, const StringKev*> mesg_text_;
   SymbolKev* sym_eval_;

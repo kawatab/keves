@@ -58,8 +58,8 @@ public:
   FlonumKev add(KevesGC*) const;
   ExactComplexNumberKev add(KevesGC*, ExactComplexNumberKev) const;
   InexactComplexNumberKev add(InexactComplexNumberKev) const;
-  void CopyFrom(const RationalNumberKev&);
-  void CopyFrom(RationalNumberKev&&);
+  void copyFrom(const RationalNumberKev&);
+  void copyFrom(RationalNumberKev&&);
   const Bignum* denominator() const;
   RationalNumberKev divide(KevesGC*, KevesFixnum) const;
   RationalNumberKev divide(KevesGC*, RationalNumberKev) const;
@@ -71,7 +71,7 @@ public:
   RationalNumberKev round(KevesGC*) const;
   RationalNumberKev truncate(KevesGC*) const;
   RationalNumberKev inverse() const;
-  bool IsEmpty() const;
+  bool isEmpty() const;
   bool isEqualTo(RationalNumberKev) const;
   bool isEven() const;
   bool isInteger() const;
@@ -173,7 +173,7 @@ private:
   double toDouble() const;
 
   template<class ZONE>
-  static RationalNumberKev* Make(ZONE* zone);
+  static RationalNumberKev* make(ZONE* zone);
 
 protected:
   bool neg_;
@@ -191,17 +191,17 @@ public:
   }
 
   template<class ZONE>
-  static MutableKev* CopyTo(ZONE* zone, MutableKev* kev) {
-    return FixedLengthKev<RationalNumberKev>::From(kev)->CopyTo(zone);
+  static MutableKev* copyTo(ZONE* zone, MutableKev* kev) {
+    return FixedLengthKev<RationalNumberKev>::from(kev)->copyTo(zone);
   }
 
   template<class ZONE>
-  static quintptr* CopyContents(ZONE* zone, MutableKev* kev) {
-    FixedLengthKev<RationalNumberKev>* num(FixedLengthKev<RationalNumberKev>::From(kev));
-    VariableLengthKev<Bignum>* numerator(VariableLengthKev<Bignum>::From(num->numerator()));
-    VariableLengthKev<Bignum>* denominator(VariableLengthKev<Bignum>::From(num->denominator()));
-    num->numerator_ = zone->Copy(numerator);
-    num->denominator_ = zone->Copy(denominator);
+  static quintptr* copyContents(ZONE* zone, MutableKev* kev) {
+    FixedLengthKev<RationalNumberKev>* num(FixedLengthKev<RationalNumberKev>::from(kev));
+    VariableLengthKev<Bignum>* numerator(VariableLengthKev<Bignum>::from(num->numerator()));
+    VariableLengthKev<Bignum>* denominator(VariableLengthKev<Bignum>::from(num->denominator()));
+    num->numerator_ = zone->copy(numerator);
+    num->denominator_ = zone->copy(denominator);
     return num->border();
   }
 
@@ -211,41 +211,41 @@ public:
 
 public:
   template<class BASE, class STACK>
-  static void PushChildren(STACK* pending, KevesValue value) {
+  static void pushChildren(STACK* pending, KevesValue value) {
     const RationalNumberKev* rational(value);
-    BASE::PushValue(pending, rational->numerator_);
-    BASE::PushValue(pending, rational->denominator_);
+    BASE::pushValue(pending, rational->numerator_);
+    BASE::pushValue(pending, rational->denominator_);
   }
 
   template<class BASE, class LIST, class STREAM>
-  static void WriteObject(const LIST& list, STREAM& out, KevesValue value) {
+  static void writeObject(const LIST& list, STREAM& out, KevesValue value) {
     const RationalNumberKev* rational(value);
 
     out << static_cast<uioword>(rational->type())
 	<< static_cast<ioword>(rational->neg_)
-	<< BASE::IndexAddress(list, rational->numerator_)
-	<< BASE::IndexAddress(list, rational->denominator_);
+	<< BASE::indexAddress(list, rational->numerator_)
+	<< BASE::indexAddress(list, rational->denominator_);
   }
 
   template<class /*BASE*/, class STREAM, class GC>
-  static Kev* ReadObject(STREAM& in, GC* gc) {
+  static Kev* readObject(STREAM& in, GC* gc) {
     ioword neg;
     uioword numerator, denominator;
     in >> neg >> numerator >> denominator;
-    RationalNumberKev* rational(Make(gc));
+    RationalNumberKev* rational(make(gc));
     
     rational->set(static_cast<bool>(neg),
-		  KevesValue::template FromUioword<Bignum>(numerator),
-		  KevesValue::template FromUioword<Bignum>(denominator));
+		  KevesValue::template fromUioword<Bignum>(numerator),
+		  KevesValue::template fromUioword<Bignum>(denominator));
 
     return rational;
   }
   
   template<class BASE, class LIST>
-  static void RevertObject(const LIST& object_list, MutableKevesValue kev) {
+  static void revertObject(const LIST& object_list, MutableKevesValue kev) {
     RationalNumberKev* rational(kev);
-    BASE::RevertValue(object_list, &rational->numerator_);
-    BASE::RevertValue(object_list, &rational->denominator_);
+    BASE::revertValue(object_list, &rational->numerator_);
+    BASE::revertValue(object_list, &rational->denominator_);
   }
 };
 
@@ -314,8 +314,8 @@ public:
   FlonumKev ceiling() const;
   FlonumKev cos() const;
   FlonumKev* copy(KevesGC*) const;
-  void CopyFrom(const FlonumKev&);
-  void CopyFrom(FlonumKev&&);
+  void copyFrom(const FlonumKev&);
+  void copyFrom(FlonumKev&&);
   FlonumKev divide(KevesFixnum) const;
   FlonumKev divide(RationalNumberKev) const;
   FlonumKev divide(FlonumKev) const;
@@ -373,7 +373,7 @@ public:
   FlonumKev truncate() const;
 
   template<class ZONE>
-  static FlonumKev* Make(ZONE* zone, double);
+  static FlonumKev* make(ZONE* zone, double);
 
   static FlonumKev fromString(StringKev, bool*);
 
@@ -393,13 +393,13 @@ public:
   }
 
   template<class ZONE>
-  static MutableKev* CopyTo(ZONE* zone, MutableKev* kev) {
-    return FixedLengthKev<FlonumKev>::From(kev)->CopyTo(zone);
+  static MutableKev* copyTo(ZONE* zone, MutableKev* kev) {
+    return FixedLengthKev<FlonumKev>::from(kev)->copyTo(zone);
   }
 
   template<class ZONE>
-  static quintptr* CopyContents(ZONE* /*zone*/, MutableKev* kev) {
-    return FixedLengthKev<FlonumKev>::From(kev)->border();
+  static quintptr* copyContents(ZONE* /*zone*/, MutableKev* kev) {
+    return FixedLengthKev<FlonumKev>::from(kev)->border();
   }
 
   ////////////////////////////////////////////////////////////
@@ -408,25 +408,25 @@ public:
 
 public:
   template<class /*BASE*/, class STACK>
-  static void PushChildren(STACK* /*pending*/, KevesValue /*value*/) {
+  static void pushChildren(STACK* /*pending*/, KevesValue /*value*/) {
     return;
   }
 
   template<class /*BASE*/, class LIST, class STREAM>
-  static void WriteObject(const LIST& /*list*/, STREAM& out, KevesValue value) {
+  static void writeObject(const LIST& /*list*/, STREAM& out, KevesValue value) {
     const FlonumKev* flonum(value);
     out << static_cast<uioword>(flonum->type()) << flonum->value_;
   }
 
   template<class /*BASE*/, class STREAM, class GC>
-  static Kev* ReadObject(STREAM& in, GC* gc) {
+  static Kev* readObject(STREAM& in, GC* gc) {
     double value;
     in >> value;
-    return Make(gc, value);
+    return make(gc, value);
   }
   
   template<class /*BASE*/, class LIST>
-  static void RevertObject(const LIST& /*object_list*/,
+  static void revertObject(const LIST& /*object_list*/,
 			   MutableKevesValue /*kev*/) {
     return;
   }
@@ -452,8 +452,8 @@ public:
   ExactComplexNumberKev add(KevesGC*, KevesFixnum) const;
   ExactComplexNumberKev add(KevesGC*, RationalNumberKev) const;
   ExactComplexNumberKev add(KevesGC*, ExactComplexNumberKev) const;
-  void CopyFrom(const ExactComplexNumberKev&);
-  void CopyFrom(ExactComplexNumberKev&&);
+  void copyFrom(const ExactComplexNumberKev&);
+  void copyFrom(ExactComplexNumberKev&&);
   ExactComplexNumberKev divide(KevesGC*, KevesFixnum) const;
   ExactComplexNumberKev divide(KevesGC*, RationalNumberKev) const;
   InexactComplexNumberKev divide(FlonumKev) const;
@@ -461,7 +461,7 @@ public:
   InexactComplexNumberKev divide(InexactComplexNumberKev) const;
   RationalNumberKev imag() const;
   ExactComplexNumberKev inverse() const;
-  bool IsEmpty() const;
+  bool isEmpty() const;
   ExactComplexNumberKev multiply(KevesGC*, KevesFixnum) const;
   ExactComplexNumberKev multiply(KevesGC*, RationalNumberKev) const;
   ExactComplexNumberKev multiply(KevesGC*, ExactComplexNumberKev) const;
@@ -484,7 +484,7 @@ public:
   QString toQString() const;
 
   template<class ZONE>
-  static ExactComplexNumberKev* Make(ZONE* zone);
+  static ExactComplexNumberKev* make(ZONE* zone);
 
   static KevesValue makeFromBinary(KevesGC*, StringKev, StringKev, int);
 
@@ -506,21 +506,21 @@ public:
   }
 
   template<class ZONE>
-  static MutableKev* CopyTo(ZONE* zone, MutableKev* kev) {
-    return FixedLengthKev<ExactComplexNumberKev>::From(kev)->CopyTo(zone);
+  static MutableKev* copyTo(ZONE* zone, MutableKev* kev) {
+    return FixedLengthKev<ExactComplexNumberKev>::from(kev)->copyTo(zone);
   }
 
   template<class ZONE>
-  static quintptr* CopyContents(ZONE* zone, MutableKev* kev) {
-    FixedLengthKev<ExactComplexNumberKev>* num(FixedLengthKev<ExactComplexNumberKev>::From(kev));
-    VariableLengthKev<Bignum>* real_numerator(VariableLengthKev<Bignum>::From(num->real().numerator()));
-    VariableLengthKev<Bignum>* real_denominator(VariableLengthKev<Bignum>::From(num->real().denominator()));
-    VariableLengthKev<Bignum>* imag_numerator(VariableLengthKev<Bignum>::From(num->imag().numerator()));
-    VariableLengthKev<Bignum>* imag_denominator(VariableLengthKev<Bignum>::From(num->imag().denominator()));
-    num->real_numerator_ = zone->Copy(real_numerator);
-    num->real_denominator_ = zone->Copy(real_denominator);
-    num->imag_numerator_ = zone->Copy(imag_numerator);
-    num->imag_denominator_ = zone->Copy(imag_denominator);
+  static quintptr* copyContents(ZONE* zone, MutableKev* kev) {
+    FixedLengthKev<ExactComplexNumberKev>* num(FixedLengthKev<ExactComplexNumberKev>::from(kev));
+    VariableLengthKev<Bignum>* real_numerator(VariableLengthKev<Bignum>::from(num->real().numerator()));
+    VariableLengthKev<Bignum>* real_denominator(VariableLengthKev<Bignum>::from(num->real().denominator()));
+    VariableLengthKev<Bignum>* imag_numerator(VariableLengthKev<Bignum>::from(num->imag().numerator()));
+    VariableLengthKev<Bignum>* imag_denominator(VariableLengthKev<Bignum>::from(num->imag().denominator()));
+    num->real_numerator_ = zone->copy(real_numerator);
+    num->real_denominator_ = zone->copy(real_denominator);
+    num->imag_numerator_ = zone->copy(imag_numerator);
+    num->imag_denominator_ = zone->copy(imag_denominator);
     return num->border();
   }
 
@@ -530,29 +530,29 @@ public:
 
 public:
   template<class BASE, class STACK>
-  static void PushChildren(STACK* pending, KevesValue value) {
+  static void pushChildren(STACK* pending, KevesValue value) {
     const ExactComplexNumberKev* complex(value);
-    BASE::PushValue(pending, complex->real_numerator_);
-    BASE::PushValue(pending, complex->real_denominator_);
-    BASE::PushValue(pending, complex->imag_numerator_);
-    BASE::PushValue(pending, complex->imag_denominator_);
+    BASE::pushValue(pending, complex->real_numerator_);
+    BASE::pushValue(pending, complex->real_denominator_);
+    BASE::pushValue(pending, complex->imag_numerator_);
+    BASE::pushValue(pending, complex->imag_denominator_);
   }
 
   template<class BASE, class LIST, class STREAM>
-  static void WriteObject(const LIST& list, STREAM& out, KevesValue value) {
+  static void writeObject(const LIST& list, STREAM& out, KevesValue value) {
     const ExactComplexNumberKev* complex(value);
 
     out << static_cast<uioword>(complex->type())
 	<< static_cast<ioword>(complex->real_neg_)
 	<< static_cast<ioword>(complex->imag_neg_)
-	<< BASE::IndexAddress(list, complex->real_numerator_)
-	<< BASE::IndexAddress(list, complex->real_denominator_)
-	<< BASE::IndexAddress(list, complex->imag_numerator_)
-	<< BASE::IndexAddress(list, complex->imag_denominator_);
+	<< BASE::indexAddress(list, complex->real_numerator_)
+	<< BASE::indexAddress(list, complex->real_denominator_)
+	<< BASE::indexAddress(list, complex->imag_numerator_)
+	<< BASE::indexAddress(list, complex->imag_denominator_);
   }
 
   template<class /*BASE*/, class STREAM, class GC>
-  static Kev* ReadObject(STREAM& in, GC* gc) {
+  static Kev* readObject(STREAM& in, GC* gc) {
     ioword real_neg, imag_neg;
     uioword real_numerator, real_denominator, imag_numerator, imag_denominator;
 
@@ -560,32 +560,32 @@ public:
        >> real_numerator >> real_denominator
        >> imag_numerator >> imag_denominator;
 
-    ExactComplexNumberKev* complex(Make(gc));
+    ExactComplexNumberKev* complex(make(gc));
     complex->real_neg_ = real_neg;
     complex->imag_neg_ = imag_neg;
 
     complex->real_numerator_
-      = KevesValue::template FromUioword<Bignum>(real_numerator);
+      = KevesValue::template fromUioword<Bignum>(real_numerator);
 
     complex->real_denominator_
-      = KevesValue::template FromUioword<Bignum>(real_denominator);
+      = KevesValue::template fromUioword<Bignum>(real_denominator);
 
     complex->imag_numerator_
-      = KevesValue::template FromUioword<Bignum>(imag_numerator);
+      = KevesValue::template fromUioword<Bignum>(imag_numerator);
 
     complex->imag_denominator_
-      = KevesValue::template FromUioword<Bignum>(imag_denominator);
+      = KevesValue::template fromUioword<Bignum>(imag_denominator);
     
     return complex;
   }
   
   template<class BASE, class LIST>
-  static void RevertObject(const LIST& object_list, MutableKevesValue value) {
+  static void revertObject(const LIST& object_list, MutableKevesValue value) {
     ExactComplexNumberKev* complex(value);
-    BASE::RevertValue(object_list, &complex->real_numerator_);
-    BASE::RevertValue(object_list, &complex->real_denominator_);
-    BASE::RevertValue(object_list, &complex->imag_numerator_);
-    BASE::RevertValue(object_list, &complex->imag_denominator_);
+    BASE::revertValue(object_list, &complex->real_numerator_);
+    BASE::revertValue(object_list, &complex->real_denominator_);
+    BASE::revertValue(object_list, &complex->imag_numerator_);
+    BASE::revertValue(object_list, &complex->imag_denominator_);
   }
 };
 
@@ -610,8 +610,8 @@ public:
   InexactComplexNumberKev add(FlonumKev) const;
   InexactComplexNumberKev add(ExactComplexNumberKev) const;
   InexactComplexNumberKev add(InexactComplexNumberKev) const;
-  void CopyFrom(const InexactComplexNumberKev&);
-  void CopyFrom(InexactComplexNumberKev&&);
+  void copyFrom(const InexactComplexNumberKev&);
+  void copyFrom(InexactComplexNumberKev&&);
   InexactComplexNumberKev divide(KevesFixnum) const;
   InexactComplexNumberKev divide(RationalNumberKev) const;
   InexactComplexNumberKev divide(FlonumKev) const;
@@ -658,13 +658,13 @@ public:
   }
 
   template<class ZONE>
-  static MutableKev* CopyTo(ZONE* zone, MutableKev* kev) {
-    return FixedLengthKev<InexactComplexNumberKev>::From(kev)->CopyTo(zone);
+  static MutableKev* copyTo(ZONE* zone, MutableKev* kev) {
+    return FixedLengthKev<InexactComplexNumberKev>::from(kev)->copyTo(zone);
   }
 
   template<class ZONE>
-  static quintptr* CopyContents(ZONE* /*zone*/, MutableKev* kev) {
-    return FixedLengthKev<InexactComplexNumberKev>::From(kev)->border();
+  static quintptr* copyContents(ZONE* /*zone*/, MutableKev* kev) {
+    return FixedLengthKev<InexactComplexNumberKev>::from(kev)->border();
   }
 
   ////////////////////////////////////////////////////////////
@@ -673,12 +673,12 @@ public:
 
 public:
   template<class /*BASE*/, class STACK>
-  static void PushChildren(STACK* /*pending*/, KevesValue /*value*/) {
+  static void pushChildren(STACK* /*pending*/, KevesValue /*value*/) {
     return;
   }
 
   template<class /*BASE*/, class LIST, class STREAM>
-  static void WriteObject(const LIST& /*list*/, STREAM& out, KevesValue value) {
+  static void writeObject(const LIST& /*list*/, STREAM& out, KevesValue value) {
     const InexactComplexNumberKev* complex(value);
     out << static_cast<uioword>(complex->type())
 	<< complex->real_
@@ -686,7 +686,7 @@ public:
   }
 
   template<class /*BASE*/, class STREAM, class GC>
-  static Kev* ReadObject(STREAM& in, GC* gc) {
+  static Kev* readObject(STREAM& in, GC* gc) {
     double real, imag;
     in >> real >> imag;
     FlonumKev flonum_real(real);
@@ -695,7 +695,7 @@ public:
   }
   
   template<class /*BASE*/, class LIST>
-  static void RevertObject(const LIST& /*object_list*/,
+  static void revertObject(const LIST& /*object_list*/,
 			   MutableKevesValue /*kev*/) {
     return;
   }
@@ -843,12 +843,12 @@ namespace NumberKev {
   InexactComplexNumberKev quotient(KevesFixnum, InexactComplexNumberKev);
 
   template<class NUMBER_KEV> static bool predicateForReal(KevesValue x) {
-    if (x.IsFixnum()) {
+    if (x.isFixnum()) {
       KevesFixnum num(x);
       return NUMBER_KEV::func(num);
     }
 
-    if (x.IsPtr()) {
+    if (x.isPtr()) {
       switch (x.type()) {
       case RationalNumberKev::TYPE:
 	{
@@ -871,12 +871,12 @@ namespace NumberKev {
   }
 
   template<class NUMBER_KEV> static bool predicate(KevesValue x) {
-    if (x.IsFixnum()) {
+    if (x.isFixnum()) {
       KevesFixnum num(x);
       return NUMBER_KEV::func(num);
     }
 
-    if (x.IsPtr()) {
+    if (x.isPtr()) {
       switch (x.type()) {
       case RationalNumberKev::TYPE: {
 	const RationalNumberKev* num(x);
@@ -910,15 +910,15 @@ namespace NumberKev {
   template<class> bool compare_helper2(KevesValue, KevesValue);
 
   template<class NUMBER_KEV> bool compare(KevesValue x, KevesValue y) {
-    if (y.IsFixnum()) {
+    if (y.isFixnum()) {
       KevesFixnum num2(y);
       
-      if (x.IsFixnum()) {
+      if (x.isFixnum()) {
 	KevesFixnum num1(x);
 	return NUMBER_KEV::func(num1, num2);
       }
       
-      if (x.IsPtr()) {
+      if (x.isPtr()) {
 	if (x.type() == RationalNumberKev::TYPE) {
 	  const RationalNumberKev* num1(x);
 	  const RationalNumberKevFromInt rational(num2);
@@ -940,15 +940,15 @@ namespace NumberKev {
   }
   
   template<class NUMBER_KEV> bool compare_helper1(KevesValue x, KevesValue y) {
-    if (y.Is<RationalNumberKev>()) {
+    if (y.is<RationalNumberKev>()) {
       const RationalNumberKev* num2(y);
       
-      if (x.IsFixnum()) {
+      if (x.isFixnum()) {
 	KevesFixnum num1(x);
 	return NUMBER_KEV::func(RationalNumberKevFromInt(num1), *num2);
       }
       
-      if (x.IsPtr()) {
+      if (x.isPtr()) {
 	if (x.type() == RationalNumberKev::TYPE) {
 	  const RationalNumberKev* num1(x);
 	  return NUMBER_KEV::func(*num1, *num2);
@@ -968,16 +968,16 @@ namespace NumberKev {
   }
   
   template<class NUMBER_KEV> bool compare_helper2(KevesValue x, KevesValue y) {
-    if (y.Is<FlonumKev>()) {
+    if (y.is<FlonumKev>()) {
       const FlonumKev* num2(y);
       
-      if (x.IsFixnum()) {
+      if (x.isFixnum()) {
 	KevesFixnum num1(x);
 	FlonumKev flonum(num1);
 	return NUMBER_KEV::func(flonum, *num2);
       }
       
-      if (x.IsPtr()) {
+      if (x.isPtr()) {
 	if (x.type() == RationalNumberKev::TYPE) {
 	  const RationalNumberKev* num1(x);
 	  return NUMBER_KEV::func(num1->toInexact(), *num2);

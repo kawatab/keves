@@ -26,11 +26,11 @@ GeneratorKev::GeneratorKev()
 GeneratorKev::GeneratorKev(LambdaKev* proc)
   : MutableKev(TYPE), proc_(proc) {}
 
-void GeneratorKev::CopyFrom(const GeneratorKev& other) {
+void GeneratorKev::copyFrom(const GeneratorKev& other) {
   this->proc_ = other.proc_;
 }
 
-void GeneratorKev::CopyFrom(GeneratorKev&& other) {
+void GeneratorKev::copyFrom(GeneratorKev&& other) {
   this->proc_ = other.proc_;
 }
 

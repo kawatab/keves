@@ -23,78 +23,78 @@
   
 
 template<class KEV>
-void KevesBase::PushValue(QStack<const Kev*>* pending, KEV* kev) {
+void KevesBase::pushValue(QStack<const Kev*>* pending, KEV* kev) {
   if (kev) pending->push(kev);
 }
   
 template<class KEV>
-void KevesBase::PushArray(QStack<const Kev*>* pending, KEV* kev) {
+void KevesBase::pushArray(QStack<const Kev*>* pending, KEV* kev) {
   const KevesValue* iter(kev->array());
   const KevesValue* end(iter + kev->size());
-  for (; iter != end; ++iter) PushValue(pending, *iter);
+  for (; iter != end; ++iter) pushValue(pending, *iter);
 }
 
 template<class KEV>
-void KevesBase::RevertValue(const QList<const Kev*>& object_list, KEV** kev) {
+void KevesBase::revertValue(const QList<const Kev*>& object_list, KEV** kev) {
   MutableKevesValue value(*kev);
-  if (IsIndex(value))
+  if (isIndex(value))
     *kev = static_cast<KEV*>(const_cast<Kev*>(object_list.at(value.toUIntPtr() >> 2)));
 }
 
 template<class KEV>
-void KevesBase::ReadArray(QDataStream& in, KEV* kev) {
+void KevesBase::readArray(QDataStream& in, KEV* kev) {
   KevesValue* iter(kev->array());
   const KevesValue* end(iter + kev->size());
   uioword value;
 
   for (; iter != end; ++iter) {
     in >> value;
-    *iter = KevesValue::FromUioword<Kev>(value);
+    *iter = KevesValue::fromUioword<Kev>(value);
   }
 }
 
 template<class KEV>
-void KevesBase::RevertArray(const QList<const Kev*>& object_list, KEV* kev) {
+void KevesBase::revertArray(const QList<const Kev*>& object_list, KEV* kev) {
   KevesValue* iter(kev->array());
   const KevesValue* end(iter + kev->size());
     
   for (; iter != end; ++iter)
-    if (iter->IsRef()) RevertValue(object_list, iter);
+    if (iter->isRef()) revertValue(object_list, iter);
 }
 
 template<class KEV>
-void KevesBase::WriteArray(const QList<const Kev*>& list,
+void KevesBase::writeArray(const QList<const Kev*>& list,
 			   QDataStream& out,
 			   KEV* kev) {
   const KevesValue* iter(kev->array());
   const KevesValue* end(iter + kev->size());
-  for (; iter != end; ++iter) out << IndexAddress(list, *iter);
+  for (; iter != end; ++iter) out << indexAddress(list, *iter);
 }
 
 template<class KEV>
-void KevesBase::SetFunctionTable() {
+void KevesBase::setFunctionTable() {
   ft_PushChildren_[KEV::TYPE]
-    = KEV::template PushChildren<KevesBase, QStack<const Kev*> >;
+    = KEV::template pushChildren<KevesBase, QStack<const Kev*> >;
 
   ft_ReadObject_[KEV::TYPE]
-    // = KEV::template ReadObject<KevesBase, QDataStream, KevesGC>;
-    = KEV::template ReadObject<KevesBase, QDataStream, KevesBase>;
+    // = KEV::template readObject<KevesBase, QDataStream, KevesGC>;
+    = KEV::template readObject<KevesBase, QDataStream, KevesBase>;
 
   ft_RevertObject_[KEV::TYPE]
-    = KEV::template RevertObject<KevesBase, QList<const Kev*> >;
+    = KEV::template revertObject<KevesBase, QList<const Kev*> >;
 
   ft_WriteObject_[KEV::TYPE]
-    = KEV::template WriteObject<KevesBase, QList<const Kev*>, QDataStream>;
+    = KEV::template writeObject<KevesBase, QList<const Kev*>, QDataStream>;
 }
 
 template<class KEV>
-KEV* KevesBase::ToMutable(const KEV* kev) {
+KEV* KevesBase::toMutable(const KEV* kev) {
   KEV* mutable_kev(const_cast<KEV*>(kev));
     
   /*
   if (IsInTenured(mutable_kev) && !mutable_kev->IsMarkedDynamic()) {
-    mutable_kev->MarkDynamic(); // IMPORTANT !!!
-    this->PushToMarkedList(mutable_kev); // IMPORTANT !!!
+    mutable_kev->markDynamic(); // IMPORTANT !!!
+    this->pushToMarkedList(mutable_kev); // IMPORTANT !!!
   }
   */
     

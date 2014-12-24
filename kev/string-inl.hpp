@@ -20,46 +20,46 @@
 #pragma once
 
 template<class ZONE>
-StringCoreKev* StringCoreKev::Make(ZONE* zone, const QString& str) {
+StringCoreKev* StringCoreKev::make(ZONE* zone, const QString& str) {
   auto ctor = [&str](void* ptr) {
     StringCoreKev* string(new(ptr) StringCoreKev(str.size()));
     string->set(str);
     return string;
   };
   
-  return zone->Make(ctor, alloc_size(str.size()));
+  return zone->make(ctor, alloc_size(str.size()));
 }
 
 template<class ZONE>
-StringCoreKev* StringCoreKev::Make(ZONE* zone, int size) {
+StringCoreKev* StringCoreKev::make(ZONE* zone, int size) {
   auto ctor = [size](void* ptr) { return new(ptr) StringCoreKev(size); };
-  return zone->Make(ctor, alloc_size(size));
+  return zone->make(ctor, alloc_size(size));
 }
 
 template<class ZONE>
-StringKev* StringKev::Make(ZONE* zone, int size) {
-  return zone->Make(ctor(zone, size), alloc_size(nullptr));
+StringKev* StringKev::make(ZONE* zone, int size) {
+  return zone->make(ctor(zone, size), alloc_size(nullptr));
 }
 
 template<class ZONE>
-StringKev* StringKev::Make(ZONE* zone, const QString& str) {
-  return zone->Make(ctor(zone, str), alloc_size(nullptr));
+StringKev* StringKev::make(ZONE* zone, const QString& str) {
+  return zone->make(ctor(zone, str), alloc_size(nullptr));
 }
 
 template<class ZONE>
-StringKev* StringKev::MakeSubstring(ZONE* zone, const StringKev* str, int start, int end) {
+StringKev* StringKev::makeSubstring(ZONE* zone, const StringKev* str, int start, int end) {
   auto ctor = [str, start, end](void* ptr) {
-    return new(ptr) StringKev(str->Mid(start, end - start));
+    return new(ptr) StringKev(str->mid(start, end - start));
   };
     
-  return zone->Make(ctor, alloc_size(nullptr));
+  return zone->make(ctor, alloc_size(nullptr));
 }
 
 template<class ZONE>
-StringKev* StringKev::Make(ZONE* zone, StringCoreKev* core, int idx, int len) {
+StringKev* StringKev::make(ZONE* zone, StringCoreKev* core, int idx, int len) {
   auto ctor = [core, idx, len](void* ptr) {
     return new(ptr) StringKev(core, idx, len);
   };
     
-  return zone->Make(ctor, alloc_size(nullptr));
+  return zone->make(ctor, alloc_size(nullptr));
 }

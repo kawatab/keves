@@ -30,7 +30,7 @@ typedef qint64 fx_long;
 
 class ArgumentFrameKev;
 class LocalVarFrameKev;
-class FreeVarFrameKev;
+// class FreeVarFrameKev;
 class StackFrameKev;
 
 enum emb_value {
@@ -152,67 +152,67 @@ protected:
   }
 
 public:
-  uchar CountUp() {
+  uchar countUp() {
     Q_ASSERT((value_ & COPY) == 0);
     value_ = (value_ + COUNT) & ~GUARD;
     return value_ >> 8;
   }
 
-  MutableKev* GetNewAddress() const {
+  MutableKev* getNewAddress() const {
     Q_ASSERT((value_ & ALIGN) == COPY);
     return reinterpret_cast<MutableKev*>(value_ & ~ALIGN);
   }
 
-  bool IsCopied() const {
+  bool isCopied() const {
     return value_ & COPY;
   }
 
-  bool IsMarkedLive() const {
+  bool isMarkedLive() const {
     Q_ASSERT((value_ & COPY) == 0);
     return value_ & LIVE;
   }
 
-  void MarkLive() {
+  void markLive() {
     Q_ASSERT((value_ & COPY) == 0);
     value_ |= LIVE;
   }
 
-  void ResetLive() {
+  void resetLive() {
     Q_ASSERT((value_ & COPY) == 0);
     value_ &= ~LIVE;
   }
 
-  bool IsMarkedDynamic() const {
+  bool isMarkedDynamic() const {
     Q_ASSERT((value_ & COPY) == 0);
     return value_ & DYNAM;
   }
 
-  void MarkDynamic() {
+  void markDynamic() {
     Q_ASSERT((value_ & COPY) == 0);
     value_ |= DYNAM;
   }
 
-  bool IsMarkedPermanent() const {
+  bool isMarkedPermanent() const {
     Q_ASSERT((value_ & COPY) == 0);
     return value_ & PERMN;
   }
 
-  void MarkPermanent() {
+  void markPermanent() {
     Q_ASSERT((value_ & COPY) == 0);
     value_ |= PERMN;
   }
 
-  void ResetCountAndMark() {
+  void resetCountAndMark() {
     Q_ASSERT((value_ & COPY) == 0);
     value_ &= TYP;
   }
 
-  void ResetMark() {
+  void resetMark() {
     Q_ASSERT((value_ & COPY) == 0);
     value_ &= 0xffff;
   }
 
-  void SetNewAddress(const Kev* kev) {
+  void setNewAddress(const Kev* kev) {
     Q_ASSERT(this != kev && (value_ & COPY) == 0);
     value_ = reinterpret_cast<quintptr>(kev) | COPY;
   }
@@ -258,141 +258,143 @@ public:
   : val_(reinterpret_cast<quintptr>(frame)) {
   }
   
+  /*
   explicit KevesValue(const FreeVarFrameKev* frame)
   : val_(reinterpret_cast<quintptr>(frame)) {
   }
+  */
   
   explicit KevesValue(const StackFrameKev* frame)
   : val_(reinterpret_cast<quintptr>(frame)) {
   }
   
-  bool IsKev(kev_type type) const {
-    return this->IsPtr() && this->type() == type;
+  bool isKev(kev_type type) const {
+    return this->isPtr() && this->type() == type;
   }
 
-  template<class KEV> bool Is() {
-    return this->IsPtr() && this->type() == KEV::TYPE;
+  template<class KEV> bool is() {
+    return this->isPtr() && this->type() == KEV::TYPE;
   }
 
-  bool IsComplexNumber() const {
-    return IsFixnum() ||
-      (IsPtr() && (type() | (RATIONAL_NUM ^ INEX_CPLX_NUM)) == INEX_CPLX_NUM);
-    // (IsPtr() && ((type() | (RATIONAL_NUM ^ EXCT_CPLX_NUM)) == EXCT_CPLX_NUM ||
+  bool isComplexNumber() const {
+    return isFixnum() ||
+      (isPtr() && (type() | (RATIONAL_NUM ^ INEX_CPLX_NUM)) == INEX_CPLX_NUM);
+    // (isPtr() && ((type() | (RATIONAL_NUM ^ EXCT_CPLX_NUM)) == EXCT_CPLX_NUM ||
     // type() == INEX_CPLX_NUM));
   }
 
-  bool IsCondition() const {
-    return IsPtr() && (type() | (CONDITION_SMP ^ CONDITION_CMP)) == CONDITION_CMP;
+  bool isCondition() const {
+    return isPtr() && (type() | (CONDITION_SMP ^ CONDITION_CMP)) == CONDITION_CMP;
   }
 
-  bool IsDestination() const {
-    return IsPtr() && type() == DESTINATION;
+  bool isDestination() const {
+    return isPtr() && type() == DESTINATION;
   }
 
-  bool IsEmpty() const {
+  bool isEmpty() const {
     return !val_;
   }
 
-  bool IsExactNumber() const {
-    return IsFixnum() ||
-      (IsPtr() && (type() | (RATIONAL_NUM ^ EXCT_CPLX_NUM)) == EXCT_CPLX_NUM);
+  bool isExactNumber() const {
+    return isFixnum() ||
+      (isPtr() && (type() | (RATIONAL_NUM ^ EXCT_CPLX_NUM)) == EXCT_CPLX_NUM);
   }
 
-  bool IsInexactNumber() const {
-    return IsPtr() && (type() | (FLONUM ^ INEX_CPLX_NUM)) == INEX_CPLX_NUM;
+  bool isInexactNumber() const {
+    return isPtr() && (type() | (FLONUM ^ INEX_CPLX_NUM)) == INEX_CPLX_NUM;
   }
   
-  bool IsJump() const {
-    return IsPtr() && type() == JUMP;
+  bool isJump() const {
+    return isPtr() && type() == JUMP;
   }
 
-  bool IsMacro() const {
-    return IsPtr() && type() == MACRO;
+  bool isMacro() const {
+    return isPtr() && type() == MACRO;
   }
 
-  bool IsNumber() const {
-    return IsFixnum() ||
-      (IsPtr() && (type() | (RATIONAL_NUM ^ INEX_CPLX_NUM)) == INEX_CPLX_NUM);
+  bool isNumber() const {
+    return isFixnum() ||
+      (isPtr() && (type() | (RATIONAL_NUM ^ INEX_CPLX_NUM)) == INEX_CPLX_NUM);
   }
 
-  bool IsPair() const {
-    return IsPtr() && type() == PAIR;
+  bool isPair() const {
+    return isPtr() && type() == PAIR;
   }
 
-  bool IsProcedure() const {
-    return IsPtr() && (type() | (CPS ^ CONTINUATION)) == CONTINUATION;
+  bool isProcedure() const {
+    return isPtr() && (type() | (CPS ^ CONTINUATION)) == CONTINUATION;
   }
 
 
-  bool IsPtr() const {
+  bool isPtr() const {
     return ((val_ - 1) | ALIGN) < val_; // 00 (except NULL)
   }
   
-  bool IsBool() const {
+  bool isBool() const {
     return (val_ | (EMB_TRUE ^ EMB_FALSE)) == EMB_TRUE; // 1001
   }
 
-  bool IsChar() const { // see keves_char.hpp
+  bool isChar() const { // see keves_char.hpp
     return (val_ & 0xff) == CHAR; // 0000 1101
   }
   
-  bool IsFixnum() const { // see keves_fixnum.hpp
+  bool isFixnum() const { // see keves_fixnum.hpp
     return (val_ & ALIGN) == FIXNUM; // 11
   }
   
-  bool IsInstruct() const { // see keves_instruct.hpp
+  bool isInstruct() const { // see keves_instruct.hpp
     return (val_ & 0xff) == INST; // 0000 0101
   }
   
-  bool IsRef() const {
+  bool isRef() const {
     return (val_ & ALIGN) == REF; // 10
   }
 
-  bool IsRationalNumber() const {
-    return IsFixnum() || (IsPtr() && type() == RATIONAL_NUM);
+  bool isRationalNumber() const {
+    return isFixnum() || (isPtr() && type() == RATIONAL_NUM);
   }
 
-  bool IsRealNumber() const {
-    return IsFixnum() ||
-      (IsPtr() && (type() | (RATIONAL_NUM ^ FLONUM)) == FLONUM);
+  bool isRealNumber() const {
+    return isFixnum() ||
+      (isPtr() && (type() | (RATIONAL_NUM ^ FLONUM)) == FLONUM);
   }
 
-  bool IsString() const {
-    return IsPtr() && type() == STRING;
+  bool isString() const {
+    return isPtr() && type() == STRING;
   }
 
-  bool IsSymbol() const {
-    return IsPtr() && type() == SYMBOL;
+  bool isSymbol() const {
+    return isPtr() && type() == SYMBOL;
   }
 
-  bool IsGenerator() const {
-    return IsPtr() && type() == GENERATOR;
+  bool isGenerator() const {
+    return isPtr() && type() == GENERATOR;
   }
 
-  bool IsWrapped() const {
-    return IsPtr() && type() == WRAPPED;
+  bool isWrapped() const {
+    return isPtr() && type() == WRAPPED;
   }
 
-  bool IsTemplate() const {
-    return IsPtr() && type() == TEMPLATE;
+  bool isTemplate() const {
+    return isPtr() && type() == TEMPLATE;
   }
 
-  bool IsVector() const {
-    return IsPtr() && type() == VECTOR;
+  bool isVector() const {
+    return isPtr() && type() == VECTOR;
   }
   
-  bool IsCode() const {
-    return IsPtr() && type() == CODE;
+  bool isCode() const {
+    return isPtr() && type() == CODE;
   }
   
   template<class KEV>
-  const KEV* ToPtr() const {
+  const KEV* toPtr() const {
     const KEV* temp(static_cast<const KEV*>(reinterpret_cast<const Kev*>(val_)));
     Q_ASSERT(temp->type() == KEV::TYPE);
     return temp;
   }
 
-  const Kev* ToPtr() const {
+  const Kev* toPtr() const {
     return reinterpret_cast<const Kev*>(val_);
   }
 
@@ -401,7 +403,7 @@ public:
   }
 
   kev_type type() const {
-    Q_ASSERT(IsPtr());
+    Q_ASSERT(isPtr());
     return reinterpret_cast<const Kev*>(val_)->type();
   }
 
@@ -420,7 +422,7 @@ public:
   }
 
   template<class KEV>
-  static KEV* FromUioword(uioword value) {
+  static KEV* fromUioword(uioword value) {
     return reinterpret_cast<KEV*>(static_cast<quintptr>(value));
   }
 
@@ -443,11 +445,11 @@ public:
   constexpr MutableKevesValue(MutableKev* kev) : KevesValue(kev) {
   }
   
-  MutableKev* ToPtr() {
+  MutableKev* toPtr() {
     return reinterpret_cast<MutableKev*>(val_);
   }
 
-  template<class KEV> KEV* ToPtr() {
+  template<class KEV> KEV* toPtr() {
     KEV* temp(reinterpret_cast<KEV*>(val_));
     Q_ASSERT(temp->type() == KEV::TYPE);
     return temp;
@@ -477,14 +479,14 @@ public:
   }
   
   template<class ZONE>
-  FixedLengthKev<KEV>* CopyTo(ZONE* zone) const {
+  FixedLengthKev<KEV>* copyTo(ZONE* zone) const {
     Q_ASSERT((this->MutableKev::type() | (STACK_FRAME ^ STACK_FRAME_E)) || this->type() == KEV::TYPE);
 
     auto ctor = [this](void* ptr) { return new(ptr) FixedLengthKev<KEV>(*this); };
-    return zone->Make(ctor, KEV::alloc_size(this));
+    return zone->make(ctor, KEV::alloc_size(this));
   }
 
-  static FixedLengthKev<KEV>* From(const MutableKev* kev) {
+  static FixedLengthKev<KEV>* from(const MutableKev* kev) {
     return static_cast<FixedLengthKev<KEV>*>(const_cast<MutableKev*>(kev));
   }
 };
@@ -505,19 +507,19 @@ public:
     : KEV(size) {}
   
   template<class ZONE>
-  VariableLengthKev<KEV>* CopyTo(ZONE* zone) const {
+  VariableLengthKev<KEV>* copyTo(ZONE* zone) const {
     Q_ASSERT(this->type() == KEV::TYPE);
 
     auto ctor = [this](void* ptr) {
       VariableLengthKev<KEV>* temp(new(ptr) VariableLengthKev<KEV>(this->size()));
-      temp->CopyArray(this);
+      temp->copyArray(this);
       return temp;
     };
     
-    return zone->Make(ctor, KEV::alloc_size(this));
+    return zone->make(ctor, KEV::alloc_size(this));
   }
 
-  static VariableLengthKev<KEV>* From(const MutableKev* kev) {
+  static VariableLengthKev<KEV>* from(const MutableKev* kev) {
     return static_cast<VariableLengthKev<KEV>*>(const_cast<MutableKev*>(kev));
   }
 };

@@ -21,12 +21,12 @@
 
 
 template<class KEV>
-KEV* KevesGC::ToMutable(const KEV* kev) {
+KEV* KevesGC::toMutable(const KEV* kev) {
   KEV* mutable_kev(const_cast<KEV*>(kev));
     
-  if (IsInTenured(mutable_kev) && !mutable_kev->IsMarkedDynamic()) {
-    mutable_kev->MarkDynamic(); // IMPORTANT !!!
-    this->PushToMarkedList(mutable_kev); // IMPORTANT !!!
+  if (isInTenured(mutable_kev) && !mutable_kev->isMarkedDynamic()) {
+    mutable_kev->markDynamic(); // IMPORTANT !!!
+    this->pushToMarkedList(mutable_kev); // IMPORTANT !!!
   }
     
   return mutable_kev;
@@ -34,64 +34,64 @@ KEV* KevesGC::ToMutable(const KEV* kev) {
 
 /*
 template<class CTOR>
-auto KevesGC::Make(CTOR ctor, size_t size) -> decltype(ctor(nullptr)) {
-  return tenured_.Make(ctor, size);
+auto KevesGC::make(CTOR ctor, size_t size) -> decltype(ctor(nullptr)) {
+  return tenured_.make(ctor, size);
 }
 */
 
 template<class CTOR>
-void KevesGC::MakeArray(CTOR ctor, size_t elem_size, int num) {
-  tenured_.MakeArray(ctor, elem_size, num);
+void KevesGC::makeArray(CTOR ctor, size_t elem_size, int num) {
+  tenured_.makeArray(ctor, elem_size, num);
 }
   
 template<class ZONE, class KEV>
-KEV* KevesGC::CopyAndSetNewAddress(ZONE* zone, KEV* kev) {
+KEV* KevesGC::copyAndSetNewAddress(ZONE* zone, KEV* kev) {
   KEV* old_address(kev);
-  kev = kev->CopyTo(zone);
-  old_address->SetNewAddress(kev);
+  kev = kev->copyTo(zone);
+  old_address->setNewAddress(kev);
   return kev;
 }
 
 template<class KEV>
-void KevesGC::SetFunctionTable() {
+void KevesGC::setFunctionTable() {
   ft_size_[KEV::TYPE] = KEV::alloc_size;
 }
   
 template<class KEV>
-KEV* KevesGC::Tenured::Copy(KEV* kev) {
+KEV* KevesGC::Tenured::copy(KEV* kev) {
   KEV* old_address(kev);
       
   if (!old_address)
     return old_address;
       
-  if (old_address->IsCopied())
-    return static_cast<KEV*>(old_address->GetNewAddress());
+  if (old_address->isCopied())
+    return static_cast<KEV*>(old_address->getNewAddress());
 
-  if (gc_->IsInEden(kev))
-    return KevesGC::CopyAndSetNewAddress(this, kev);
+  if (gc_->isInEden(kev))
+    return KevesGC::copyAndSetNewAddress(this, kev);
       
-  gc_->MarkLive(kev);
+  gc_->markLive(kev);
   return kev;
 }
 
 /*
 template<class CTOR>
-auto KevesGC::Tenured::Make(CTOR ctor, size_t size) -> decltype(ctor(nullptr)) {
+auto KevesGC::Tenured::make(CTOR ctor, size_t size) -> decltype(ctor(nullptr)) {
   void* ptr(gc_->tenured_.Alloc(size));
   decltype(ctor(nullptr)) temp(ctor(ptr));
-  temp->MarkDynamic(); // IMPORTANT !!!
-  gc_->PushToMarkedList(temp); // IMPORTANT !!!
+  temp->markDynamic(); // IMPORTANT !!!
+  gc_->pushToMarkedList(temp); // IMPORTANT !!!
   return temp;
 }
 */
 
 template<class CTOR>
-void KevesGC::Tenured::MakeArray(CTOR ctor, size_t elem_size, int num) {
+void KevesGC::Tenured::makeArray(CTOR ctor, size_t elem_size, int num) {
   while (num-- > 0) ctor(Alloc(elem_size));
 }
     
 template<class KEV>
-void KevesGC::Tenured::SetFunctionTable() {
-  ft_CopyTo_[KEV::TYPE] = KEV::template CopyTo<Tenured>;
-  ft_CopyContents_[KEV::TYPE] = KEV::template CopyContents<Tenured>;
+void KevesGC::Tenured::setFunctionTable() {
+  ft_CopyTo_[KEV::TYPE] = KEV::template copyTo<Tenured>;
+  ft_CopyContents_[KEV::TYPE] = KEV::template copyContents<Tenured>;
 }

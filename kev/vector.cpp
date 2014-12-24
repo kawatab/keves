@@ -21,10 +21,10 @@
 
 
 VectorKev::VectorKev(int n) : MutableKev(TYPE), size_(n) {
-  Clear();
+  clear();
 }
 
-KevesValue VectorKev::At(int i) const {
+KevesValue VectorKev::at(int i) const {
   Q_ASSERT(i >= 0 && i < size_);
   return array()[i];
 }
@@ -45,12 +45,12 @@ KevesIterator VectorKev::end() {
   return begin() +  size_;
 }
 
-void VectorKev::Replace(int i, KevesValue obj) {
+void VectorKev::replace(int i, KevesValue obj) {
   Q_ASSERT(i >= 0 && i < size_);
   array()[i] = obj;
 }
   
-void VectorKev::CopyArray(const VectorKev* org) {
+void VectorKev::copyArray(const VectorKev* org) {
   std::copy_n(org->array(), size_, this->array());
 }
 
@@ -62,10 +62,10 @@ KevesValue* VectorKev::array() {
   return reinterpret_cast<KevesValue*>(this + 1);
 }
 
-void VectorKev::Clear() {
+void VectorKev::clear() {
   std::fill_n(array(), size_, EMB_UNDEF);
 }
 
-void VectorKev::Fill(KevesValue obj) {
+void VectorKev::fill(KevesValue obj) {
   std::fill_n(array(), size_, obj);
 }

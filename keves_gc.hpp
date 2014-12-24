@@ -48,56 +48,56 @@ public:
   KevesGC& operator=(const KevesGC&&) = delete;
   ~KevesGC() = default;
 
-  void Init(KevesVM* vm, KevesList<KevesNode<0> >* shared_list);
+  void init(KevesVM* vm, KevesList<KevesNode<0> >* shared_list);
   
   template<class KEV>
-  KEV* ToMutable(const KEV* kev);
+  KEV* toMutable(const KEV* kev);
 
-  void Execute(const_KevesIterator);
+  void execute(const_KevesIterator);
 
-  double GetElapsedTime() const {
+  double getElapsedTime() const {
     return static_cast<double>(elapsed_time_) / CLOCKS_PER_SEC;
   }
 
   template<class CTOR>
-  auto Make(CTOR ctor, size_t size) -> decltype(ctor(nullptr)) {
-    return tenured_.Make(ctor, size);
+  auto make(CTOR ctor, size_t size) -> decltype(ctor(nullptr)) {
+    return tenured_.make(ctor, size);
   }
 
   template<class CTOR>
-  void MakeArray(CTOR ctor, size_t elem_size, int num);
+  void makeArray(CTOR ctor, size_t elem_size, int num);
   
-  void MarkLive(MutableKev*);
+  void markLive(MutableKev*);
 
   const_KevesIterator pc() const {
     return pc_;
   }
 
-  void Reset();
+  void reset();
 
-  void Set(KevesList<KevesNode<0> >* shared_list) {
+  void set(KevesList<KevesNode<0> >* shared_list) {
     shared_list_ = shared_list;
   }
   
-  // void Set(jmp_buf*, KevesValue*, KevesValue*, void*, void*, const_KevesIterator);
+  // void set(jmp_buf*, KevesValue*, KevesValue*, void*, void*, const_KevesIterator);
 
 private:
-  bool IsInEden(MutableKev* kev) const;
-  bool IsInTenured(MutableKev*) const;
-  bool IsInTenuredWithoutMark(MutableKev*) const;
-  void MarkAndCopy();
-  void PushToFreeList(KevesBaseNode);
-  void PushToTenuredList(KevesBaseNode);
-  void PushToMarkedList(MutableKev*);
-  void PushToUncheckedList(MutableKev*);
-  void Sweep();
-  void UnmarkAllObjects();
+  bool isInEden(MutableKev* kev) const;
+  bool isInTenured(MutableKev*) const;
+  bool isInTenuredWithoutMark(MutableKev*) const;
+  void markAndCopy();
+  void pushToFreeList(KevesBaseNode);
+  void pushToTenuredList(KevesBaseNode);
+  void pushToMarkedList(MutableKev*);
+  void pushToUncheckedList(MutableKev*);
+  void sweep();
+  void unmarkAllObjects();
 
   template<class ZONE, class KEV>
-  static KEV* CopyAndSetNewAddress(ZONE* zone, KEV* kev);
+  static KEV* copyAndSetNewAddress(ZONE* zone, KEV* kev);
 
   template<class KEV>
-  void SetFunctionTable();
+  void setFunctionTable();
   
   static size_t alignedSize(size_t size);
 
@@ -111,29 +111,29 @@ private:
     ~Tenured() = default;
     
     template<class KEV>
-    KEV* Copy(KEV* kev);
+    KEV* copy(KEV* kev);
 
-    KevesValue Copy(MutableKevesValue);
-    void CopyContents(MutableKev*);
+    KevesValue copy(MutableKevesValue);
+    void copyContents(MutableKev*);
     
     template<class CTOR>
-    auto Make(CTOR ctor, size_t size) -> decltype(ctor(nullptr)) {
+    auto make(CTOR ctor, size_t size) -> decltype(ctor(nullptr)) {
       void* ptr(gc_->tenured_.Alloc(size));
       decltype(ctor(nullptr)) temp(ctor(ptr));
-      temp->MarkDynamic(); // IMPORTANT !!!
-      gc_->PushToMarkedList(temp); // IMPORTANT !!!
+      temp->markDynamic(); // IMPORTANT !!!
+      gc_->pushToMarkedList(temp); // IMPORTANT !!!
       return temp;
     }
 
     template<class CTOR>
-    void MakeArray(CTOR ctor, size_t elem_size, int num);
+    void makeArray(CTOR ctor, size_t elem_size, int num);
     
-    void Set(KevesGC* gc) {
+    void set(KevesGC* gc) {
       gc_ = gc;
     }
     
     template<class KEV>
-    void SetFunctionTable();
+    void setFunctionTable();
   
   private:
     void* Alloc(size_t);

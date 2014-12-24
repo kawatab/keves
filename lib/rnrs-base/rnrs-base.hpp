@@ -39,7 +39,7 @@ public:
   LibRnrsBase& operator=(LibRnrsBase&&) = delete;
   ~LibRnrsBase() = default;
 
-  void Init(KevesBase* base);
+  void init(KevesBase* base);
 
   SymbolKev* sym_char_upcase_;
   CPSKev proc_char_upcase_;
@@ -493,9 +493,9 @@ private:
     static void funcWithGC(KevesVM* vm, const_KevesIterator pc) {
       const AUGEND* augend(vm->gr1_);
       const ADDEND* addend(vm->acc_);
-      SUM sum { augend->add(vm->gc(), *addend) };
+      SUM sum(augend->add(vm->gc(), *addend));
       vm->acc_ = &sum;
-      return KevesVM::ReturnValueSafe(vm, pc);
+      return KevesVM::returnValueSafe(vm, pc);
     }
 
     template<class AUGEND, class ADDEND, class SUM>
@@ -504,7 +504,7 @@ private:
       const ADDEND* addend(vm->acc_);
       SUM sum { augend->add(*addend) };
       vm->acc_ = &sum;
-      return KevesVM::ReturnValueSafe(vm, pc);
+      return KevesVM::returnValueSafe(vm, pc);
     }
 
     static fx_int func(KevesFixnum num1, KevesFixnum num2) {
@@ -567,7 +567,7 @@ private:
       const MULTIPLIER* multiplier(vm->acc_);
       PRODUCT product { multiplicand->multiply(vm->gc(), *multiplier) };
       vm->acc_ = &product;
-      return KevesVM::ReturnValueSafe(vm, pc);
+      return KevesVM::returnValueSafe(vm, pc);
     }
 
     template<class MULTIPLICAND, class MULTIPLIER, class PRODUCT>
@@ -576,7 +576,7 @@ private:
       const MULTIPLIER* multiplier(vm->acc_);
       PRODUCT product { multiplicand->multiply(*multiplier) };
       vm->acc_ = &product;
-      return KevesVM::ReturnValueSafe(vm, pc);
+      return KevesVM::returnValueSafe(vm, pc);
     }
 
     static fx_long func(KevesFixnum num1, KevesFixnum num2) {
@@ -644,7 +644,7 @@ private:
       const SUBTRAHEND* subtrahend(vm->acc_);
       DIFFERENCE difference { minuend->subtract(vm->gc(), *subtrahend) };
       vm->acc_ = &difference;
-      return KevesVM::ReturnValueSafe(vm, pc);
+      return KevesVM::returnValueSafe(vm, pc);
     }
 
     template<class MINUEND, class SUBTRAHEND, class DIFFERENCE>
@@ -653,7 +653,7 @@ private:
       const SUBTRAHEND* subtrahend(vm->acc_);
       DIFFERENCE difference { minuend->subtract(*subtrahend) };
       vm->acc_ = &difference;
-      return KevesVM::ReturnValueSafe(vm, pc);
+      return KevesVM::returnValueSafe(vm, pc);
     }
   };
 
@@ -692,7 +692,7 @@ private:
       const DIVISOR* divisor(vm->acc_);
       QUOTIENT quotient { dividend->divide(vm->gc(), *divisor) };
       vm->acc_ = &quotient;
-      return KevesVM::ReturnValueSafe(vm, pc);
+      return KevesVM::returnValueSafe(vm, pc);
     }
 
     template<class DIVIDEND, class DIVISOR, class QUOTIENT>
@@ -701,7 +701,7 @@ private:
       const DIVISOR* divisor(vm->acc_);
       QUOTIENT quotient { dividend->divide(*divisor) };
       vm->acc_ = &quotient;
-      return KevesVM::ReturnValueSafe(vm, pc);
+      return KevesVM::returnValueSafe(vm, pc);
     }
   };
 

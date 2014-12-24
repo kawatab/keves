@@ -21,20 +21,20 @@
 
 
 template<class ZONE>
-SimpleConditionKev* SimpleConditionKev::Make(ZONE* zone, const RecordKev* field, KevesValue value) {
+SimpleConditionKev* SimpleConditionKev::make(ZONE* zone, const RecordKev* field, KevesValue value) {
   auto ctor = [field, value](void* ptr) {
     return new(ptr) SimpleConditionKev(field, value);
   };
 
-  return zone->Make(ctor, alloc_size(nullptr));
+  return zone->make(ctor, alloc_size(nullptr));
 }
 
 
 template<class ZONE>
-CompoundConditionKev* CompoundConditionKev::Make(ZONE* zone, VectorKev* values) {
+CompoundConditionKev* CompoundConditionKev::make(ZONE* zone, VectorKev* values) {
   auto ctor = [values](void* ptr) {
     return new(ptr) CompoundConditionKev(values);
   };
 
-  return zone->Make(ctor, alloc_size(nullptr));
+  return zone->make(ctor, alloc_size(nullptr));
 }

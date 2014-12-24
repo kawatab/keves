@@ -39,32 +39,32 @@
 #include "value/char.hpp"
 
 
-void LibRnrsUnicode::Init(KevesBase* base) {
-  std::cout << "LibRnrsUnicode::Init()" << std::endl;
+void LibRnrsUnicode::init(KevesBase* base) {
+  std::cout << "LibRnrsUnicode::init()" << std::endl;
 
-  // SetID("rnrs", "unicode-bin");
-  // SetVerNum(6);
+  // setID("rnrs", "unicode-bin");
+  // setVerNum(6);
 					       
-  sym_char_alphabetic_q_ = SymbolKev::Make(base, "char-alphabetic?");
-  sym_char_downcase_ = SymbolKev::Make(base, "char-downcase");
-  sym_char_general_category_ = SymbolKev::Make(base, "char-general-category");
-  sym_char_lower_case_q_ = SymbolKev::Make(base, "char-lower-case?");
-  sym_char_numeric_q_ = SymbolKev::Make(base, "char-numeric?");
-  sym_char_title_case_q_ = SymbolKev::Make(base, "char-title-case?");
-  sym_char_titlecase_ = SymbolKev::Make(base, "char-titlecase");
-  sym_char_foldcase_ = SymbolKev::Make(base, "char-foldcase");
-  sym_char_ci_eq_q_ = SymbolKev::Make(base, "char-ci=?");
-  sym_char_ci_lt_q_ = SymbolKev::Make(base, "char-ci<?");
-  sym_char_ci_gt_q_ = SymbolKev::Make(base, "char-ci>?");
-  sym_char_ci_lte_q_ = SymbolKev::Make(base, "char-ci<=?");
-  sym_char_ci_gte_q_ = SymbolKev::Make(base, "char-ci>=?");
-  sym_char_upcase_ = SymbolKev::Make(base, "char-upcase");
-  sym_char_upper_case_q_ = SymbolKev::Make(base, "char-upper-case?");
-  sym_char_whitespace_q_ = SymbolKev::Make(base, "char-whitespace?");
-  sym_string_downcase_ = SymbolKev::Make(base, "string-downcase");
-  sym_string_foldcase_ = SymbolKev::Make(base, "string-foldcase");
-  sym_string_titlecase_ = SymbolKev::Make(base, "string-titlecase");
-  sym_string_upcase_ = SymbolKev::Make(base, "string-upcase");
+  sym_char_alphabetic_q_ = SymbolKev::make(base, "char-alphabetic?");
+  sym_char_downcase_ = SymbolKev::make(base, "char-downcase");
+  sym_char_general_category_ = SymbolKev::make(base, "char-general-category");
+  sym_char_lower_case_q_ = SymbolKev::make(base, "char-lower-case?");
+  sym_char_numeric_q_ = SymbolKev::make(base, "char-numeric?");
+  sym_char_title_case_q_ = SymbolKev::make(base, "char-title-case?");
+  sym_char_titlecase_ = SymbolKev::make(base, "char-titlecase");
+  sym_char_foldcase_ = SymbolKev::make(base, "char-foldcase");
+  sym_char_ci_eq_q_ = SymbolKev::make(base, "char-ci=?");
+  sym_char_ci_lt_q_ = SymbolKev::make(base, "char-ci<?");
+  sym_char_ci_gt_q_ = SymbolKev::make(base, "char-ci>?");
+  sym_char_ci_lte_q_ = SymbolKev::make(base, "char-ci<=?");
+  sym_char_ci_gte_q_ = SymbolKev::make(base, "char-ci>=?");
+  sym_char_upcase_ = SymbolKev::make(base, "char-upcase");
+  sym_char_upper_case_q_ = SymbolKev::make(base, "char-upper-case?");
+  sym_char_whitespace_q_ = SymbolKev::make(base, "char-whitespace?");
+  sym_string_downcase_ = SymbolKev::make(base, "string-downcase");
+  sym_string_foldcase_ = SymbolKev::make(base, "string-foldcase");
+  sym_string_titlecase_ = SymbolKev::make(base, "string-titlecase");
+  sym_string_upcase_ = SymbolKev::make(base, "string-upcase");
 
   proc_char_upcase_.set(&Function::make<Function::IsChar, CharUpcase>, sym_char_upcase_);
   proc_char_downcase_.set(&Function::make<Function::IsChar, CharDowncase>, sym_char_downcase_);
@@ -87,101 +87,101 @@ void LibRnrsUnicode::Init(KevesBase* base) {
   proc_string_titlecase_.set(&Function::make<Function::IsString, StringTitlecase>, sym_string_titlecase_);
   proc_string_foldcase_.set(&Function::make<Function::IsString, StringFoldcase>, sym_string_foldcase_);
 
-  AddBind("char-alphabetic?", &proc_char_alphabetic_q_);
-  AddBind("char-upcase", &proc_char_upcase_);
-  AddBind("char-downcase", &proc_char_downcase_);
-  AddBind("char-titlecase", &proc_char_titlecase_);
-  AddBind("char-foldcase", &proc_char_foldcase_);
-  AddBind("char-ci=?", &proc_char_ci_eq_q_);
-  AddBind("char-ci<?", &proc_char_ci_lt_q_);
-  AddBind("char-ci>?", &proc_char_ci_gt_q_);
-  AddBind("char-ci<=?", &proc_char_ci_lte_q_);
-  AddBind("char-ci>=?", &proc_char_ci_gte_q_);
-  AddBind("char-numeric?", &proc_char_numeric_q_);
-  AddBind("char-whitespace?", &proc_char_whitespace_q_);
-  AddBind("char-upper-case?", &proc_char_upper_case_q_);
-  AddBind("char-lower-case?", &proc_char_lower_case_q_);
-  AddBind("char-title-case?", &proc_char_title_case_q_);
-  AddBind("char-general-category", &proc_char_general_category_);
-  AddBind("string-upcase", &proc_string_upcase_);
-  AddBind("string-downcase", &proc_string_downcase_);
-  AddBind("string-titlecase", &proc_string_titlecase_);
-  AddBind("string-foldcase", &proc_string_foldcase_);
+  addBind("char-alphabetic?", &proc_char_alphabetic_q_);
+  addBind("char-upcase", &proc_char_upcase_);
+  addBind("char-downcase", &proc_char_downcase_);
+  addBind("char-titlecase", &proc_char_titlecase_);
+  addBind("char-foldcase", &proc_char_foldcase_);
+  addBind("char-ci=?", &proc_char_ci_eq_q_);
+  addBind("char-ci<?", &proc_char_ci_lt_q_);
+  addBind("char-ci>?", &proc_char_ci_gt_q_);
+  addBind("char-ci<=?", &proc_char_ci_lte_q_);
+  addBind("char-ci>=?", &proc_char_ci_gte_q_);
+  addBind("char-numeric?", &proc_char_numeric_q_);
+  addBind("char-whitespace?", &proc_char_whitespace_q_);
+  addBind("char-upper-case?", &proc_char_upper_case_q_);
+  addBind("char-lower-case?", &proc_char_lower_case_q_);
+  addBind("char-title-case?", &proc_char_title_case_q_);
+  addBind("char-general-category", &proc_char_general_category_);
+  addBind("string-upcase", &proc_string_upcase_);
+  addBind("string-downcase", &proc_string_downcase_);
+  addBind("string-titlecase", &proc_string_titlecase_);
+  addBind("string-foldcase", &proc_string_foldcase_);
 
 }
 
 void LibRnrsUnicode::CharUpcase::func(KevesVM* vm, const_KevesIterator pc) {
   KevesChar chr(vm->acc_);
-  vm->acc_ = chr.ToUpper();
-  return KevesVM::ReturnValue(vm, pc);
+  vm->acc_ = chr.toUpper();
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsUnicode::CharDowncase::func(KevesVM* vm, const_KevesIterator pc) {
   KevesChar chr(vm->acc_);
-  vm->acc_ = chr.ToLower();
-  return KevesVM::ReturnValue(vm, pc);
+  vm->acc_ = chr.toLower();
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsUnicode::CharTitlecase::func(KevesVM* vm, const_KevesIterator pc) {
   KevesChar chr(vm->acc_);
-  vm->acc_ = chr.ToTitleCase();
-  return KevesVM::ReturnValue(vm, pc);
+  vm->acc_ = chr.toTitleCase();
+  return KevesVM::returnValue(vm, pc);
 }
 
 void LibRnrsUnicode::CharFoldcase::func(KevesVM* vm, const_KevesIterator pc) {
   KevesChar chr(vm->acc_);
-  vm->acc_ = chr.ToCaseFolded();
-  return KevesVM::ReturnValue(vm, pc);
+  vm->acc_ = chr.toCaseFolded();
+  return KevesVM::returnValue(vm, pc);
 }
 
 bool LibRnrsUnicode::IsCharCiEqual::func(KevesValue qev1, KevesValue qev2) {
-  return KevesChar(qev1).ToCaseFolded() == KevesChar(qev2).ToCaseFolded();
+  return KevesChar(qev1).toCaseFolded() == KevesChar(qev2).toCaseFolded();
 }
 
 bool LibRnrsUnicode::IsCharCiLT::func(KevesValue qev1, KevesValue qev2) {
-  return KevesChar(qev1).ToCaseFolded() < KevesChar(qev2).ToCaseFolded();
+  return KevesChar(qev1).toCaseFolded() < KevesChar(qev2).toCaseFolded();
 }
 
 bool LibRnrsUnicode::IsCharCiGT::func(KevesValue qev1, KevesValue qev2) {
-  return KevesChar(qev1).ToCaseFolded() > KevesChar(qev2).ToCaseFolded();
+  return KevesChar(qev1).toCaseFolded() > KevesChar(qev2).toCaseFolded();
 }
 
 bool LibRnrsUnicode::IsCharCiLTE::func(KevesValue qev1, KevesValue qev2) {
-  return KevesChar(qev1).ToCaseFolded() <= KevesChar(qev2).ToCaseFolded();
+  return KevesChar(qev1).toCaseFolded() <= KevesChar(qev2).toCaseFolded();
 }
 
 bool LibRnrsUnicode::IsCharCiGTE::func(KevesValue qev1, KevesValue qev2) {
-  return KevesChar(qev1).ToCaseFolded() >= KevesChar(qev2).ToCaseFolded();
+  return KevesChar(qev1).toCaseFolded() >= KevesChar(qev2).toCaseFolded();
 }
 
 bool LibRnrsUnicode::IsCharAlphabetic::func(KevesValue qev) {
   KevesChar chr(qev);
-  return chr.IsLetter();
+  return chr.isLetter();
 }
 
 bool LibRnrsUnicode::IsCharNumeric::func(KevesValue qev) {
   KevesChar chr(qev);
-  return chr.IsNumber();
+  return chr.isNumber();
 }
 
 bool LibRnrsUnicode::IsCharWhitespace::func(KevesValue qev) {
   KevesChar chr(qev);
-  return chr.IsSpace();
+  return chr.isSpace();
 }
 
 bool LibRnrsUnicode::IsCharUpperCase::func(KevesValue qev) {
   KevesChar chr(qev);
-  return chr.IsUpper();
+  return chr.isUpper();
 }
 
 bool LibRnrsUnicode::IsCharLowerCase::func(KevesValue qev) {
   KevesChar chr(qev);
-  return chr.IsLower();
+  return chr.isLower();
 }
 
 bool LibRnrsUnicode::IsCharTitleCase::func(KevesValue qev) {
   KevesChar chr(qev);
-  return chr.IsTitleCase();
+  return chr.isTitleCase();
 }
 
 void LibRnrsUnicode::CharGeneralCategory::func(KevesVM* vm, const_KevesIterator pc) {
@@ -192,39 +192,39 @@ void LibRnrsUnicode::CharGeneralCategory::func(KevesVM* vm, const_KevesIterator 
 		      "Ll", "Lt", "Lm", "Lo", "Pc", "Pd", "Ps", "Pe",
 		      "Pi", "Pf", "Po", "Sm", "Sc", "Sk", "So", };
 
-  QChar::Category cat_n(chr.Category());
+  QChar::Category cat_n(chr.category());
   StringKevWithArray<0x4> cat_str(cat[cat_n]);
   SymbolKev cat_sym(cat_str);
   vm->acc_ = &cat_sym;
-  return KevesVM::ReturnValueSafe(vm, pc);
+  return KevesVM::returnValueSafe(vm, pc);
 }
 
 void LibRnrsUnicode::StringUpcase::func(KevesVM* vm, const_KevesIterator pc) {
   const StringKev* original(vm->acc_);
-  StringKev upcase(original->ToUpper(vm->gc()));
+  StringKev upcase(original->toUpper(vm->gc()));
   vm->acc_ = &upcase;
-  return KevesVM::ReturnValueSafe(vm, pc);
+  return KevesVM::returnValueSafe(vm, pc);
 }
 
 void LibRnrsUnicode::StringDowncase::func(KevesVM* vm, const_KevesIterator pc) {
   const StringKev* original(vm->acc_);
-  StringKev downcase(original->ToLower(vm->gc()));
+  StringKev downcase(original->toLower(vm->gc()));
   vm->acc_ = &downcase;
-  return KevesVM::ReturnValueSafe(vm, pc);
+  return KevesVM::returnValueSafe(vm, pc);
 }
 
 void LibRnrsUnicode::StringTitlecase::func(KevesVM* vm, const_KevesIterator pc) {
   const StringKev* original(vm->acc_);
-  StringKev titlecase(original->ToTitleCase(vm->gc()));
+  StringKev titlecase(original->toTitleCase(vm->gc()));
   vm->acc_ = &titlecase;
-  return KevesVM::ReturnValueSafe(vm, pc);
+  return KevesVM::returnValueSafe(vm, pc);
 }
 
 void LibRnrsUnicode::StringFoldcase::func(KevesVM* vm, const_KevesIterator pc) {
   const StringKev* original(vm->acc_);
-  StringKev foldcase(original->ToCaseFolded(vm->gc()));
+  StringKev foldcase(original->toCaseFolded(vm->gc()));
   vm->acc_ = &foldcase;
-  return KevesVM::ReturnValueSafe(vm, pc);
+  return KevesVM::returnValueSafe(vm, pc);
 }
 
 
@@ -233,9 +233,9 @@ void LibRnrsUnicode::StringFoldcase::func(KevesVM* vm, const_KevesIterator pc) {
 ////////////////////////////////////////////////////////////////
 
 extern "C" {
-  KevesLibrary* Make(KevesBase* base) {
+  KevesLibrary* make(KevesBase* base) {
     LibRnrsUnicode* library(new LibRnrsUnicode());
-    library->Init(base);
+    library->init(base);
     return library;
   }
 }

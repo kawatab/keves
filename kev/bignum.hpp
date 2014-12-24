@@ -50,8 +50,8 @@ protected:
 public:
   explicit Bignum(int len);
 
-  void CopyFrom(const Bignum& org);
-  // void CopyFrom(Bignum&&); // not suitable for variable-length object
+  void copyFrom(const Bignum& org);
+  // void copyFrom(Bignum&&); // not suitable for variable-length object
   bool equals(const Bignum& other) const;
   bool equals(bg_uint other) const;
   void initMPZ(mpz_class* mpz_num) const;
@@ -135,20 +135,20 @@ public:
   }
 
   template<class ZONE>
-  static MutableKev* CopyTo(ZONE* zone, MutableKev* kev) {
-    return VariableLengthKev<Bignum>::From(kev)->CopyTo(zone);
+  static MutableKev* copyTo(ZONE* zone, MutableKev* kev) {
+    return VariableLengthKev<Bignum>::from(kev)->copyTo(zone);
   }
 
   template<class ZONE>
-  static quintptr* CopyContents(ZONE*, MutableKev* kev) {
-    return VariableLengthKev<Bignum>::From(kev)->border();
+  static quintptr* copyContents(ZONE*, MutableKev* kev) {
+    return VariableLengthKev<Bignum>::from(kev)->border();
   }
 
   quintptr* border() {
     return reinterpret_cast<quintptr*>(this + 1) + (sizeof(bg_uint) * len_ + sizeof(quintptr) - 1) / sizeof(quintptr);
   }
   
-  void CopyArray(const Bignum* org);
+  void copyArray(const Bignum* org);
   
   ////////////////////////////////////////////////////////////
   // Section For serialize begin !!!                        //
@@ -156,12 +156,12 @@ public:
 
 public:
   template<class /*BASE*/, class STACK>
-  static void PushChildren(STACK* /*pending*/, KevesValue /*value*/) {
+  static void pushChildren(STACK* /*pending*/, KevesValue /*value*/) {
     return;
   }
 
   template<class /*BASE*/, class LIST, class STREAM>
-  static void WriteObject(const LIST& /*list*/, STREAM& out, KevesValue value) {
+  static void writeObject(const LIST& /*list*/, STREAM& out, KevesValue value) {
     const Bignum* bignum(value);
     int size(bignum->size());
 
@@ -173,7 +173,7 @@ public:
   }
 
   template<class /*BASE*/, class LIST, class GC>
-  static Kev* ReadObject(LIST& in, GC* gc) {
+  static Kev* readObject(LIST& in, GC* gc) {
     ioword size;
     in >> size;
     Bignum* bignum(makeFromLength(gc, size));
@@ -183,7 +183,7 @@ public:
   }
 
   template<class /*BASE*/, class LIST>
-  static void RevertObject(const LIST&, MutableKevesValue /*value*/) {
+  static void revertObject(const LIST&, MutableKevesValue /*value*/) {
     return;
   }
 };

@@ -21,21 +21,21 @@
 
 
 template<class ZONE>
-RationalNumberKev* RationalNumberKev::Make(ZONE* zone) {
+RationalNumberKev* RationalNumberKev::make(ZONE* zone) {
   auto ctor = [](void* ptr) { return new(ptr) RationalNumberKev(); };
-  return zone->Make(ctor, alloc_size(nullptr));
+  return zone->make(ctor, alloc_size(nullptr));
 }
 
 template<class ZONE>
-FlonumKev* FlonumKev::Make(ZONE* zone, double d) {
+FlonumKev* FlonumKev::make(ZONE* zone, double d) {
   auto ctor = [d](void* ptr) { return new(ptr) FlonumKev(d); };
-  return zone->Make(ctor, alloc_size(nullptr));
+  return zone->make(ctor, alloc_size(nullptr));
 }
 
 template<class ZONE>
-ExactComplexNumberKev* ExactComplexNumberKev::Make(ZONE* zone) {
+ExactComplexNumberKev* ExactComplexNumberKev::make(ZONE* zone) {
   auto ctor = [](void* ptr) { return new(ptr) ExactComplexNumberKev(); };
-  return zone->Make(ctor, alloc_size(nullptr));
+  return zone->make(ctor, alloc_size(nullptr));
 }
 
 template<class ZONE>
@@ -44,7 +44,7 @@ InexactComplexNumberKev* InexactComplexNumberKev::makeFromFlonums(ZONE* zone, Fl
     return new(ptr) InexactComplexNumberKev(real, imag);
   };
 
-  return zone->Make(ctor, alloc_size(nullptr));
+  return zone->make(ctor, alloc_size(nullptr));
 }
 
 template<class ZONE>
@@ -56,16 +56,16 @@ RationalNumberKev::RationalNumberKev(ZONE* zone, const mpq_class& mpq_num)
 template<class ZONE>
 RationalNumberKev* RationalNumberKev::makeFromString(ZONE* zone, StringKev str) {
   int i;
-  int pos(str.IndexOf("/"));
+  int pos(str.indexOf("/"));
   QString str1;
   QString str2;
-  RationalNumberKev* number(RationalNumberKev::Make(zone));
+  RationalNumberKev* number(RationalNumberKev::make(zone));
 
   if (pos > 0) { // rational
-    str1.operator=(str.Left(pos).ToQString());
-    str2.operator=(str.Right(str.size() - pos - 1).ToQString());
+    str1.operator=(str.left(pos).toQString());
+    str2.operator=(str.right(str.size() - pos - 1).toQString());
 
-    number->CopyFrom(str1.left(1) == "+" ?
+    number->copyFrom(str1.left(1) == "+" ?
 		     RationalNumberKev(false,
 			 Bignum::makeFromString(zone,
 						str1.right(str1.size() - 1)),
@@ -79,17 +79,17 @@ RationalNumberKev* RationalNumberKev::makeFromString(ZONE* zone, StringKev str) 
 			 Bignum::makeFromString(zone, str1),
 			 Bignum::makeFromString(zone, str2)));
   } else { // not rational
-    if ((pos = str.IndexOf("e")) < 0 &&
-	(pos = str.IndexOf("s")) < 0 &&
-	(pos = str.IndexOf("f")) < 0 &&
-	(pos = str.IndexOf("d")) < 0 &&
-	(pos = str.IndexOf("l")) < 0) {
-      str1.operator=(str.ToQString());
+    if ((pos = str.indexOf("e")) < 0 &&
+	(pos = str.indexOf("s")) < 0 &&
+	(pos = str.indexOf("f")) < 0 &&
+	(pos = str.indexOf("d")) < 0 &&
+	(pos = str.indexOf("l")) < 0) {
+      str1.operator=(str.toQString());
       i = 0;
     } else {
       bool ok;
-      str1.operator=(str.Left(pos).ToQString());
-      str2.operator=(str.Right(str.size() - pos - 1).ToQString());
+      str1.operator=(str.left(pos).toQString());
+      str2.operator=(str.right(str.size() - pos - 1).toQString());
       i = -str2.toInt(&ok);
 
       if (!ok)
@@ -109,7 +109,7 @@ RationalNumberKev* RationalNumberKev::makeFromString(ZONE* zone, StringKev str) 
       i = 0;
     }
 
-    number->CopyFrom(str1.left(1) == "+" ?
+    number->copyFrom(str1.left(1) == "+" ?
 		     RationalNumberKev(false,
 			 Bignum::makeFromString(zone,
 						str1.right(str1.size() - 1)),
@@ -136,5 +136,5 @@ template<class ZONE>
 void RationalNumberKev::reduce(ZONE* zone) {
   mpq_class mpq_num(makeMPQ());
   mpq_num.canonicalize();
-  this->CopyFrom(RationalNumberKev(zone, mpq_num));
+  this->copyFrom(RationalNumberKev(zone, mpq_num));
 }

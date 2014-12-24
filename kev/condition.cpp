@@ -31,11 +31,11 @@ SimpleConditionKev::SimpleConditionKev(const RecordKev* rec_type, KevesValue b)
   : MutableKev(TYPE), record_type_(rec_type), value_(b) {
 }
 
-void SimpleConditionKev::CopyFrom(const SimpleConditionKev& other) {
+void SimpleConditionKev::copyFrom(const SimpleConditionKev& other) {
   this->value_ = other.value_;
 }
 
-void SimpleConditionKev::CopyFrom(SimpleConditionKev&& other) {
+void SimpleConditionKev::copyFrom(SimpleConditionKev&& other) {
   this->value_ = other.value_;
 }
 
@@ -53,10 +53,10 @@ CompoundConditionKev::CompoundConditionKev(const VectorKev* values)
   : MutableKev(TYPE), values_(values) {
 }
 
-void CompoundConditionKev::CopyFrom(const CompoundConditionKev& other) {
+void CompoundConditionKev::copyFrom(const CompoundConditionKev& other) {
   this->values_ = other.values_;
 }
 
-void CompoundConditionKev::CopyFrom(CompoundConditionKev&& other) {
+void CompoundConditionKev::copyFrom(CompoundConditionKev&& other) {
   this->values_ = other.values_;
 }

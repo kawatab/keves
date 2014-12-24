@@ -21,7 +21,7 @@
 
 
 template<class ZONE>
-PairKev* PairKev::Make(ZONE* zone, KevesValue car, KevesValue cdr) {
+PairKev* PairKev::make(ZONE* zone, KevesValue car, KevesValue cdr) {
   auto ctor = [car, cdr](void* ptr) { return new(ptr) PairKev(car, cdr); };
-  return zone->Make(ctor, alloc_size(nullptr));
+  return zone->make(ctor, alloc_size(nullptr));
 }

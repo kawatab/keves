@@ -1,4 +1,4 @@
-// keves/kev/reference-inl.hpp - references for Keves
+// keves/kev/record-inl.hpp - records for Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -19,9 +19,11 @@
 
 #pragma once
 
+#include "record.hpp"
+
 
 template<class ZONE>
-ReferenceKev* ReferenceKev::make(ZONE* zone, KevesValue ref) {
-  auto ctor = [ref](void* ptr) { return new(ptr) ReferenceKev(ref); };
+const RecordKev* RecordKev::make(ZONE zone, const char* name) {
+  auto ctor = [name](void* ptr) { return new(ptr) RecordKev(name); };
   return zone->make(ctor, alloc_size(nullptr));
 }

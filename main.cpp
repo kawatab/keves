@@ -21,8 +21,8 @@
 
 int main() {
   KevesBase base;
-  base.RunThread();
-  base.RunThread();
+  base.runThread();
+  base.runThread();
 
   return 0;
 }

@@ -51,7 +51,7 @@ public:
   }
 
   template<class ZONE>
-  static CodeKev* Make(ZONE* zone, int size);
+  static CodeKev* make(ZONE* zone, int size);
   
 private:
   static size_t alloc_size(int size) {
@@ -71,18 +71,18 @@ public:
   }
 
   template<class ZONE>
-  static MutableKev* CopyTo(ZONE* zone, MutableKev* kev) {
-    return VariableLengthKev<CodeKev>::From(kev)->CopyTo(zone);
+  static MutableKev* copyTo(ZONE* zone, MutableKev* kev) {
+    return VariableLengthKev<CodeKev>::from(kev)->copyTo(zone);
   }
 
   template<class ZONE>
-  static quintptr* CopyContents(ZONE* zone, MutableKev* kev) {
-    VariableLengthKev<CodeKev>* code(VariableLengthKev<CodeKev>::From(kev));
+  static quintptr* copyContents(ZONE* zone, MutableKev* kev) {
+    VariableLengthKev<CodeKev>* code(VariableLengthKev<CodeKev>::from(kev));
     // KevesValue* begin(code->array());
     // KevesValue* end(iter + code->size());
-    // for (; iter != end_iter; ++iter) *iter = zone->Copy(*iter);
-    // std::for_each(begin, end, [](KevesValue* iter) { *iter = zone->Copy(*iter) });
-    for (KevesValue& elem : *code) elem = zone->Copy(elem);
+    // for (; iter != end_iter; ++iter) *iter = zone->copy(*iter);
+    // std::for_each(begin, end, [](KevesValue* iter) { *iter = zone->copy(*iter) });
+    for (KevesValue& elem : *code) elem = zone->copy(elem);
     return code->border();
   }
 
@@ -90,7 +90,7 @@ public:
     return reinterpret_cast<quintptr*>(this + 1)  + size_;
   }
 
-  void CopyArray(const CodeKev* org);
+  void copyArray(const CodeKev* org);
   
   ////////////////////////////////////////////////////////////
   // Section For serialize !!!                              //
@@ -98,33 +98,33 @@ public:
 
 public:
   template<class BASE, class STACK>
-  static void PushChildren(STACK* pending, KevesValue value) {
+  static void pushChildren(STACK* pending, KevesValue value) {
     const CodeKev* code(value);
-    BASE::PushArray(pending, code);
+    BASE::pushArray(pending, code);
   }
 
   template<class BASE, class LIST, class STREAM>
-  static void WriteObject(const LIST& list, STREAM& out, KevesValue value) {
+  static void writeObject(const LIST& list, STREAM& out, KevesValue value) {
     const CodeKev* code(value);
 
     out << static_cast<uioword>(code->type())
 	<< static_cast<ioword>(code->size());
 
-    BASE::WriteArray(list, out, code);
+    BASE::writeArray(list, out, code);
   }
 
   template<class BASE, class STREAM, class GC>
-  static Kev* ReadObject(STREAM& in, GC* gc) {
+  static Kev* readObject(STREAM& in, GC* gc) {
     ioword size;
     in >> size;
-    CodeKev* code(CodeKev::Make(gc, size));
-    BASE::ReadArray(in, code);
+    CodeKev* code(CodeKev::make(gc, size));
+    BASE::readArray(in, code);
     return code;
   }
   
   template<class BASE, class LIST>
-  static void RevertObject(const LIST& object_list, MutableKevesValue value) {
+  static void revertObject(const LIST& object_list, MutableKevesValue value) {
     CodeKev* code(value);
-    BASE::RevertArray(object_list, code);
+    BASE::revertArray(object_list, code);
   }
 };
