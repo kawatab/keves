@@ -19,7 +19,6 @@
 
 #pragma once
 
-#include <QHash>
 #include "keves_library.hpp"
 #include "keves_vm.hpp"
 #include "kev/number.hpp"

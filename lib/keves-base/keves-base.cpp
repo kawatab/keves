@@ -60,6 +60,7 @@ void LibKevesBase::init(KevesBase* base) {
   addBind("&who", base->builtin()->amp_who());
   addBind("&message", base->builtin()->amp_message());
 
+  /*
   CodeKev* code(CodeKev::make(base, 16));
   KevesIterator iter(code->begin());
   *iter++ = KevesInstruct(CMD_FRAME_R);
@@ -78,6 +79,7 @@ void LibKevesBase::init(KevesBase* base) {
   Q_ASSERT(iter <= code->end());
 
   addBind("my-code", code);
+  */
 }
 
 void LibKevesBase::procDisplay(KevesVM* vm, const_KevesIterator pc) {

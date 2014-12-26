@@ -1,4 +1,4 @@
-// keves/kevc_generator/code_rnrs-unicode.cpp - a code of (rnrs unicode)
+// keves/kevc_generator/code_rnrs-mutable-strings.cpp - a code of (rnrs mutable-strings)
 // Keves will be an R6RS Scheme implementation.
 //
 // Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -17,36 +17,18 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "code_rnrs-unicode.hpp"
+#include "code_rnrs-mutable-strings.hpp"
 
 #include "kevc_generator.hpp"
 
 
-void Code_RnrsUnicode::write(KevcGenerator* generator) {
+void Code_RnrsMutableStrings::write(KevcGenerator* generator) {
   // import and export binds
-  if (!generator->setImportLibrary("rnrs", "unicode-bin", 6)) return;
+  if (!generator->setImportLibrary("rnrs", "mutable-strings-bin", 6)) return;
 
   const char* binds[] = {
-    "char-alphabetic?",
-    "char-downcase",
-    "char-general-category",
-    "char-lower-case?",
-    "char-numeric?",
-    "char-title-case?",
-    "char-titlecase",
-    "char-foldcase",
-    "char-ci=?",
-    "char-ci<?",
-    "char-ci>?",
-    "char-ci<=?",
-    "char-ci>=?",
-    "char-upcase",
-    "char-upper-case?",
-    "char-whitespace?",
-    "string-downcase",
-    "string-foldcase",
-    "string-titlecase",
-    "string-upcase"
+    "string-fill!",
+    "string-set!"
   };
 
   for (auto bind : binds)

@@ -13,9 +13,10 @@ QMAKE_CXXFLAGS += -std=c++11
 HEADERS += kevc_generator.hpp \
            code_keves-base.hpp \
            code_rnrs-base.hpp \
-           code_rnrs-unicode.hpp \
            code_rnrs-exceptions.hpp \
            code_rnrs-lists.hpp \
+           code_rnrs-mutable-strings.hpp \
+           code_rnrs-unicode.hpp \
            test_code.hpp \
            keves_base.hpp \
            keves_base-inl.hpp \
@@ -50,9 +51,10 @@ SOURCES += main.cpp \
            kevc_generator.cpp \
            code_keves-base.cpp \
            code_rnrs-base.cpp \
-           code_rnrs-unicode.cpp \
            code_rnrs-exceptions.cpp \
            code_rnrs-lists.cpp \
+           code_rnrs-mutable-strings.cpp \
+           code_rnrs-unicode.cpp \
            test_code.cpp \
            keves_base.cpp \
            keves_builtin_values.cpp \

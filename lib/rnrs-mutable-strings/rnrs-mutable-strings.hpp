@@ -1,4 +1,4 @@
-// keves/lib/keves-base/keves-base.hpp - library of Keves base
+// keves/lib/rnrs-mutable-strings/rnrs-mutable-strings.hpp - library of Keves base
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -26,31 +26,28 @@
 class KevesBase;
 class SymbolKev;
 
-class LibKevesBase : public KevesLibrary {
+class LibRnrsMutableStrings : public KevesLibrary {
 public:
-  LibKevesBase() = default;
-  LibKevesBase(const LibKevesBase&) = delete;
-  LibKevesBase(LibKevesBase&&) = delete;
-  LibKevesBase& operator=(const LibKevesBase&) = delete;
-  LibKevesBase& operator=(LibKevesBase&&) = delete;
-  ~LibKevesBase() = default;
+  LibRnrsMutableStrings() = default;
+  LibRnrsMutableStrings(const LibRnrsMutableStrings&) = delete;
+  LibRnrsMutableStrings(LibRnrsMutableStrings&&) = delete;
+  LibRnrsMutableStrings& operator=(const LibRnrsMutableStrings&) = delete;
+  LibRnrsMutableStrings& operator=(LibRnrsMutableStrings&&) = delete;
+  ~LibRnrsMutableStrings() = default;
 
   void init(KevesBase* base);
 
-  SymbolKev* sym_display_;
-  CPSKev proc_display_;
-  SymbolKev* sym_newline_;
-  CPSKev proc_newline_;
-
-  /*
-  static KevesValue makeLexicalCondition(KevesIterator*,
-					 KevesValue, KevesValue, KevesValue);
-  */
+  SymbolKev* sym_string_fill_e_;
+  CPSKev proc_string_fill_e_;
+  SymbolKev* sym_string_set_e_;
+  CPSKev proc_string_set_e_;
 
 private:
-  static void procDisplay(KevesVM*, const_KevesIterator);
+  struct StringFillE {
+    static void func(KevesVM* vm, const_KevesIterator pc);
+  };
 
-  struct Newline {
-    static void func(KevesVM*, const_KevesIterator);
+  struct StringSetE {
+    static void func(KevesVM* vm, const_KevesIterator pc);
   };
 };

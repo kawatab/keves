@@ -21,6 +21,7 @@
 #include "code_rnrs-base.hpp"
 #include "code_rnrs-exceptions.hpp"
 #include "code_rnrs-lists.hpp"
+#include "code_rnrs-mutable-strings.hpp"
 #include "code_rnrs-unicode.hpp"
 #include "kevc_generator.hpp"
 #include "keves_base.hpp"
@@ -63,6 +64,13 @@ int main() {
   }
 
   {
+    KevcGenerator generator(&base, "lib/rnrs/mutable-strings.kevc",
+			    "rnrs", "mutable-strings", 6);
+
+    Code_RnrsMutableStrings::write(&generator);
+  }
+
+  {
     KevcGenerator generator(&base, "lib/rnrs/unicode.kevc",
 			    "rnrs", "unicode", 6);
 
@@ -81,6 +89,7 @@ int main() {
   KevcGenerator::testRead(&base, "lib/keves/base.kevc");
   KevcGenerator::testRead(&base, "lib/rnrs/exceptions.kevc");
   KevcGenerator::testRead(&base, "lib/rnrs/lists.kevc");
+  KevcGenerator::testRead(&base, "lib/rnrs/mutable-strings.kevc");
   KevcGenerator::testRead(&base, "lib/rnrs/unicode.kevc");
   KevcGenerator::testRead(&base, "lib/rnrs/base.kevc");
 
