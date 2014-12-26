@@ -20,9 +20,9 @@
 #pragma once
 
 
-class KevesBase;
+class KevcGenerator;
+
 
 namespace Code_RnrsUnicode {
-  void write(KevesBase* base, const char* file_name);
-  void read(KevesBase* base, const char* file_name);
+  void write(KevcGenerator* generator);
 };

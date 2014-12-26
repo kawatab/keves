@@ -525,9 +525,9 @@ void KevesVM::cmd_LAST_POP_TEST_R(KevesVM* vm, const_KevesIterator pc) {
     cmd_SKIP(vm, pc) : cmd_NOP(vm, pc + KevesFixnum(*pc) + 1);
 }
 
-void KevesVM::cmd_TEST0(KevesVM* vm, const_KevesIterator pc) {
-  return (vm->registers_.lastArgument() != EMB_FALSE ?
-	  cmd_SKIP : cmd_JUMP)(vm, pc);
+void KevesVM::cmd_TEST0_R(KevesVM* vm, const_KevesIterator pc) {
+  return vm->registers_.lastArgument() != EMB_FALSE ?
+    cmd_SKIP(vm, pc) : cmd_NOP(vm, pc + KevesFixnum(*pc) + 1);
 }
 
 void KevesVM::cmd_TEST_NOT_R(KevesVM* vm, const_KevesIterator pc) {

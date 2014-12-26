@@ -142,7 +142,7 @@ public:
   static void cmd_SKIP(KevesVM*, const_KevesIterator);
   static void cmd_TEST(KevesVM*, const_KevesIterator);
   static void cmd_TEST_R(KevesVM*, const_KevesIterator);
-  static void cmd_TEST0(KevesVM*, const_KevesIterator);
+  static void cmd_TEST0_R(KevesVM*, const_KevesIterator);
   static void cmd_TEST_NOT_R(KevesVM*, const_KevesIterator);
   static void cmd_SWITCH_N_ARG(KevesVM*, const_KevesIterator);
   static void cmd_SWITCH_N_ARG_R(KevesVM*, const_KevesIterator);

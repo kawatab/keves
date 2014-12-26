@@ -19,51 +19,19 @@
 
 #include "code_rnrs-exceptions.hpp"
 
-#include <iostream>
-#include <QList>
-#include "keves_base.hpp"
-#include "keves_library.hpp"
+#include "kevc_generator.hpp"
 
 
-void Code_RnrsExceptions::write(KevesBase* base, const char* file_name) {
-  // Library Header
-  QStringList id;
-  QList<ver_num_t> ver_num;
-  id << "rnrs" << "exceptions";
-  ver_num << 6;
-  KevesLibrary this_lib(id, ver_num);
+void Code_RnrsExceptions::write(KevcGenerator* generator) {
+  // import and export binds
+  if (!generator->setImportLibrary("rnrs", "exceptions-bin", 6)) return;
 
-  // import binds
-  KevesImportLibraryList import_libs(base);
-
-  // from (rnrs exceptions)
-  QStringList id_rnrs_exceptions_bin;
-  id_rnrs_exceptions_bin << "rnrs" << "exceptions-bin";
-  QList<ver_num_t> ver_rnrs_exceptions_bin;
-  ver_rnrs_exceptions_bin << 6;
-
-  if (!import_libs.setLibrary(id_rnrs_exceptions_bin, ver_rnrs_exceptions_bin)) {
-    std::cerr << "Aborted writing the file: " << file_name << ".\n";
-    return;
-  }
-
-  // export binds
   const char* binds[] = {
     "raise"
   };
 
   for (auto bind : binds)
-    this_lib.addBind(bind, import_libs.nominateBind(bind));
+    generator->exportBind(bind, generator->importBind(bind));
 
-  this_lib.writeToFile(base, file_name, import_libs);
-}
-
-void Code_RnrsExceptions::read(KevesBase* base, const char* file_name) {
-  std::cout << file_name << ":" << std::endl;
-  
-  KevesLibrary* lib(KevesLibrary::readFromFile(file_name, base));
-
-  lib->displayProperty(base);
-  
-  delete lib;
+  generator->writeToFile();
 }

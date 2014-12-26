@@ -17,10 +17,12 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#include <iostream>
+#include "code_keves-base.hpp"
 #include "code_rnrs-base.hpp"
 #include "code_rnrs-exceptions.hpp"
+#include "code_rnrs-lists.hpp"
 #include "code_rnrs-unicode.hpp"
+#include "kevc_generator.hpp"
 #include "keves_base.hpp"
 #include "test_code.hpp"
 
@@ -28,25 +30,59 @@
 int main() {
   KevesBase base;
 
-  TestCode::Code02::write(&base, "test02.kevc");
-  TestCode::Code02::read(&base, "test02.kevc");
+  {
+    KevcGenerator generator(&base, "test02.kevc", "main");
+    TestCode::Code02::write(&generator);
+  }
 
-  std::cout << std::endl;
-  
-  TestCode::Code03::write(&base, "test03.kevc");
-  TestCode::Code03::read(&base, "test03.kevc");
+  {
+    KevcGenerator generator(&base, "test03.kevc", "main");
+    TestCode::Code03::write(&generator);
+  }
 
-  Code_RnrsExceptions::write(&base, "lib/rnrs/exceptions.kevc");
-  Code_RnrsExceptions::read(&base, "lib/rnrs/exceptions.kevc");
+  {
+    KevcGenerator generator(&base, "lib/keves/base.kevc",
+			    "keves", "base", 0, 1);
 
-  Code_RnrsUnicode::write(&base, "lib/rnrs/unicode.kevc");
-  Code_RnrsUnicode::read(&base, "lib/rnrs/unicode.kevc");
+    KevesBaseCode::write(&generator);
+  }
 
-  Code_RnrsBase::write(&base, "lib/rnrs/base.kevc");
-  Code_RnrsBase::read(&base, "lib/rnrs/base.kevc");
+  {
+    KevcGenerator generator(&base, "lib/rnrs/exceptions.kevc",
+			    "keves", "exceptions", 6);
 
-  TestCode::KevesBaseCode::write(&base, "lib/keves/base.kevc");
-  TestCode::KevesBaseCode::read(&base, "lib/keves/base.kevc");
+    Code_RnrsExceptions::write(&generator);
+  }
+
+
+  {
+    KevcGenerator generator(&base, "lib/rnrs/lists.kevc",
+			    "rnrs", "lists", 6);
+
+    Code_RnrsLists::write(&generator);
+  }
+
+  {
+    KevcGenerator generator(&base, "lib/rnrs/unicode.kevc",
+			    "rnrs", "unicode", 6);
+
+    Code_RnrsUnicode::write(&generator);
+  }
+
+  {
+    KevcGenerator generator(&base, "lib/rnrs/base.kevc",
+			    "rnrs", "base", 6);
+
+    Code_RnrsBase::write(&generator);
+  }
+
+  KevcGenerator::testRead(&base, "test02.kevc");
+  KevcGenerator::testRead(&base, "test03.kevc");
+  KevcGenerator::testRead(&base, "lib/keves/base.kevc");
+  KevcGenerator::testRead(&base, "lib/rnrs/exceptions.kevc");
+  KevcGenerator::testRead(&base, "lib/rnrs/lists.kevc");
+  KevcGenerator::testRead(&base, "lib/rnrs/unicode.kevc");
+  KevcGenerator::testRead(&base, "lib/rnrs/base.kevc");
 
   return 0;
 }

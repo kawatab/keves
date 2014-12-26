@@ -31,7 +31,7 @@ enum keves_instruct {
   CMD_SKIP,
   CMD_TEST,
   CMD_TEST_R,
-  CMD_TEST0,
+  CMD_TEST0_R,
   CMD_TEST_NOT_R,
   CMD_SWITCH_N_ARG,
   CMD_SWITCH_N_ARG_R,

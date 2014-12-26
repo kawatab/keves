@@ -20,21 +20,15 @@
 #pragma once
 
 
-class KevesBase;
+class KevcGenerator;
+
 
 namespace TestCode {
-  namespace KevesBaseCode {
-    void write(KevesBase* base, const char* file_name);
-    void read(KevesBase* base, const char* file_name);
-  };
-
   namespace Code02 {
-    void write(KevesBase* base, const char* file_name);
-    void read(KevesBase* base, const char* file_name);
+    void write(KevcGenerator* generator);
   };
 
   namespace Code03 {
-    void write(KevesBase* base, const char* file_name);
-    void read(KevesBase* base, const char* file_name);
+    void write(KevcGenerator* generator);
   };
 };

@@ -102,6 +102,11 @@ public:
   ~KevesLibrary() = default;
 
   KevesLibrary(const QStringList& id, const QList<ver_num_t>& ver_num);
+  KevesLibrary(const char* id);
+  KevesLibrary(const char* id1, const char* id2, ver_num_t ver_num);
+
+  KevesLibrary(const char* id1, const char* id2,
+	       ver_num_t ver_num1, ver_num_t ver_num2);
   
   void addBind(const char* id, KevesValue kev);
   void displayProperty(KevesBase* base) const;

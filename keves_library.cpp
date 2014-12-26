@@ -132,6 +132,25 @@ KevesLibrary::KevesLibrary(const QStringList& id,
   setID(id, ver_num);
 }
 
+KevesLibrary::KevesLibrary(const char* id)
+  : id_(), ver_num_(), bind_list_() {
+  id_ << id;
+  
+}
+  
+KevesLibrary::KevesLibrary(const char* id1, const char* id2, ver_num_t ver_num)
+  : id_(), ver_num_(), bind_list_() {
+  id_ << id1 << id2;
+  ver_num_ << ver_num;
+}
+
+KevesLibrary::KevesLibrary(const char* id1, const char* id2,
+			   ver_num_t ver_num1, ver_num_t ver_num2)
+  : id_(), ver_num_(), bind_list_() {
+  id_ << id1 << id2;
+  ver_num_ << ver_num1 << ver_num2;
+}
+
 void KevesLibrary::setID(const QStringList& id,
 			 const QList<ver_num_t>& ver_num) {
   id_.clear();

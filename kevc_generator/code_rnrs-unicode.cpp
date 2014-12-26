@@ -19,33 +19,12 @@
 
 #include "code_rnrs-unicode.hpp"
 
-#include <iostream>
-#include <QList>
-#include "keves_base.hpp"
-#include "keves_library.hpp"
+#include "kevc_generator.hpp"
 
 
-void Code_RnrsUnicode::write(KevesBase* base, const char* file_name) {
-  // Library Header
-  QStringList id;
-  QList<ver_num_t> ver_num;
-  id << "rnrs" << "unicode";
-  ver_num << 6;
-  KevesLibrary this_lib(id, ver_num);
-
-  // import binds
-  KevesImportLibraryList import_libs(base);
-
-  // from (rnrs unicode)
-  QStringList id_rnrs_unicode_bin;
-  id_rnrs_unicode_bin << "rnrs" << "unicode-bin";
-  QList<ver_num_t> ver_rnrs_unicode_bin;
-  ver_rnrs_unicode_bin << 6;
-
-  if (!import_libs.setLibrary(id_rnrs_unicode_bin, ver_rnrs_unicode_bin)) {
-    std::cerr << "Aborted writing the file: " << file_name << ".\n";
-    return;
-  }
+void Code_RnrsUnicode::write(KevcGenerator* generator) {
+  // import and export binds
+  if (!generator->setImportLibrary("rnrs", "unicode-bin", 6)) return;
 
   // export binds
   const char* binds[] = {
@@ -72,17 +51,7 @@ void Code_RnrsUnicode::write(KevesBase* base, const char* file_name) {
   };
 
   for (auto bind : binds)
-    this_lib.addBind(bind, import_libs.nominateBind(bind));
+    generator->exportBind(bind, generator->importBind(bind));
 
-  this_lib.writeToFile(base, file_name, import_libs);
-}
-
-void Code_RnrsUnicode::read(KevesBase* base, const char* file_name) {
-  std::cout << file_name << ":" << std::endl;
-  
-  KevesLibrary* lib(KevesLibrary::readFromFile(file_name, base));
-
-  lib->displayProperty(base);
-  
-  delete lib;
+  generator->writeToFile();
 }

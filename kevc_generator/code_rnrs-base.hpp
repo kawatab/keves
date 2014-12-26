@@ -21,19 +21,16 @@
 
 #include "keves_value.hpp"
 
-class KevesBase;
-class KevesLibrary;
+
+class KevcGenerator;
+
 
 namespace Code_RnrsBase {
-  void write(KevesBase* base, const char* file_name);
-  void read(KevesBase* base, const char* file_name);
+  void write(KevcGenerator* generator);
 
-  KevesValue makeCode_proc_append(KevesBase* base);
-  KevesValue makeCode_proc_eq_q(KevesBase* base);
-  KevesValue makeCode_proc_eqv_q(KevesBase* base);
-
-  KevesValue makeCode_proc_map(KevesBase* base,
-			       KevesLibrary* library, KevesValue proc_raise);
-
-  KevesValue makeCode_proc_string_append(KevesBase* base);
+  KevesValue makeCode_proc_append(KevcGenerator* generator);
+  KevesValue makeCode_proc_eq_q(KevcGenerator* generator);
+  KevesValue makeCode_proc_eqv_q(KevcGenerator* generator);
+  KevesValue makeCode_proc_map(KevcGenerator* generator, KevesValue proc_raise);
+  KevesValue makeCode_proc_string_append(KevcGenerator* generator);
 };

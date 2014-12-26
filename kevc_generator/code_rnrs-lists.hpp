@@ -1,4 +1,4 @@
-// keves/keves_generator/test_code.hpp - a code of of (rnrs exceptions)
+// keves/keves_generator/code_rnrs-lists.hpp - a code of of (rnrs base)
 // Keves will be an R6RS Scheme implementation.
 //
 // Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -19,10 +19,23 @@
 
 #pragma once
 
+#include "keves_value.hpp"
+
 
 class KevcGenerator;
 
 
-namespace Code_RnrsExceptions {
+namespace Code_RnrsLists {
   void write(KevcGenerator* generator);
+
+  KevesValue makeCode_proc_assq(KevcGenerator* generator,
+				KevesValue proc_eq_q);
+
+  KevesValue makeCode_proc_fold_left(KevcGenerator* generator,
+				     KevesValue proc_apply,
+				     KevesValue proc_car,
+				     KevesValue proc_cdr,
+				     KevesValue proc_cons,
+				     KevesValue proc_map,
+				     KevesValue proc_pair_q);
 };

@@ -19,84 +19,31 @@
 
 #include "code_rnrs-base.hpp"
 
-#include <iostream>
-#include <QList>
-#include "keves_base.hpp"
-#include "keves_library.hpp"
-#include "kev/bignum.hpp"
-#include "kev/bignum-inl.hpp"
+#include "kevc_generator.hpp"
+#include "keves_builtin_values.hpp"
 #include "kev/code.hpp"
-#include "kev/code-inl.hpp"
 #include "kev/frame.hpp"
-#include "kev/frame-inl.hpp"
-#include "kev/number.hpp"
-#include "kev/number-inl.hpp"
-#include "kev/pair.hpp"
-#include "kev/pair-inl.hpp"
 #include "kev/procedure.hpp"
-#include "kev/procedure-inl.hpp"
-#include "kev/reference.hpp"
-#include "kev/reference-inl.hpp"
-#include "kev/string.hpp"
-#include "kev/string-inl.hpp"
 #include "kev/symbol.hpp"
-#include "kev/symbol-inl.hpp"
-#include "kev/vector.hpp"
-#include "kev/vector-inl.hpp"
-#include "value/char.hpp"
+#include "value/fixnum.hpp"
+#include "value/instruct.hpp"
 
 
-void Code_RnrsBase::write(KevesBase* base, const char* file_name) {
-  // Library Header
-  QStringList id;
-  QList<ver_num_t> ver_num;
-  id << "rnrs" << "base";
-  ver_num << 6;
-  KevesLibrary this_lib(id, ver_num);
-
+void Code_RnrsBase::write(KevcGenerator* generator) {
   // import binds
-  KevesImportLibraryList import_libs(base);
-
-  // from (keves base-bin)
-  QStringList id_keves_base_bin;
-  id_keves_base_bin << "keves" << "base-bin";
-  QList<ver_num_t> ver_keves_base_bin;
-  ver_keves_base_bin << 6;
-
-  if (!import_libs.setLibrary(id_keves_base_bin, ver_keves_base_bin)) {
-    std::cerr << "Aborted writing the file: " << file_name << ".\n";
-    return;
-  }
+  if (!generator->setImportLibrary("keves", "base-bin", 0, 1)) return;
 
   // for invoking makeAssertCondition()
-  import_libs.nominateBind("&assert");
-  import_libs.nominateBind("&message");
-  import_libs.nominateBind("&irritants");
-  import_libs.nominateBind("&who");
+  generator->importBind("&assert");
+  generator->importBind("&message");
+  generator->importBind("&irritants");
+  generator->importBind("&who");
  
-  // from (rnrs exceptions)
-  QStringList id_rnrs_exceptions;
-  id_rnrs_exceptions << "rnrs" << "exceptions-bin";
-  QList<ver_num_t> ver_rnrs_exceptions;
-  ver_rnrs_exceptions << 6;
+  if (!generator->setImportLibrary("rnrs", "exceptions", 6)) return;
+  KevesValue proc_raise(generator->importBind("raise"));
 
-  if (!import_libs.setLibrary(id_rnrs_exceptions, ver_rnrs_exceptions)) {
-    std::cerr << "Aborted writing the file: " << file_name << ".\n";
-    return;
-  }
-
-  KevesValue proc_raise(import_libs.nominateBind("raise"));
-
-  // from (rnrs base)
-  QStringList id_rnrs_base_bin;
-  id_rnrs_base_bin << "rnrs" << "base-bin";
-  QList<ver_num_t> ver_rnrs_base_bin;
-  ver_rnrs_base_bin << 6;
-
-  if (!import_libs.setLibrary(id_rnrs_base_bin, ver_rnrs_base_bin)) {
-    std::cerr << "Aborted writing the file: " << file_name << ".\n";
-    return;
-  }
+  // import and export binds
+  if (!generator->setImportLibrary("rnrs", "base-bin", 6)) return;
 
   // export binds
   const char* binds[] = {
@@ -227,39 +174,35 @@ void Code_RnrsBase::write(KevesBase* base, const char* file_name) {
   };
 
   for (auto bind : binds)
-    this_lib.addBind(bind, import_libs.nominateBind(bind));
+    generator->exportBind(bind, generator->importBind(bind));
 
-  this_lib.addBind("append", makeCode_proc_append(base));
-  this_lib.addBind("string-append", makeCode_proc_string_append(base));
-  this_lib.addBind("map", makeCode_proc_map(base, &this_lib, proc_raise));
-  this_lib.addBind("eqv?", makeCode_proc_eqv_q(base));
-  this_lib.addBind("eq?", makeCode_proc_eq_q(base));
+  generator->exportBind("append",
+			makeCode_proc_append(generator));
+
+  generator->exportBind("string-append",
+			makeCode_proc_string_append(generator));
+
+  generator->exportBind("map",
+			makeCode_proc_map(generator, proc_raise));
+
+  generator->exportBind("eqv?", makeCode_proc_eqv_q(generator));
+  generator->exportBind("eq?", makeCode_proc_eq_q(generator));
   
-  this_lib.writeToFile(base, file_name, import_libs);
+  generator->writeToFile();
 }
 
-void Code_RnrsBase::read(KevesBase* base, const char* file_name) {
-  std::cout << file_name << ":" << std::endl;
-  
-  KevesLibrary* lib(KevesLibrary::readFromFile(file_name, base));
+KevesValue Code_RnrsBase::makeCode_proc_append(KevcGenerator* generator) {
+  SymbolKev* sym_append(generator->makeSymbol("append"));
 
-  lib->displayProperty(base);
-  
-  delete lib;
-}
-
-KevesValue Code_RnrsBase::makeCode_proc_append(KevesBase* base) {
-  SymbolKev* sym_append(SymbolKev::make(base, "append"));
-
-  KevesValue err_req_proper_list(base->makeAssertCondition(sym_append,
-							   base->getMesgText(KevesBuiltinValues::mesg_ReqProperList),
-							   EMB_NULL));
+  KevesValue err_req_proper_list(generator->makeAssertCondition(sym_append,
+								KevesBuiltinValues::mesg_ReqProperList,
+								EMB_NULL));
       
-  KevesValue err_req_pair(base->makeAssertCondition(sym_append,
-						    base->getMesgText(KevesBuiltinValues::mesg_ReqPair),
-						    EMB_NULL));
+  KevesValue err_req_pair(generator->makeAssertCondition(sym_append,
+							 KevesBuiltinValues::mesg_ReqPair,
+							 EMB_NULL));
   
-  CodeKev* code(CodeKev::make(base, 79));
+  CodeKev* code(generator->makeCode(79));
   {
     KevesIterator iter(code->begin());
     *iter++ = KevesInstruct(CMD_SWITCH_N_ARG_R);
@@ -403,21 +346,21 @@ KevesValue Code_RnrsBase::makeCode_proc_append(KevesBase* base) {
     Q_ASSERT(iter <= code->end());
   }
   
-  LocalVarFrameKev* free_vars(LocalVarFrameKev::make(base, 0, nullptr));
-  LambdaKev* lambda(LambdaKev::make(base, free_vars, code, 0));
+  LocalVarFrameKev* free_vars(generator->makeLocalVarFrame(0, nullptr));
+  LambdaKev* lambda(generator->makeLambda(free_vars, code, 0));
   return lambda;
 }
 
-KevesValue Code_RnrsBase::makeCode_proc_string_append(KevesBase* base) {
-  SymbolKev* sym_string_append(SymbolKev::make(base, "string-append"));
+KevesValue Code_RnrsBase::makeCode_proc_string_append(KevcGenerator* generator) {
+  SymbolKev* sym_string_append(generator->makeSymbol("string-append"));
 
-  KevesValue err(base->makeAssertCondition(sym_string_append,
-					   base->getMesgText(KevesBuiltinValues::mesg_ReqStr),
-					   EMB_NULL));
+  KevesValue err(generator->makeAssertCondition(sym_string_append,
+						KevesBuiltinValues::mesg_ReqStr,
+						EMB_NULL));
     
-  KevesValue empty_str(StringKev::make(base, ""));
+  KevesValue empty_str(generator->makeString(""));
 
-  CodeKev* code(CodeKev::make(base, 28));
+  CodeKev* code(generator->makeCode(28));
   {
     KevesIterator iter(code->begin());
     *iter++ = KevesInstruct(CMD_SWITCH_N_ARG_R);
@@ -472,57 +415,59 @@ KevesValue Code_RnrsBase::makeCode_proc_string_append(KevesBase* base) {
     Q_ASSERT(iter <= code->end());
   }
   
-  LocalVarFrameKev* free_vars(LocalVarFrameKev::make(base, 0, nullptr));
-  LambdaKev* lambda(LambdaKev::make(base, free_vars, code, 0));
+  LocalVarFrameKev* free_vars(generator->makeLocalVarFrame(0, nullptr));
+  LambdaKev* lambda(generator->makeLambda(free_vars, code, 0));
   return lambda;
 }
 
-KevesValue Code_RnrsBase::makeCode_proc_map(KevesBase* base,
-					    KevesLibrary* library,
+KevesValue Code_RnrsBase::makeCode_proc_map(KevcGenerator* generator,
 					    KevesValue proc_raise) {
-  SymbolKev* sym_map(SymbolKev::make(base, "map"));
+  SymbolKev* sym_map(generator->makeSymbol("map"));
   LambdaKev* proc_length_check;
   LambdaKev* proc_separate_first_value;
   LambdaKev* proc_transpose;
   LambdaKev* proc_map;
 
-  KevesValue proc_equal(library->findBind("="));
-  KevesValue proc_apply(library->findBind("apply"));
-  KevesValue proc_car(library->findBind("car"));
-  KevesValue proc_caar(library->findBind("caar"));
-  KevesValue proc_call_with_values(library->findBind("call-with-values"));
-  KevesValue proc_cdr(library->findBind("cdr"));
-  KevesValue proc_cdar(library->findBind("cdar"));
-  KevesValue proc_cons(library->findBind("cons"));
-  KevesValue proc_length(library->findBind("length"));
-  KevesValue proc_list(library->findBind("list"));
-  KevesValue proc_not(library->findBind("not"));
-  KevesValue proc_null_q(library->findBind("null?"));
-  KevesValue proc_pair_q(library->findBind("pair?"));
-  KevesValue proc_procedure_q(library->findBind("procedure?"));
-  KevesValue proc_values(library->findBind("values"));
-  KevesValue proc_zero_q(library->findBind("zero?"));
+  KevesValue proc_equal(generator->findBind("="));
+  KevesValue proc_apply(generator->findBind("apply"));
+  KevesValue proc_car(generator->findBind("car"));
+  KevesValue proc_caar(generator->findBind("caar"));
+  KevesValue proc_call_with_values(generator->findBind("call-with-values"));
+  KevesValue proc_cdr(generator->findBind("cdr"));
+  KevesValue proc_cdar(generator->findBind("cdar"));
+  KevesValue proc_cons(generator->findBind("cons"));
+  KevesValue proc_length(generator->findBind("length"));
+  KevesValue proc_list(generator->findBind("list"));
+  KevesValue proc_not(generator->findBind("not"));
+  KevesValue proc_null_q(generator->findBind("null?"));
+  KevesValue proc_pair_q(generator->findBind("pair?"));
+  KevesValue proc_procedure_q(generator->findBind("procedure?"));
+  KevesValue proc_values(generator->findBind("values"));
+  KevesValue proc_zero_q(generator->findBind("zero?"));
 
-  KevesValue err51(base->makeAssertCondition(sym_map,
-					     base->getMesgText(KevesBuiltinValues::mesg_Req1Got0),
-					     EMB_NULL));
+  KevesValue err51(generator->
+		   makeAssertCondition(sym_map,
+				       KevesBuiltinValues::mesg_Req1Got0,
+				       EMB_NULL));
       
 
-  KevesValue err52(base->makeAssertCondition(sym_map,
-					     base->getMesgText(KevesBuiltinValues::mesg_Req1GotMore),
-					     EMB_NULL));
+  KevesValue err52(generator->
+		   makeAssertCondition(sym_map,
+				       KevesBuiltinValues::mesg_Req1GotMore,
+				       EMB_NULL));
 
-  KevesValue err53(base->makeAssertCondition(sym_map,
-					     base->getMesgText(KevesBuiltinValues::mesg_Req1OrMoreGot0),
-					     EMB_NULL));
+  KevesValue err53(generator->
+		   makeAssertCondition(sym_map,
+				       KevesBuiltinValues::mesg_Req1OrMoreGot0,
+				       EMB_NULL));
 
-  LocalVarFrameKev* free_vars(LocalVarFrameKev::make(base, 0, nullptr));
+  LocalVarFrameKev* free_vars(generator->makeLocalVarFrame(0, nullptr));
 
-  CodeKev* code(CodeKev::make(base, 500));
+  CodeKev* code(generator->makeCode(500));
   KevesIterator iter(code->begin());
 
   proc_length_check
-    = LambdaKev::make(base, free_vars, code, iter - code->begin());
+    = generator->makeLambda(free_vars, code, iter - code->begin());
   {
     // *iter++ = KevesFixnum(0);
     // *iter++ = KevesInstruct(CMD_CLOSE_R);
@@ -600,7 +545,7 @@ KevesValue Code_RnrsBase::makeCode_proc_map(KevesBase* base,
 
   
   proc_separate_first_value
-    = LambdaKev::make(base, free_vars, code, iter - code->begin());
+    = generator->makeLambda(free_vars, code, iter - code->begin());
   {
     // *iter++ = KevesFixnum(0);
     // *iter++ = KevesInstruct(CMD_CLOSE_R);
@@ -710,7 +655,7 @@ KevesValue Code_RnrsBase::makeCode_proc_map(KevesBase* base,
     Q_ASSERT(iter <= code->end());
   }
 
-  proc_transpose = LambdaKev::make(base, free_vars, code, iter - code->begin());
+  proc_transpose = generator->makeLambda(free_vars, code, iter - code->begin());
   {
     // *iter++ = KevesFixnum(0);
     // *iter++ = KevesInstruct(CMD_CLOSE_R);
@@ -794,7 +739,7 @@ KevesValue Code_RnrsBase::makeCode_proc_map(KevesBase* base,
     Q_ASSERT(iter <= code->end());
   }
 
-  proc_map = LambdaKev::make(base, free_vars, code, iter - code->begin());
+  proc_map = generator->makeLambda(free_vars, code, iter - code->begin());
   {
     // *iter++ = KevesFixnum(0);
     // *iter++ = KevesInstruct(CMD_CLOSE_R);
@@ -1128,22 +1073,25 @@ KevesValue Code_RnrsBase::makeCode_proc_map(KevesBase* base,
   return proc_map;
 }
 
-KevesValue Code_RnrsBase::makeCode_proc_eqv_q(KevesBase* base) {
-  SymbolKev* sym_eqv_q(SymbolKev::make(base, "eqv?"));
+KevesValue Code_RnrsBase::makeCode_proc_eqv_q(KevcGenerator* generator) {
+  SymbolKev* sym_eqv_q(generator->makeSymbol("eqv?"));
 		       
-  KevesValue err_no_arg(base->makeAssertCondition(sym_eqv_q,
-						  base->getMesgText(KevesBuiltinValues::mesg_Req2Got0),
+  KevesValue err_no_arg(generator->
+			makeAssertCondition(sym_eqv_q,
+					    KevesBuiltinValues::mesg_Req2Got0,
+					    EMB_NULL));
+      
+  KevesValue err_one_arg(generator->
+			 makeAssertCondition(sym_eqv_q,
+					     KevesBuiltinValues::mesg_Req2Got1,
+					     EMB_NULL));
+      
+  KevesValue err_too_many_arg(generator->
+			      makeAssertCondition(sym_eqv_q,
+						  KevesBuiltinValues::mesg_Req2GotMore,
 						  EMB_NULL));
-      
-  KevesValue err_one_arg(base->makeAssertCondition(sym_eqv_q,
-						   base->getMesgText(KevesBuiltinValues::mesg_Req2Got1),
-						   EMB_NULL));
-      
-  KevesValue err_too_many_arg(base->makeAssertCondition(sym_eqv_q,
-							base->getMesgText(KevesBuiltinValues::mesg_Req2GotMore),
-							EMB_NULL));
 
-  CodeKev* code(CodeKev::make(base, 49));
+  CodeKev* code(generator->makeCode(49));
   {
     KevesIterator iter(code->begin());
     
@@ -1245,28 +1193,31 @@ KevesValue Code_RnrsBase::makeCode_proc_eqv_q(KevesBase* base) {
     Q_ASSERT(iter <= code->end());
   }
   
-  LocalVarFrameKev* free_vars(LocalVarFrameKev::make(base, 0, nullptr));
-  LambdaKev* lambda(LambdaKev::make(base, free_vars, code, 0));
+  LocalVarFrameKev* free_vars(generator->makeLocalVarFrame(0, nullptr));
+  LambdaKev* lambda(generator->makeLambda(free_vars, code, 0));
   return lambda;
 }
 
 // eq?
-KevesValue Code_RnrsBase::makeCode_proc_eq_q(KevesBase* base) {
-  SymbolKev* sym_eq_q(SymbolKev::make(base, "eq?"));
+KevesValue Code_RnrsBase::makeCode_proc_eq_q(KevcGenerator* generator) {
+  SymbolKev* sym_eq_q(generator->makeSymbol("eq?"));
 		       
-  KevesValue err_no_arg(base->makeAssertCondition(sym_eq_q,
-						  base->getMesgText(KevesBuiltinValues::mesg_Req2Got0),
+  KevesValue err_no_arg(generator->
+			makeAssertCondition(sym_eq_q,
+					    KevesBuiltinValues::mesg_Req2Got0,
+					    EMB_NULL));
+      
+  KevesValue err_one_arg(generator->
+			 makeAssertCondition(sym_eq_q,
+					     KevesBuiltinValues::mesg_Req2Got1,
+					     EMB_NULL));
+      
+  KevesValue err_too_many_arg(generator->
+			      makeAssertCondition(sym_eq_q,
+						  KevesBuiltinValues::mesg_Req2GotMore,
 						  EMB_NULL));
-      
-  KevesValue err_one_arg(base->makeAssertCondition(sym_eq_q,
-						   base->getMesgText(KevesBuiltinValues::mesg_Req2Got1),
-						   EMB_NULL));
-      
-  KevesValue err_too_many_arg(base->makeAssertCondition(sym_eq_q,
-							base->getMesgText(KevesBuiltinValues::mesg_Req2GotMore),
-							EMB_NULL));
 
-  CodeKev* code(CodeKev::make(base, 30));
+  CodeKev* code(generator->makeCode(30));
   {
     KevesIterator iter(code->begin());
     
@@ -1331,7 +1282,7 @@ KevesValue Code_RnrsBase::makeCode_proc_eq_q(KevesBase* base) {
     Q_ASSERT(iter <= code->end());
   }
   
-  LocalVarFrameKev* free_vars(LocalVarFrameKev::make(base, 0, nullptr));
-  LambdaKev* lambda(LambdaKev::make(base, free_vars, code, 0));
+  LocalVarFrameKev* free_vars(generator->makeLocalVarFrame(0, nullptr));
+  LambdaKev* lambda(generator->makeLambda(free_vars, code, 0));
   return lambda;
 }
