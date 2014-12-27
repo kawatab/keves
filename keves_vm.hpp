@@ -30,7 +30,7 @@
 
 class CodeKev;
 class ExactComplexNumberKev;
-class KevesBase;
+class KevesCommon;
 class KevesTextualOutputPort;
 class RationalNumberKev;
 class RecordKev;
@@ -56,11 +56,11 @@ public:
 public:
   int execute_helper(const QString& arg);
   
-  static KevesVM* make(KevesBase* base);
-  static KevesVM* make(KevesBase* base, KevesTextualOutputPort* result_field);
+  static KevesVM* make(KevesCommon* common);
+  static KevesVM* make(KevesCommon* common, KevesTextualOutputPort* result_field);
   
-  KevesBase* base() {
-    return base_;
+  KevesCommon* common() {
+    return common_;
   }
   
   KevesGC* gc() {
@@ -278,7 +278,7 @@ public:
 
 
 private:
-  KevesBase* base_;
+  KevesCommon* common_;
   vm_func* cmd_table_;
   KevesGC gc_;
   KevesTextualOutputPort* result_field_;

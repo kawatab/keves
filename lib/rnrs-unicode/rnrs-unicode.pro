@@ -11,8 +11,8 @@ QMAKE_CXXFLAGS += -std=c++11
 
 # Input
 HEADERS += rnrs-unicode.hpp \
-           keves_base.hpp \
            keves_builtin_values.hpp \
+           keves_common.hpp \
            keves_library.hpp \
            keves_template.hpp \
            keves_textual_port.hpp \
@@ -28,8 +28,8 @@ HEADERS += rnrs-unicode.hpp \
            value/char.hpp
 
 SOURCES += rnrs-unicode.cpp \
-           keves_base.cpp \
            keves_builtin_values.cpp \
+           keves_common.cpp \
            keves_library.cpp \
            keves_template.cpp \
            keves_textual_port.cpp \

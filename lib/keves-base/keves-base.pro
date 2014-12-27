@@ -10,8 +10,8 @@ QMAKE_CXXFLAGS += -std=c++11
 
 # Input
 HEADERS += keves-base.hpp \
-           keves_base.hpp \
            keves_builtin_values.hpp \
+           keves_common.hpp \
            keves_gc.hpp \
            keves_library.hpp \
            keves_template.hpp \
@@ -28,8 +28,8 @@ HEADERS += keves-base.hpp \
            kev/symbol-inl.hpp
 
 SOURCES += keves-base.cpp \
-           keves_base.cpp \
            keves_builtin_values.cpp \
+           keves_common.cpp \
            keves_gc.cpp \
            keves_library.cpp \
            keves_template.cpp \

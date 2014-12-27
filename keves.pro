@@ -10,9 +10,9 @@ LIBS += -lgmpxx -lgmp -L/usr/lib/keves/keves/base/
 QMAKE_CXXFLAGS += -std=c++11
 
 # Input
-HEADERS += keves_base.hpp \
-           keves_base-inl.hpp \
-           keves_builtin_values.hpp \
+HEADERS += keves_builtin_values.hpp \
+           keves_common.hpp \
+           keves_common-inl.hpp \
 #           keves_eval_window.hpp \
            keves_gc.hpp \
 #           keves_heap.hpp \
@@ -49,8 +49,8 @@ HEADERS += keves_base.hpp \
            value/instruct.hpp
            
 
-SOURCES += keves_base.cpp \
-           keves_builtin_values.cpp \
+SOURCES += keves_builtin_values.cpp \
+           keves_common.cpp \
            keves_gc.cpp \
            keves_iterator.cpp \
            keves_library.cpp \

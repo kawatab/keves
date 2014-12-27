@@ -19,8 +19,8 @@
 
 #pragma once
 
-#include "keves_base.hpp"
 #include "keves_builtin_values.hpp"
+#include "keves_common.hpp"
 #include "keves_vm.hpp"
 #include "kev/number.hpp"
 
@@ -31,52 +31,52 @@ namespace Function {
       return true;
     }
     
-    static constexpr KevesValue message(KevesBase* /*base*/) {
+    static constexpr KevesValue message(KevesCommon* /*common*/) {
       return EMB_UNDEF;
     }
 
-    static constexpr KevesValue message1(KevesBase* /*base*/) {
+    static constexpr KevesValue message1(KevesCommon* /*common*/) {
       return EMB_UNDEF;
     }
 
-    static constexpr KevesValue message2(KevesBase* /*base*/) {
+    static constexpr KevesValue message2(KevesCommon* /*common*/) {
       return EMB_UNDEF;
     }
 
-    static constexpr KevesValue message3(KevesBase* /*base*/) {
+    static constexpr KevesValue message3(KevesCommon* /*common*/) {
       return EMB_UNDEF;
     }
   };
 
   struct IsFixnum {
     static bool func(KevesValue);
-    static KevesValue message(KevesBase* base);
-    static KevesValue message1(KevesBase* base);
-    static KevesValue message2(KevesBase* base);
-    static KevesValue message3(KevesBase* base);
+    static KevesValue message(KevesCommon* common);
+    static KevesValue message1(KevesCommon* common);
+    static KevesValue message2(KevesCommon* common);
+    static KevesValue message3(KevesCommon* common);
   };
 
   struct IsChar {
     static bool func(KevesValue);
-    static KevesValue message(KevesBase* base);
-    static KevesValue message1(KevesBase* base);
-    static KevesValue message2(KevesBase* base);
+    static KevesValue message(KevesCommon* common);
+    static KevesValue message1(KevesCommon* common);
+    static KevesValue message2(KevesCommon* common);
   };
 
   struct IsString {
     static bool func(KevesValue);
-    static KevesValue message(KevesBase* base);
-    static KevesValue message1(KevesBase* base);
+    static KevesValue message(KevesCommon* common);
+    static KevesValue message1(KevesCommon* common);
   };
 
   struct IsSymbol {
     static bool func(KevesValue);
-    static KevesValue message(KevesBase* base);
+    static KevesValue message(KevesCommon* common);
   };
     
   struct IsPair {
     static bool func(KevesValue);
-    static KevesValue message(KevesBase* base);
+    static KevesValue message(KevesCommon* common);
   };
 
   void raiseGetAnything(KevesVM*, const_KevesIterator);
@@ -121,7 +121,7 @@ namespace Function {
     }
 
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = PRETEST::message(vm->base());
+    vm->gr1_ = PRETEST::message(vm->common());
     vm->gr2_ = EMB_NULL;
     return KevesVM::raiseAssertCondition(vm, pc);
   }
@@ -130,7 +130,7 @@ namespace Function {
   void compare_error(KevesVM* vm, const_KevesIterator pc)
   {
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = TEST::message(vm->base());
+    vm->gr1_ = TEST::message(vm->common());
     vm->gr2_ = EMB_NULL;
     return KevesVM::raiseAssertCondition(vm, pc);
   }
@@ -189,7 +189,7 @@ namespace Function {
 
       if (!TEST::func(result)) {
 	vm->acc_ = vm->gr2_;
-	vm->gr1_ = TEST::message(vm->base());
+	vm->gr1_ = TEST::message(vm->common());
 	vm->gr2_ = EMB_NULL;
 	return KevesVM::raiseAssertCondition(vm, pc);
       }
@@ -199,7 +199,7 @@ namespace Function {
 
 	if (!TEST::func(current)) {
 	  vm->acc_ = vm->gr2_;
-	  vm->gr1_ = TEST::message(vm->base());
+	  vm->gr1_ = TEST::message(vm->common());
 	  vm->gr2_ = EMB_NULL;
 	  return KevesVM::raiseAssertCondition(vm, pc);
 	}
@@ -219,7 +219,7 @@ namespace Function {
       
       if (!TEST::func(kev)) {
 	vm->acc_ = vm->gr2_;
-	vm->gr1_ = TEST::message(vm->base());
+	vm->gr1_ = TEST::message(vm->common());
 	vm->gr2_ = EMB_NULL;
 	return KevesVM::raiseAssertCondition(vm, pc);
       }
@@ -244,7 +244,7 @@ namespace Function {
 
     if (!TEST::func(result)) {
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = TEST::message(vm->base());
+      vm->gr1_ = TEST::message(vm->common());
       vm->gr2_ = EMB_NULL;
       return KevesVM::raiseAssertCondition(vm, pc);
     }
@@ -254,7 +254,7 @@ namespace Function {
 
       if (!TEST::func(current)) {
 	vm->acc_ = vm->gr2_;
-	vm->gr1_ = TEST::message(vm->base());
+	vm->gr1_ = TEST::message(vm->common());
 	vm->gr2_ = EMB_NULL;
 	return KevesVM::raiseAssertCondition(vm, pc);
       }
@@ -284,7 +284,7 @@ namespace Function {
     }
 
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = TEST::message(vm->base());
+    vm->gr1_ = TEST::message(vm->common());
     vm->gr2_ = EMB_NULL;
     return KevesVM::raiseAssertCondition(vm, pc);
   }
@@ -300,14 +300,14 @@ namespace Function {
 
       if (!TEST1::func(kev1)) {
 	vm->acc_ = vm->gr2_;
-	vm->gr1_ = TEST1::message1(vm->base());
+	vm->gr1_ = TEST1::message1(vm->common());
 	vm->gr2_ = EMB_NULL;
 	return KevesVM::raiseAssertCondition(vm, pc);
       }
 
       if (!TEST2::func(kev2)) {
 	vm->acc_ = vm->gr2_;
-	vm->gr1_ = TEST2::message2(vm->base());
+	vm->gr1_ = TEST2::message2(vm->common());
 	vm->gr2_ = EMB_NULL;
 	return KevesVM::raiseAssertCondition(vm, pc);
       }
@@ -332,21 +332,21 @@ namespace Function {
 
       if (!TEST1::func(kev1)) {
 	vm->acc_ = vm->gr2_;
-	vm->gr1_ = TEST1::message1(vm->base());
+	vm->gr1_ = TEST1::message1(vm->common());
 	vm->gr2_ = EMB_NULL;
 	return KevesVM::raiseAssertCondition(vm, pc);
       }
 
       if (!TEST2::func(kev2)) {
 	vm->acc_ = vm->gr2_;
-	vm->gr1_ = TEST2::message2(vm->base());
+	vm->gr1_ = TEST2::message2(vm->common());
 	vm->gr2_ = EMB_NULL;
 	return KevesVM::raiseAssertCondition(vm, pc);
       }
 
       if (!TEST3::func(kev3)) {
 	vm->acc_ = vm->gr2_;
-	vm->gr1_ = TEST2::message3(vm->base());
+	vm->gr1_ = TEST2::message3(vm->common());
 	vm->gr2_ = EMB_NULL;
 	return KevesVM::raiseAssertCondition(vm, pc);
       }
@@ -414,7 +414,7 @@ namespace Arithmatic {
 	return func5<OPERATOR1, OPERATOR2>(vm, pc);
       
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = KevesValue(vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqNum));
+      vm->gr1_ = KevesValue(vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqNum));
       vm->gr2_ = EMB_NULL;
       return KevesVM::raiseAssertCondition(vm, pc);
     }
@@ -446,7 +446,7 @@ namespace Arithmatic {
 	return OPERATOR1::funcInexactComplexFixnum(vm, pc);
 
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = KevesValue(vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqNum));
+      vm->gr1_ = KevesValue(vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqNum));
       vm->gr2_ = EMB_NULL;
       return KevesVM::raiseAssertCondition(vm, pc);
     }
@@ -507,7 +507,7 @@ namespace Arithmatic {
     }
 
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = KevesValue(vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqNum));
+    vm->gr1_ = KevesValue(vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqNum));
     vm->gr2_ = EMB_NULL;
     return KevesVM::raiseAssertCondition(vm, pc);
   }
@@ -536,7 +536,7 @@ namespace Arithmatic {
 	return OPERATOR1::funcInexactComplexRational(vm, pc);
       
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = KevesValue(vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqNum));
+      vm->gr1_ = KevesValue(vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqNum));
       vm->gr2_ = EMB_NULL;
       return KevesVM::raiseAssertCondition(vm, pc);
     }
@@ -599,7 +599,7 @@ namespace Arithmatic {
     }
     
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = KevesValue(vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqNum));
+    vm->gr1_ = KevesValue(vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqNum));
     vm->gr2_ = EMB_NULL;
     return KevesVM::raiseAssertCondition(vm, pc);
   }
@@ -628,7 +628,7 @@ namespace Arithmatic {
 	return OPERATOR1::funcInexactComplexFlonum(vm, pc);
 
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = KevesValue(vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqNum));
+      vm->gr1_ = KevesValue(vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqNum));
       vm->gr2_ = EMB_NULL;
       return KevesVM::raiseAssertCondition(vm, pc);
     }
@@ -689,7 +689,7 @@ namespace Arithmatic {
     }
 
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = KevesValue(vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqNum));
+    vm->gr1_ = KevesValue(vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqNum));
     vm->gr2_ = EMB_NULL;
     return KevesVM::raiseAssertCondition(vm, pc);
   }
@@ -718,7 +718,7 @@ namespace Arithmatic {
 	return OPERATOR1::funcInexactComplexExactComplex(vm, pc);
       
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = KevesValue(vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqNum));
+      vm->gr1_ = KevesValue(vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqNum));
       vm->gr2_ = EMB_NULL;
       return KevesVM::raiseAssertCondition(vm, pc);
     }
@@ -779,7 +779,7 @@ namespace Arithmatic {
     }
 
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = KevesValue(vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqNum));
+    vm->gr1_ = KevesValue(vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqNum));
     vm->gr2_ = EMB_NULL;
     return KevesVM::raiseAssertCondition(vm, pc);
   }
@@ -808,7 +808,7 @@ namespace Arithmatic {
 	return OPERATOR1::funcInexactComplexInexactComplex(vm, pc);
       
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = KevesValue(vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqNum));
+      vm->gr1_ = KevesValue(vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqNum));
       vm->gr2_ = EMB_NULL;
       return KevesVM::raiseAssertCondition(vm, pc);
     }
@@ -841,7 +841,7 @@ namespace Arithmatic {
       result.copyFrom(OPERATOR2::func(*num2, *num1));
     } else {
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = KevesValue(vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqNum));
+      vm->gr1_ = KevesValue(vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqNum));
       vm->gr2_ = EMB_NULL;
       return KevesVM::raiseAssertCondition(vm, pc);
     }

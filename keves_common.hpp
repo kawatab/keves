@@ -1,4 +1,4 @@
-// keves/keves_base_kev.hpp - base of Keves
+// keves/keves_common.hpp - common resources of Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -34,14 +34,14 @@ class KevesImportLibraryList;
 class QString;
 
 
-class KevesBase {
+class KevesCommon {
 public:
-  KevesBase();
-  KevesBase(const KevesBase&) = delete;
-  KevesBase(const KevesBase&&) = delete;
-  KevesBase& operator=(const KevesBase&) = delete;
-  KevesBase& operator=(const KevesBase&&) = delete;
-  ~KevesBase();
+  KevesCommon();
+  KevesCommon(const KevesCommon&) = delete;
+  KevesCommon(const KevesCommon&&) = delete;
+  KevesCommon& operator=(const KevesCommon&) = delete;
+  KevesCommon& operator=(const KevesCommon&&) = delete;
+  ~KevesCommon();
 
   ////////////////////////////////////////////////////////////////
   // General functions                                          //
@@ -131,7 +131,7 @@ public:
   template<class KEV>
   static void writeArray(const QList<const Kev*>& list, QDataStream& out, KEV* kev);
 
-  Kev* (*ft_readObject(uioword value))(QDataStream&, KevesBase*) {
+  Kev* (*ft_readObject(uioword value))(QDataStream&, KevesCommon*) {
     return ft_ReadObject_[value];
   }
   
@@ -187,7 +187,7 @@ private:
   KevesList<KevesNode<0> > shared_list_;
   void (*ft_PushChildren_[0177])(QStack<const Kev*>*, KevesValue);
   void (*ft_RevertObject_[0177])(const QList<const Kev*>&, MutableKevesValue);
-  Kev* (*ft_ReadObject_[0177])(QDataStream&, KevesBase*);
+  Kev* (*ft_ReadObject_[0177])(QDataStream&, KevesCommon*);
 
   void (*ft_WriteObject_[0177])(const QList<const Kev*>&, QDataStream&,
 				KevesValue);

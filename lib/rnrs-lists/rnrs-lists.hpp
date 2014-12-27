@@ -23,7 +23,7 @@
 #include "kev/procedure.hpp"
 
 
-class KevesBase;
+class KevesCommon;
 class SymbolKev;
 
 class LibRnrsLists : public KevesLibrary {
@@ -35,7 +35,7 @@ public:
   LibRnrsLists& operator=(LibRnrsLists&&) = delete;
   ~LibRnrsLists() = default;
 
-  void init(KevesBase* base);
+  void init(KevesCommon* common);
 
   SymbolKev* sym_cons_star_;
   CPSKev proc_cons_star_;

@@ -25,7 +25,7 @@
 
 
 class CodeKev;
-class KevesBase;
+class KevesCommon;
 class KevesGC;
 class QString;
 class StringKev;
@@ -40,7 +40,7 @@ public:
   KevesBuiltinValues& operator=(const KevesBuiltinValues&&) = delete;
   ~KevesBuiltinValues() = default;
 
-  void init(KevesBase* base);
+  void init(KevesCommon* common);
 
   // for messages
   static const char mesg_Req0[];
@@ -153,7 +153,7 @@ public:
   
 
 private:
-  void initMesgList(const QString& file_name, KevesBase* base);
+  void initMesgList(const QString& file_name, KevesCommon* common);
 
   QHash<QString, const StringKev*> mesg_text_;
   SymbolKev* sym_eval_;

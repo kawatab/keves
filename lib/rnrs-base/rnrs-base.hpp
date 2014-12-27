@@ -26,7 +26,7 @@
 #include "value/fixnum.hpp"
 
 
-class KevesBase;
+class KevesCommon;
 class SymbolKev;
 
 class LibRnrsBase : public KevesLibrary {
@@ -38,7 +38,7 @@ public:
   LibRnrsBase& operator=(LibRnrsBase&&) = delete;
   ~LibRnrsBase() = default;
 
-  void init(KevesBase* base);
+  void init(KevesCommon* common);
 
   SymbolKev* sym_char_upcase_;
   CPSKev proc_char_upcase_;
@@ -380,7 +380,7 @@ private:
 
   struct IsInteger {
     static bool func(KevesValue);
-    static KevesValue message(KevesBase*);
+    static KevesValue message(KevesCommon* common);
   };
 
   struct IsIntegerValued {
@@ -405,7 +405,7 @@ private:
 
   struct IsNumber {
     static bool func(KevesValue);
-    static KevesValue message(KevesBase*);
+    static KevesValue message(KevesCommon* common);
   };
 
   struct IsPositive {
@@ -414,10 +414,10 @@ private:
 
   struct IsProcedure {
     static bool func(KevesValue);
-    static KevesValue message(KevesBase*);
-    static KevesValue message1(KevesBase*);
-    static KevesValue message2(KevesBase*);
-    static KevesValue message3(KevesBase*);
+    static KevesValue message(KevesCommon* common);
+    static KevesValue message1(KevesCommon* common);
+    static KevesValue message2(KevesCommon* common);
+    static KevesValue message3(KevesCommon* common);
   };
 
   struct IsRational {
@@ -430,9 +430,9 @@ private:
 
   struct IsReal {
     static bool func(KevesValue);
-    static KevesValue message(KevesBase*);
-    static KevesValue message1(KevesBase*);
-    static KevesValue message2(KevesBase*);
+    static KevesValue message(KevesCommon* common);
+    static KevesValue message1(KevesCommon* common);
+    static KevesValue message2(KevesCommon* common);
   };
 
   struct IsRealValued {
@@ -979,8 +979,8 @@ private:
 
   struct IsVector {
     static bool func(KevesValue);
-    static KevesValue message(KevesBase*);
-    static KevesValue message1(KevesBase*);
+    static KevesValue message(KevesCommon* common);
+    static KevesValue message1(KevesCommon* common);
   };
 
   static void procMakeVector(KevesVM*, const_KevesIterator);

@@ -47,19 +47,21 @@ public:
   KevcGenerator& operator=(const KevcGenerator&&) = delete;
   ~KevcGenerator() = default;
 
-  KevcGenerator(KevesBase* base, const char* file_name,
+  KevcGenerator(KevesCommon* common, const char* file_name,
 		const char* id);
 
-  KevcGenerator(KevesBase* base, const char* file_name,
+  KevcGenerator(KevesCommon* common, const char* file_name,
 		const char* id1, const char* id2, ver_num_t ver_num);
 
-  KevcGenerator(KevesBase* base, const char* file_name,
+  KevcGenerator(KevesCommon* common, const char* file_name,
 		const char* id1, const char* id2,
 		ver_num_t ver_num1, ver_num_t ver_num2);
 
-  KevesBase* base() {
-    return base_;
+  /*
+  KevesCommon* common() {
+    return common_;
   }
+  */
   
   void exportBind(const char* id, KevesValue value);
   KevesValue findBind(const char* id) const;
@@ -91,12 +93,12 @@ public:
 
   void writeToFile();
 
-  static void testRead(KevesBase* base, const char* file_name);
+  static void testRead(KevesCommon* common, const char* file_name);
 
 private:
-  static KevesLibrary* readFromFile(KevesBase* base, const char* file_name);
+  static KevesLibrary* readFromFile(KevesCommon* common, const char* file_name);
 
-  KevesBase* base_;
+  KevesCommon* common_;
   const char* file_name_;
   KevesLibrary this_lib_;
   KevesImportLibraryList import_libs_;

@@ -18,9 +18,9 @@ HEADERS += kevc_generator.hpp \
            code_rnrs-mutable-strings.hpp \
            code_rnrs-unicode.hpp \
            test_code.hpp \
-           keves_base.hpp \
-           keves_base-inl.hpp \
            keves_builtin_values.hpp \
+           keves_common.hpp \
+           keves_common-inl.hpp \
            keves_gc.hpp \
            keves_iterator.hpp \
            keves_library.hpp \
@@ -56,8 +56,8 @@ SOURCES += main.cpp \
            code_rnrs-mutable-strings.cpp \
            code_rnrs-unicode.cpp \
            test_code.cpp \
-           keves_base.cpp \
            keves_builtin_values.cpp \
+           keves_common.cpp \
            keves_gc.cpp \
            keves_iterator.cpp \
            keves_library.cpp \

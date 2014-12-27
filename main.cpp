@@ -16,13 +16,13 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
-#include "keves_base.hpp"
+#include "keves_common.hpp"
 
 
 int main() {
-  KevesBase base;
-  base.runThread();
-  base.runThread();
+  KevesCommon common;
+  common.runThread();
+  common.runThread();
 
   return 0;
 }

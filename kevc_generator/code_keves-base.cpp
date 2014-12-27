@@ -20,7 +20,7 @@
 #include "code_keves-base.hpp"
 
 #include "kevc_generator.hpp"
-#include "keves_base.hpp"
+#include "keves_common.hpp"
 #include "kev/code.hpp"
 #include "kev/pair.hpp"
 #include "kev/string.hpp"
@@ -28,7 +28,7 @@
 #include "value/fixnum.hpp"
 
 
-void KevesBaseCode::write(KevcGenerator* generator) {
+void Code_KevesBase::write(KevcGenerator* generator) {
   // import binds
   if (!generator->setImportLibrary("keves", "base-bin", 6)) return;
   KevesValue proc_display(generator->importBind("display"));

@@ -25,6 +25,6 @@
 class KevcGenerator;
 
 
-namespace KevesBaseCode {
+namespace Code_KevesBase {
   void write(KevcGenerator* generator);
 };

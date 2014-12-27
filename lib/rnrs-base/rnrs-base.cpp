@@ -24,9 +24,9 @@
 #include <QTextCodec>
 #include <QTextEdit>
 #include <QTextStream>
-#include "keves_base.hpp"
-#include "keves_base-inl.hpp"
 #include "keves_builtin_values.hpp"
+#include "keves_common.hpp"
+#include "keves_common-inl.hpp"
 #include "keves_template.hpp"
 #include "keves_vm.hpp"
 #include "kev/code.hpp"
@@ -46,142 +46,142 @@
 #include "value/fixnum.hpp"
 
 
-void LibRnrsBase::init(KevesBase* base) {
+void LibRnrsBase::init(KevesCommon* common) {
   std::cout << "LibRnrsBase::init()" << std::endl;
 
   // setID("rnrs", "base-bin");
   // setVerNum(6);
 					       
-  sym_abs_ = SymbolKev::make(base, "abs");
-  sym_add_ = SymbolKev::make(base, "+");
-  // sym_and_ = SymbolKev::make(base, "and");
-  sym_angle_ = SymbolKev::make(base, "angle");
-  // sym_append_ = SymbolKev::make(base, "append");
-  sym_apply_ = SymbolKev::make(base, "apply");
-  sym_assertion_violation_ = SymbolKev::make(base, "assertion-violation");
-  // sym_begin_ = SymbolKev::make(base, "begin");
-  // sym_begin0_ = SymbolKev::make(base, "begin0");
-  sym_boolean_q_ = SymbolKev::make(base, "boolean?");
-  sym_call_with_cc_ = SymbolKev::make(base, "call/cc");
-  sym_call_with_current_continuation_ = SymbolKev::make(base, "call-with-current-continuation");
-  sym_call_with_values_ = SymbolKev::make(base, "call-with-values");
-  sym_car_ = SymbolKev::make(base, "car");
-  sym_cdr_ = SymbolKev::make(base, "cdr");
-  sym_caar_ = SymbolKev::make(base, "caar");
-  sym_cadr_ = SymbolKev::make(base, "cadr");
-  sym_cdar_ = SymbolKev::make(base, "cdar");
-  sym_cddr_ = SymbolKev::make(base, "cddr");
-  sym_caaar_ = SymbolKev::make(base, "caaar");
-  sym_caadr_ = SymbolKev::make(base, "caadr");
-  sym_cadar_ = SymbolKev::make(base, "cadar");
-  sym_caddr_ = SymbolKev::make(base, "caddr");
-  sym_cdaar_ = SymbolKev::make(base, "cdaar");
-  sym_cdadr_ = SymbolKev::make(base, "cdadr");
-  sym_cddar_ = SymbolKev::make(base, "cddar");
-  sym_cdddr_ = SymbolKev::make(base, "cdddr");
-  sym_ceiling_ = SymbolKev::make(base, "ceiling");
-  sym_char_eq_q_ = SymbolKev::make(base, "char=?");
-  sym_char_gt_q_ = SymbolKev::make(base, "char>?");
-  sym_char_gte_q_ = SymbolKev::make(base, "char>=?");
-  sym_char_lt_q_ = SymbolKev::make(base, "char<?");
-  sym_char_lte_q_ = SymbolKev::make(base, "char<=?");
-  sym_char_q_ = SymbolKev::make(base, "char?");
-  sym_char_to_integer_ = SymbolKev::make(base, "char->integer");
-  sym_complex_q_ = SymbolKev::make(base, "complex?");
-  sym_cons_ = SymbolKev::make(base, "cons");
-  sym_denominator_ = SymbolKev::make(base, "denominator");
-  sym_divide_ = SymbolKev::make(base, "/");
-  sym_dynamic_wind_ = SymbolKev::make(base, "dynamic-wind");
-  // sym_eq_q_ = SymbolKev::make(base, "eq?");
-  sym_equal_ = SymbolKev::make(base, "=");
-  // sym_eqv_q_ = SymbolKev::make(base, "eqv?");
-  sym_exact_q_ = SymbolKev::make(base, "exact?");
-  sym_flacos_ = SymbolKev::make(base, "flacos");
-  sym_flasin_ = SymbolKev::make(base, "flasin");
-  sym_flatan_ = SymbolKev::make(base, "flatan");
-  sym_flcos_ = SymbolKev::make(base, "flcos");
-  sym_flexact_ = SymbolKev::make(base, "flexact");
-  sym_flexp_ = SymbolKev::make(base, "flexp");
-  sym_flexpt_ = SymbolKev::make(base, "flexpt");
-  sym_fllog_ = SymbolKev::make(base, "fllog");
-  sym_floor_ = SymbolKev::make(base, "floor");
-  sym_flsin_ = SymbolKev::make(base, "flsin");
-  sym_flsqrt_ = SymbolKev::make(base, "flsqrt");
-  sym_fltan_ = SymbolKev::make(base, "fltan");
-  sym_greater_than_ = SymbolKev::make(base, ">");
-  sym_greater_than_equal_ = SymbolKev::make(base, ">=");
-  sym_even_q_ = SymbolKev::make(base, "even?");
-  sym_finite_q_ = SymbolKev::make(base, "finite?");
-  sym_imag_part_ = SymbolKev::make(base, "imag-part");
-  sym_infinite_q_ = SymbolKev::make(base, "infinite?");
-  sym_inexact_ = SymbolKev::make(base, "inexact");
-  sym_inexact_q_ = SymbolKev::make(base, "inexact?");
-  sym_integer_q_ = SymbolKev::make(base, "integer?");
-  sym_integer_valued_q_ = SymbolKev::make(base, "integer-valued?");
-  sym_integer_to_char_ = SymbolKev::make(base, "integer->char");
-  sym_length_ = SymbolKev::make(base, "length");
-  // sym_length_check_ = SymbolKev::make(base, "length-check");
-  sym_less_than_ = SymbolKev::make(base, "<");
-  sym_less_than_equal_ = SymbolKev::make(base, "<=");
-  sym_list_ = SymbolKev::make(base, "list");
-  sym_magnitude_ = SymbolKev::make(base, "magnitude");
-  sym_make_polar_ = SymbolKev::make(base, "make-polar");
-  sym_make_rectangular_ = SymbolKev::make(base, "make-rectangular");
-  sym_make_string_ = SymbolKev::make(base, "make-string");
-  sym_make_vector_ = SymbolKev::make(base, "make-vector");
-  // sym_map_ = SymbolKev::make(base, "map");
-  sym_max_ = SymbolKev::make(base, "max");
-  sym_min_ = SymbolKev::make(base, "min");
-  sym_multiply_ = SymbolKev::make(base, "*");
-  sym_nan_q_ = SymbolKev::make(base, "nan?");
-  sym_negative_q_ = SymbolKev::make(base, "negative?");
-  sym_not_ = SymbolKev::make(base, "not");
-  sym_null_q_ = SymbolKev::make(base, "null?");
-  sym_number_q_ = SymbolKev::make(base, "number?");
-  sym_number_to_string_ = SymbolKev::make(base, "number->string");
-  sym_numerator_ = SymbolKev::make(base, "numerator");
-  sym_odd_q_ = SymbolKev::make(base, "odd?");
-  sym_pair_q_ = SymbolKev::make(base, "pair?");
-  sym_positive_q_ = SymbolKev::make(base, "positive?");
-  sym_procedure_q_ = SymbolKev::make(base, "procedure?");
-  sym_rational_q_ = SymbolKev::make(base, "rational?");
-  sym_rational_valued_q_ = SymbolKev::make(base, "rational-valued?");
-  sym_real_part_ = SymbolKev::make(base, "real-part");
-  sym_real_q_ = SymbolKev::make(base, "real?");
-  sym_real_valued_q_ = SymbolKev::make(base, "real-valued?");
-  sym_reverse_ = SymbolKev::make(base, "reverse");
-  sym_round_ = SymbolKev::make(base, "round");
-  // sym_separate_first_value_ = SymbolKev::make(base, "separate-first-value");
-  sym_string_ = SymbolKev::make(base, "string");
-  // sym_string_append_ = SymbolKev::make(base, "string-append");
-  sym_string_copy_ = SymbolKev::make(base, "string-copy");
-  sym_string_eq_q_ = SymbolKev::make(base, "string=?");
-  sym_string_gt_q_ = SymbolKev::make(base, "string>?");
-  sym_string_gte_q_ = SymbolKev::make(base, "string>=?");
-  sym_string_length_ = SymbolKev::make(base, "string-length");
-  sym_string_lt_q_ = SymbolKev::make(base, "string<?");
-  sym_string_lte_q_ = SymbolKev::make(base, "string<=?");
-  sym_string_q_ = SymbolKev::make(base, "string?");
-  sym_string_ref_ = SymbolKev::make(base, "string-ref");
-  sym_string_to_list_ = SymbolKev::make(base, "string->list");
-  sym_string_to_number_ = SymbolKev::make(base, "string->number");
-  sym_string_to_symbol_ = SymbolKev::make(base, "string->symbol");
-  sym_substring_ = SymbolKev::make(base, "substring");
-  sym_subtract_ = SymbolKev::make(base, "-");
-  sym_symbol_eq_q_ = SymbolKev::make(base, "symbol=?");
-  sym_symbol_q_ = SymbolKev::make(base, "symbol?");
-  sym_symbol_to_string_ = SymbolKev::make(base, "symbol->string");
-  // sym_transpose_ = SymbolKev::make(base, "transpose");
-  sym_truncate_ = SymbolKev::make(base, "truncate");
-  sym_values_ = SymbolKev::make(base, "values");
-  sym_vector_ = SymbolKev::make(base, "vector");
-  sym_vector_length_ = SymbolKev::make(base, "vector-length");
-  sym_vector_q_ = SymbolKev::make(base, "vector?");
-  sym_vector_ref_ = SymbolKev::make(base, "vector-ref");
-  sym_vector_set_e_ = SymbolKev::make(base, "vector-set!");
-  sym_vector_to_list_ = SymbolKev::make(base, "vector->list");
-  sym_list_to_vector_ = SymbolKev::make(base, "list->vector");
-  sym_zero_q_ = SymbolKev::make(base, "zero?");
+  sym_abs_ = SymbolKev::make(common, "abs");
+  sym_add_ = SymbolKev::make(common, "+");
+  // sym_and_ = SymbolKev::make(common, "and");
+  sym_angle_ = SymbolKev::make(common, "angle");
+  // sym_append_ = SymbolKev::make(common, "append");
+  sym_apply_ = SymbolKev::make(common, "apply");
+  sym_assertion_violation_ = SymbolKev::make(common, "assertion-violation");
+  // sym_begin_ = SymbolKev::make(common, "begin");
+  // sym_begin0_ = SymbolKev::make(common, "begin0");
+  sym_boolean_q_ = SymbolKev::make(common, "boolean?");
+  sym_call_with_cc_ = SymbolKev::make(common, "call/cc");
+  sym_call_with_current_continuation_ = SymbolKev::make(common, "call-with-current-continuation");
+  sym_call_with_values_ = SymbolKev::make(common, "call-with-values");
+  sym_car_ = SymbolKev::make(common, "car");
+  sym_cdr_ = SymbolKev::make(common, "cdr");
+  sym_caar_ = SymbolKev::make(common, "caar");
+  sym_cadr_ = SymbolKev::make(common, "cadr");
+  sym_cdar_ = SymbolKev::make(common, "cdar");
+  sym_cddr_ = SymbolKev::make(common, "cddr");
+  sym_caaar_ = SymbolKev::make(common, "caaar");
+  sym_caadr_ = SymbolKev::make(common, "caadr");
+  sym_cadar_ = SymbolKev::make(common, "cadar");
+  sym_caddr_ = SymbolKev::make(common, "caddr");
+  sym_cdaar_ = SymbolKev::make(common, "cdaar");
+  sym_cdadr_ = SymbolKev::make(common, "cdadr");
+  sym_cddar_ = SymbolKev::make(common, "cddar");
+  sym_cdddr_ = SymbolKev::make(common, "cdddr");
+  sym_ceiling_ = SymbolKev::make(common, "ceiling");
+  sym_char_eq_q_ = SymbolKev::make(common, "char=?");
+  sym_char_gt_q_ = SymbolKev::make(common, "char>?");
+  sym_char_gte_q_ = SymbolKev::make(common, "char>=?");
+  sym_char_lt_q_ = SymbolKev::make(common, "char<?");
+  sym_char_lte_q_ = SymbolKev::make(common, "char<=?");
+  sym_char_q_ = SymbolKev::make(common, "char?");
+  sym_char_to_integer_ = SymbolKev::make(common, "char->integer");
+  sym_complex_q_ = SymbolKev::make(common, "complex?");
+  sym_cons_ = SymbolKev::make(common, "cons");
+  sym_denominator_ = SymbolKev::make(common, "denominator");
+  sym_divide_ = SymbolKev::make(common, "/");
+  sym_dynamic_wind_ = SymbolKev::make(common, "dynamic-wind");
+  // sym_eq_q_ = SymbolKev::make(common, "eq?");
+  sym_equal_ = SymbolKev::make(common, "=");
+  // sym_eqv_q_ = SymbolKev::make(common, "eqv?");
+  sym_exact_q_ = SymbolKev::make(common, "exact?");
+  sym_flacos_ = SymbolKev::make(common, "flacos");
+  sym_flasin_ = SymbolKev::make(common, "flasin");
+  sym_flatan_ = SymbolKev::make(common, "flatan");
+  sym_flcos_ = SymbolKev::make(common, "flcos");
+  sym_flexact_ = SymbolKev::make(common, "flexact");
+  sym_flexp_ = SymbolKev::make(common, "flexp");
+  sym_flexpt_ = SymbolKev::make(common, "flexpt");
+  sym_fllog_ = SymbolKev::make(common, "fllog");
+  sym_floor_ = SymbolKev::make(common, "floor");
+  sym_flsin_ = SymbolKev::make(common, "flsin");
+  sym_flsqrt_ = SymbolKev::make(common, "flsqrt");
+  sym_fltan_ = SymbolKev::make(common, "fltan");
+  sym_greater_than_ = SymbolKev::make(common, ">");
+  sym_greater_than_equal_ = SymbolKev::make(common, ">=");
+  sym_even_q_ = SymbolKev::make(common, "even?");
+  sym_finite_q_ = SymbolKev::make(common, "finite?");
+  sym_imag_part_ = SymbolKev::make(common, "imag-part");
+  sym_infinite_q_ = SymbolKev::make(common, "infinite?");
+  sym_inexact_ = SymbolKev::make(common, "inexact");
+  sym_inexact_q_ = SymbolKev::make(common, "inexact?");
+  sym_integer_q_ = SymbolKev::make(common, "integer?");
+  sym_integer_valued_q_ = SymbolKev::make(common, "integer-valued?");
+  sym_integer_to_char_ = SymbolKev::make(common, "integer->char");
+  sym_length_ = SymbolKev::make(common, "length");
+  // sym_length_check_ = SymbolKev::make(common, "length-check");
+  sym_less_than_ = SymbolKev::make(common, "<");
+  sym_less_than_equal_ = SymbolKev::make(common, "<=");
+  sym_list_ = SymbolKev::make(common, "list");
+  sym_magnitude_ = SymbolKev::make(common, "magnitude");
+  sym_make_polar_ = SymbolKev::make(common, "make-polar");
+  sym_make_rectangular_ = SymbolKev::make(common, "make-rectangular");
+  sym_make_string_ = SymbolKev::make(common, "make-string");
+  sym_make_vector_ = SymbolKev::make(common, "make-vector");
+  // sym_map_ = SymbolKev::make(common, "map");
+  sym_max_ = SymbolKev::make(common, "max");
+  sym_min_ = SymbolKev::make(common, "min");
+  sym_multiply_ = SymbolKev::make(common, "*");
+  sym_nan_q_ = SymbolKev::make(common, "nan?");
+  sym_negative_q_ = SymbolKev::make(common, "negative?");
+  sym_not_ = SymbolKev::make(common, "not");
+  sym_null_q_ = SymbolKev::make(common, "null?");
+  sym_number_q_ = SymbolKev::make(common, "number?");
+  sym_number_to_string_ = SymbolKev::make(common, "number->string");
+  sym_numerator_ = SymbolKev::make(common, "numerator");
+  sym_odd_q_ = SymbolKev::make(common, "odd?");
+  sym_pair_q_ = SymbolKev::make(common, "pair?");
+  sym_positive_q_ = SymbolKev::make(common, "positive?");
+  sym_procedure_q_ = SymbolKev::make(common, "procedure?");
+  sym_rational_q_ = SymbolKev::make(common, "rational?");
+  sym_rational_valued_q_ = SymbolKev::make(common, "rational-valued?");
+  sym_real_part_ = SymbolKev::make(common, "real-part");
+  sym_real_q_ = SymbolKev::make(common, "real?");
+  sym_real_valued_q_ = SymbolKev::make(common, "real-valued?");
+  sym_reverse_ = SymbolKev::make(common, "reverse");
+  sym_round_ = SymbolKev::make(common, "round");
+  // sym_separate_first_value_ = SymbolKev::make(common, "separate-first-value");
+  sym_string_ = SymbolKev::make(common, "string");
+  // sym_string_append_ = SymbolKev::make(common, "string-append");
+  sym_string_copy_ = SymbolKev::make(common, "string-copy");
+  sym_string_eq_q_ = SymbolKev::make(common, "string=?");
+  sym_string_gt_q_ = SymbolKev::make(common, "string>?");
+  sym_string_gte_q_ = SymbolKev::make(common, "string>=?");
+  sym_string_length_ = SymbolKev::make(common, "string-length");
+  sym_string_lt_q_ = SymbolKev::make(common, "string<?");
+  sym_string_lte_q_ = SymbolKev::make(common, "string<=?");
+  sym_string_q_ = SymbolKev::make(common, "string?");
+  sym_string_ref_ = SymbolKev::make(common, "string-ref");
+  sym_string_to_list_ = SymbolKev::make(common, "string->list");
+  sym_string_to_number_ = SymbolKev::make(common, "string->number");
+  sym_string_to_symbol_ = SymbolKev::make(common, "string->symbol");
+  sym_substring_ = SymbolKev::make(common, "substring");
+  sym_subtract_ = SymbolKev::make(common, "-");
+  sym_symbol_eq_q_ = SymbolKev::make(common, "symbol=?");
+  sym_symbol_q_ = SymbolKev::make(common, "symbol?");
+  sym_symbol_to_string_ = SymbolKev::make(common, "symbol->string");
+  // sym_transpose_ = SymbolKev::make(common, "transpose");
+  sym_truncate_ = SymbolKev::make(common, "truncate");
+  sym_values_ = SymbolKev::make(common, "values");
+  sym_vector_ = SymbolKev::make(common, "vector");
+  sym_vector_length_ = SymbolKev::make(common, "vector-length");
+  sym_vector_q_ = SymbolKev::make(common, "vector?");
+  sym_vector_ref_ = SymbolKev::make(common, "vector-ref");
+  sym_vector_set_e_ = SymbolKev::make(common, "vector-set!");
+  sym_vector_to_list_ = SymbolKev::make(common, "vector->list");
+  sym_list_to_vector_ = SymbolKev::make(common, "list->vector");
+  sym_zero_q_ = SymbolKev::make(common, "zero?");
   
   proc_procedure_q_.set(&Function::predicate<IsProcedure>, sym_procedure_q_);
   proc_number_q_.set(&Function::predicate<IsNumber>, sym_number_q_);
@@ -601,20 +601,20 @@ void LibRnrsBase::Inexact::func(KevesVM* vm, const_KevesIterator pc) {
   return KevesVM::returnValue(vm, pc);
 }
 
-KevesValue LibRnrsBase::IsNumber::message(KevesBase* base) {
-  return base->getMesgText(KevesBuiltinValues::mesg_ReqNum);
+KevesValue LibRnrsBase::IsNumber::message(KevesCommon* common) {
+  return common->getMesgText(KevesBuiltinValues::mesg_ReqNum);
 }
 
-KevesValue LibRnrsBase::IsReal::message(KevesBase* base) {
-  return base->getMesgText(KevesBuiltinValues::mesg_ReqRealNum);
+KevesValue LibRnrsBase::IsReal::message(KevesCommon* common) {
+  return common->getMesgText(KevesBuiltinValues::mesg_ReqRealNum);
 }
 
-KevesValue LibRnrsBase::IsReal::message1(KevesBase* base) {
-  return base->getMesgText(KevesBuiltinValues::mesg_ReqRealNumAs1st);
+KevesValue LibRnrsBase::IsReal::message1(KevesCommon* common) {
+  return common->getMesgText(KevesBuiltinValues::mesg_ReqRealNumAs1st);
 }
 
-KevesValue LibRnrsBase::IsReal::message2(KevesBase* base) {
-  return base->getMesgText(KevesBuiltinValues::mesg_ReqRealNumAs2nd);
+KevesValue LibRnrsBase::IsReal::message2(KevesCommon* common) {
+  return common->getMesgText(KevesBuiltinValues::mesg_ReqRealNumAs2nd);
 }
 
 bool LibRnrsBase::IsRealValued::func(KevesValue kev) {
@@ -680,8 +680,8 @@ bool LibRnrsBase::IsInteger::func(KevesValue kev) {
   return false;
 }
 
-KevesValue LibRnrsBase::IsInteger::message(KevesBase* base) {
-  return base->getMesgText(KevesBuiltinValues::mesg_ReqIntNum);
+KevesValue LibRnrsBase::IsInteger::message(KevesCommon* common) {
+  return common->getMesgText(KevesBuiltinValues::mesg_ReqIntNum);
 }
 
 bool LibRnrsBase::IsIntegerValued::func(KevesValue kev) {
@@ -788,20 +788,20 @@ bool LibRnrsBase::IsProcedure::func(KevesValue kev) {
   return kev.isProcedure();
 }
 
-KevesValue LibRnrsBase::IsProcedure::message(KevesBase* base) {
-  return base->getMesgText(KevesBuiltinValues::mesg_ReqProc);
+KevesValue LibRnrsBase::IsProcedure::message(KevesCommon* common) {
+  return common->getMesgText(KevesBuiltinValues::mesg_ReqProc);
 }
 
-KevesValue LibRnrsBase::IsProcedure::message1(KevesBase* base) {
-  return base->getMesgText(KevesBuiltinValues::mesg_ReqProcAs1st);
+KevesValue LibRnrsBase::IsProcedure::message1(KevesCommon* common) {
+  return common->getMesgText(KevesBuiltinValues::mesg_ReqProcAs1st);
 }
 
-KevesValue LibRnrsBase::IsProcedure::message2(KevesBase* base) {
-  return base->getMesgText(KevesBuiltinValues::mesg_ReqProcAs2nd);
+KevesValue LibRnrsBase::IsProcedure::message2(KevesCommon* common) {
+  return common->getMesgText(KevesBuiltinValues::mesg_ReqProcAs2nd);
 }
 
-KevesValue LibRnrsBase::IsProcedure::message3(KevesBase* base) {
-  return base->getMesgText(KevesBuiltinValues::mesg_ReqProcAs3rd);
+KevesValue LibRnrsBase::IsProcedure::message3(KevesCommon* common) {
+  return common->getMesgText(KevesBuiltinValues::mesg_ReqProcAs3rd);
 }
 
 KevesValue LibRnrsBase::Max::func(KevesGC* gc, KevesValue num1, KevesValue num2) {
@@ -827,7 +827,7 @@ void LibRnrsBase::Add::func1(KevesVM* vm, const_KevesIterator pc) {
   }
 
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqNum);
+  vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqNum);
   vm->gr2_ = EMB_NULL;
   return KevesVM::raiseAssertCondition(vm, pc);
 }
@@ -1014,7 +1014,7 @@ void LibRnrsBase::Multiply::func1(KevesVM* vm, const_KevesIterator pc) {
   }
 
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqNum);
+  vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqNum);
   vm->gr2_ = EMB_NULL;
   return KevesVM::raiseAssertCondition(vm, pc);
 }
@@ -1192,7 +1192,7 @@ void LibRnrsBase::Multiply::funcInexactComplexInexactComplex(KevesVM* vm, const_
 
 void LibRnrsBase::Subtract::func0(KevesVM* vm, const_KevesIterator pc) {
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_Req1OrMoreGot0);
+  vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_Req1OrMoreGot0);
   vm->gr2_ = EMB_NULL;
   return KevesVM::raiseAssertCondition(vm, pc);
 }
@@ -1282,7 +1282,7 @@ void LibRnrsBase::Subtract::func5(KevesVM* vm, const_KevesIterator pc) {
 
 void LibRnrsBase::Subtract::func6(KevesVM* vm, const_KevesIterator pc) {
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqNum);
+  vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqNum);
   vm->gr2_ = EMB_NULL;
   return KevesVM::raiseAssertCondition(vm, pc);
 }
@@ -1456,7 +1456,7 @@ void LibRnrsBase::Subtract::funcInexactComplexInexactComplex(KevesVM* vm, const_
 
 void LibRnrsBase::Divide::func0(KevesVM* vm, const_KevesIterator pc) {
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_Req1OrMoreGot0);
+  vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_Req1OrMoreGot0);
   vm->gr2_ = EMB_NULL;
   return KevesVM::raiseAssertCondition(vm, pc);
 }
@@ -1471,7 +1471,7 @@ void LibRnrsBase::Divide::func1(KevesVM* vm, const_KevesIterator pc) {
 
     if (denominator == 0) {
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_Div0);
+      vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_Div0);
       vm->gr2_ = EMB_NULL;
       return KevesVM::raiseAssertCondition(vm, pc);
     }
@@ -1515,7 +1515,7 @@ void LibRnrsBase::Divide::func1(KevesVM* vm, const_KevesIterator pc) {
   }
 
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqNum);
+  vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqNum);
   vm->gr2_ = EMB_NULL;
   return KevesVM::raiseAssertCondition(vm, pc);
 }
@@ -1699,7 +1699,7 @@ void LibRnrsBase::Numerator::func(KevesVM* vm, const_KevesIterator pc) {
 
     if (num->isNaN() || num->isInfinity()) {
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqRealNum);
+      vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqRealNum);
       vm->gr2_ = EMB_NULL;
       return KevesVM::raiseAssertCondition(vm, pc);
     }
@@ -1738,7 +1738,7 @@ void LibRnrsBase::Denominator::func(KevesVM* vm, const_KevesIterator pc) {
     
     if (num->isNaN() || num->isInfinity()) {
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqRealNum);
+      vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqRealNum);
       vm->gr2_ = EMB_NULL;
       return KevesVM::raiseAssertCondition(vm, pc);
     }
@@ -2030,21 +2030,21 @@ void LibRnrsBase::procNumberToString(KevesVM* vm, const_KevesIterator pc) {
 
 void LibRnrsBase::procNumberToString_err1(KevesVM* vm, const_KevesIterator pc) {
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqIntNum);
+  vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqIntNum);
   vm->gr2_ = EMB_NULL;
   return KevesVM::raiseAssertCondition(vm, pc);
 }
 
 void LibRnrsBase::procNumberToString_err2(KevesVM* vm, const_KevesIterator pc) {
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqNum);
+  vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqNum);
   vm->gr2_ = EMB_NULL;
   return KevesVM::raiseAssertCondition(vm, pc);
 }
 
 void LibRnrsBase::procNumberToString_err3(KevesVM* vm, const_KevesIterator pc) {
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_Req2GotMore);
+  vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_Req2GotMore);
   vm->gr2_ = EMB_NULL;
   return KevesVM::raiseAssertCondition(vm, pc);
 }
@@ -2059,7 +2059,7 @@ void LibRnrsBase::procStringToNumber(KevesVM* vm, const_KevesIterator pc) {
   case 3:
     if (!registers->lastArgument().isFixnum()) {
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_Req2GotMore);
+      vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_Req2GotMore);
       vm->gr2_ = EMB_NULL;
       return KevesVM::raiseAssertCondition(vm, pc);
     }
@@ -2069,7 +2069,7 @@ void LibRnrsBase::procStringToNumber(KevesVM* vm, const_KevesIterator pc) {
   case 2: {
     if (!registers->argument(1).isString()) {
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqStr);
+      vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqStr);
       vm->gr2_ = EMB_NULL;
       return KevesVM::raiseAssertCondition(vm, pc);
     }
@@ -2082,9 +2082,9 @@ void LibRnrsBase::procStringToNumber(KevesVM* vm, const_KevesIterator pc) {
     
   default:
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = vm->base()->getMesgText(argn > 3 ?
-				       KevesBuiltinValues::mesg_Req1Or2GotMore :
-				       KevesBuiltinValues::mesg_Req1Or2Got0);
+    vm->gr1_ = vm->common()->getMesgText(argn > 3 ?
+					 KevesBuiltinValues::mesg_Req1Or2GotMore :
+					 KevesBuiltinValues::mesg_Req1Or2Got0);
     vm->gr2_ = EMB_NULL;
     return KevesVM::raiseAssertCondition(vm, pc);
   }
@@ -2277,7 +2277,7 @@ void LibRnrsBase::Flsqrt::func(KevesVM* vm, const_KevesIterator pc) {
 
   if (flonum.isNegative()) {
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqRealNum);
+    vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqRealNum);
     vm->gr2_ = EMB_NULL;
     return KevesVM::raiseAssertCondition(vm, pc);
   }
@@ -2302,27 +2302,27 @@ void LibRnrsBase::procFlexpt(KevesVM* vm, const_KevesIterator pc) {
     }
 
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqRealNum);
+    vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqRealNum);
     vm->gr2_ = EMB_NULL;
     return KevesVM::raiseAssertCondition(vm, pc);
   }
 
   if (registers->argn() == 1) {
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_Req2Got0);
+    vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_Req2Got0);
     vm->gr2_ = EMB_NULL;
     return KevesVM::raiseAssertCondition(vm, pc);
   }
 
   if (registers->argn() == 2) {
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_Req2Got1);
+    vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_Req2Got1);
     vm->gr2_ = EMB_NULL;
     return KevesVM::raiseAssertCondition(vm, pc);
   }
   
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_Req2GotMore);
+  vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_Req2GotMore);
   vm->gr2_ = EMB_NULL;
   return KevesVM::raiseAssertCondition(vm, pc);
 }
@@ -2367,7 +2367,7 @@ void LibRnrsBase::Cadr::func(KevesVM* vm, const_KevesIterator pc) {
   }
   
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqPair);
+  vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqPair);
   vm->gr2_ = EMB_NULL;
   return KevesVM::raiseAssertCondition(vm, pc);
 }
@@ -2382,7 +2382,7 @@ void LibRnrsBase::Cddr::func(KevesVM* vm, const_KevesIterator pc) {
   }
   
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqPair);
+  vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqPair);
   vm->gr2_ = EMB_NULL;
   return KevesVM::raiseAssertCondition(vm, pc);
 }
@@ -2401,7 +2401,7 @@ void LibRnrsBase::Caaar::func(KevesVM* vm, const_KevesIterator pc) {
   }
   
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqPair);
+  vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqPair);
   vm->gr2_ = EMB_NULL;
   return KevesVM::raiseAssertCondition(vm, pc);
 }
@@ -2420,7 +2420,7 @@ void LibRnrsBase::Caadr::func(KevesVM* vm, const_KevesIterator pc) {
   }
   
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqPair);
+  vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqPair);
   vm->gr2_ = EMB_NULL;
   return KevesVM::raiseAssertCondition(vm, pc);
 }
@@ -2439,7 +2439,7 @@ void LibRnrsBase::Cadar::func(KevesVM* vm, const_KevesIterator pc) {
   }
 
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqPair);
+  vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqPair);
   vm->gr2_ = EMB_NULL;
   return KevesVM::raiseAssertCondition(vm, pc);
 }
@@ -2458,7 +2458,7 @@ void LibRnrsBase::Caddr::func(KevesVM* vm, const_KevesIterator pc) {
   }
 
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqPair);
+  vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqPair);
   vm->gr2_ = EMB_NULL;
   return KevesVM::raiseAssertCondition(vm, pc);
 }
@@ -2473,7 +2473,7 @@ void LibRnrsBase::Caar::func(KevesVM* vm, const_KevesIterator pc) {
   }
 
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqPair);
+  vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqPair);
   vm->gr2_ = EMB_NULL;
   return KevesVM::raiseAssertCondition(vm, pc);
 }
@@ -2488,7 +2488,7 @@ void LibRnrsBase::Cdar::func(KevesVM* vm, const_KevesIterator pc) {
   }
 
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqPair);
+  vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqPair);
   vm->gr2_ = EMB_NULL;
   return KevesVM::raiseAssertCondition(vm, pc);
 }
@@ -2507,7 +2507,7 @@ void LibRnrsBase::Cdaar::func(KevesVM* vm, const_KevesIterator pc) {
   }
   
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqPair);
+  vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqPair);
   vm->gr2_ = EMB_NULL;
   return KevesVM::raiseAssertCondition(vm, pc);
 }
@@ -2526,7 +2526,7 @@ void LibRnrsBase::Cdadr::func(KevesVM* vm, const_KevesIterator pc) {
   }
 
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqPair);
+  vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqPair);
   vm->gr2_ = EMB_NULL;
   return KevesVM::raiseAssertCondition(vm, pc);
 }
@@ -2545,7 +2545,7 @@ void LibRnrsBase::Cddar::func(KevesVM* vm, const_KevesIterator pc) {
   }
   
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqPair);
+  vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqPair);
   vm->gr2_ = EMB_NULL;
   return KevesVM::raiseAssertCondition(vm, pc);
 }
@@ -2564,7 +2564,7 @@ void LibRnrsBase::Cdddr::func(KevesVM* vm, const_KevesIterator pc) {
   }
 
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqPair);
+  vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqPair);
   vm->gr2_ = EMB_NULL;
   return KevesVM::raiseAssertCondition(vm, pc);
 }
@@ -2604,7 +2604,7 @@ void LibRnrsBase::Length::func(KevesVM* vm, const_KevesIterator pc) {
   }
   
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqProperList);
+  vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqProperList);
   vm->gr2_ = EMB_NULL;
   return KevesVM::raiseAssertCondition(vm, pc);
 }
@@ -2631,7 +2631,7 @@ void LibRnrsBase::Reverse::func_helper(KevesVM* vm, const_KevesIterator pc) {
     return KevesVM::returnValue(vm, pc);
 
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqProperList);
+  vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqProperList);
   vm->gr2_ = EMB_NULL;
   return KevesVM::raiseAssertCondition(vm, pc);
 }
@@ -2713,7 +2713,7 @@ void LibRnrsBase::procMakeString(KevesVM* vm, const_KevesIterator pc) {
   case 3:
     if (!registers->lastArgument().isChar()) {
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqChar);
+      vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqChar);
       vm->gr2_ = EMB_NULL;
       return KevesVM::raiseAssertCondition(vm, pc);
     }
@@ -2726,7 +2726,7 @@ void LibRnrsBase::procMakeString(KevesVM* vm, const_KevesIterator pc) {
       
       if (!first.isFixnum()) {
 	vm->acc_ = vm->gr2_;
-	vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqIntNum);
+	vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqIntNum);
 	vm->gr2_ = EMB_NULL;
 	return KevesVM::raiseAssertCondition(vm, pc);
       }
@@ -2735,7 +2735,7 @@ void LibRnrsBase::procMakeString(KevesVM* vm, const_KevesIterator pc) {
 
       if (size < 0) {
 	vm->acc_ = vm->gr2_;
-	vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_OutOfRange);
+	vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_OutOfRange);
 	vm->gr2_ = EMB_NULL;
 	return KevesVM::raiseAssertCondition(vm, pc);
       }
@@ -2746,9 +2746,9 @@ void LibRnrsBase::procMakeString(KevesVM* vm, const_KevesIterator pc) {
 
   default:
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = vm->base()->getMesgText(registers->argn() > 3 ?
-				       KevesBuiltinValues::mesg_Req1Or2GotMore :
-				       KevesBuiltinValues::mesg_Req1Or2Got0);
+    vm->gr1_ = vm->common()->getMesgText(registers->argn() > 3 ?
+					 KevesBuiltinValues::mesg_Req1Or2GotMore :
+					 KevesBuiltinValues::mesg_Req1Or2Got0);
     vm->gr2_ = EMB_NULL;
     return KevesVM::raiseAssertCondition(vm, pc);
   }
@@ -2766,7 +2766,7 @@ void LibRnrsBase::procString(KevesVM* vm, const_KevesIterator pc) {
 
     if (!current.isChar()) {
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqChar);
+      vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqChar);
       vm->gr2_ = EMB_NULL;
       return KevesVM::raiseAssertCondition(vm, pc);
     }
@@ -2791,7 +2791,7 @@ void LibRnrsBase::StringRef::func(KevesVM* vm, const_KevesIterator pc) {
 
   if (k < 0 || k >= string->size()) {
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_OutOfRange);
+    vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_OutOfRange);
     vm->gr2_ = EMB_NULL;
     return KevesVM::raiseAssertCondition(vm, pc);
   }
@@ -2839,7 +2839,7 @@ void LibRnrsBase::Substring::func(KevesVM* vm, const_KevesIterator pc) {
     
   if (start < 0 || start > end || end > len) {
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_OutOfRange);
+    vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_OutOfRange);
     vm->gr2_ = EMB_NULL;
     return KevesVM::raiseAssertCondition(vm, pc);
   }
@@ -2897,12 +2897,12 @@ bool LibRnrsBase::IsVector::func(KevesValue kev) {
   return kev.isVector();
 }
 
-KevesValue LibRnrsBase::IsVector::message(KevesBase* base) {
-  return base->getMesgText(KevesBuiltinValues::mesg_ReqVector);
+KevesValue LibRnrsBase::IsVector::message(KevesCommon* common) {
+  return common->getMesgText(KevesBuiltinValues::mesg_ReqVector);
 }
 
-KevesValue LibRnrsBase::IsVector::message1(KevesBase* base) {
-  return base->getMesgText(KevesBuiltinValues::mesg_ReqVectorAs1st);
+KevesValue LibRnrsBase::IsVector::message1(KevesCommon* common) {
+  return common->getMesgText(KevesBuiltinValues::mesg_ReqVectorAs1st);
 }
 
 void LibRnrsBase::procMakeVector(KevesVM* vm, const_KevesIterator pc) {
@@ -2919,7 +2919,7 @@ void LibRnrsBase::procMakeVector(KevesVM* vm, const_KevesIterator pc) {
     
     if (!first.isFixnum()) {
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqIntNum);
+      vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqIntNum);
       vm->gr2_ = EMB_NULL;
       return KevesVM::raiseAssertCondition(vm, pc);
     }
@@ -2928,7 +2928,7 @@ void LibRnrsBase::procMakeVector(KevesVM* vm, const_KevesIterator pc) {
     
     if (size < 0) {
       vm->acc_ = vm->gr2_;
-      vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_OutOfRange);
+      vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_OutOfRange);
       vm->gr2_ = EMB_NULL;
       return KevesVM::raiseAssertCondition(vm, pc);
     }
@@ -2939,9 +2939,9 @@ void LibRnrsBase::procMakeVector(KevesVM* vm, const_KevesIterator pc) {
     
   default:
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = vm->base()->getMesgText(registers->argn() > 3 ?
-				       KevesBuiltinValues::mesg_Req1Or2GotMore :
-				       KevesBuiltinValues::mesg_Req1Or2Got0);
+    vm->gr1_ = vm->common()->getMesgText(registers->argn() > 3 ?
+					 KevesBuiltinValues::mesg_Req1Or2GotMore :
+					 KevesBuiltinValues::mesg_Req1Or2Got0);
     vm->gr2_ = EMB_NULL;
     return KevesVM::raiseAssertCondition(vm, pc);
   }
@@ -2974,7 +2974,7 @@ void LibRnrsBase::VectorRef::func(KevesVM* vm, const_KevesIterator pc) {
 
   if (k < 0 || k >= vector->size()) {
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_OutOfRange);
+    vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_OutOfRange);
     vm->gr2_ = EMB_NULL;
     return KevesVM::raiseAssertCondition(vm, pc);
   }
@@ -2990,7 +2990,7 @@ void LibRnrsBase::VectorSetE::func(KevesVM* vm, const_KevesIterator pc) {
 
   if (k < 0 || k >= vector->size()) {
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_OutOfRange);
+    vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_OutOfRange);
     vm->gr2_ = EMB_NULL;
     return KevesVM::raiseAssertCondition(vm, pc);
   }
@@ -3047,7 +3047,7 @@ void LibRnrsBase::procListToVector(KevesVM* vm, const_KevesIterator pc) {
   
   if (size < 0) {
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqProperList);
+    vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqProperList);
     vm->gr2_ = EMB_NULL;
     return KevesVM::raiseAssertCondition(vm, pc);
   }
@@ -3094,7 +3094,7 @@ void LibRnrsBase::CallWithValues::func(KevesVM* vm, const_KevesIterator pc) {
   // wind and push *proc2*
   StackFrameKev stack_frame1;
   registers->wind(pc, &stack_frame1, &arg_frame1);
-  pc = vm->base()->builtin()->code_APPLY_MULT_APPLY();
+  pc = vm->common()->builtin()->code_APPLY_MULT_APPLY();
   registers->pushArgument(vm->gr1_);
   
   // wind and push *proc1*
@@ -3130,7 +3130,7 @@ void LibRnrsBase::DynamicWind::func(KevesVM* vm, const_KevesIterator pc) {
   vm->checkStack(&arg_frame, &func, pc);
   
   KevesValue before(registers->argument(1));
-  pc = vm->base()->builtin()->code_SET_DYNAMIC_WIND();
+  pc = vm->common()->builtin()->code_SET_DYNAMIC_WIND();
   StackFrameKev stack_frame;
   registers->wind(pc, &stack_frame, &arg_frame);
   registers->pushArgument(before);
@@ -3143,9 +3143,9 @@ void LibRnrsBase::procAssertionViolation(KevesVM* vm, const_KevesIterator pc) {
 
   if (registers->argn() < 3) {
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = vm->base()->getMesgText(registers->argn() == 2 ?
-				       KevesBuiltinValues::mesg_Req2Got1 :
-				       KevesBuiltinValues::mesg_Req2Got0);
+    vm->gr1_ = vm->common()->getMesgText(registers->argn() == 2 ?
+					 KevesBuiltinValues::mesg_Req2Got1 :
+					 KevesBuiltinValues::mesg_Req2Got0);
     vm->gr2_ = EMB_NULL;
     return KevesVM::raiseAssertCondition(vm, pc);
   }
@@ -3177,7 +3177,7 @@ void LibRnrsBase::procApply(KevesVM* vm, const_KevesIterator pc) {
   if (registers->argn() < 3) {
     vm->acc_ = vm->gr2_;
 
-    vm->gr1_ = vm->base()->getMesgText(registers->argn() == 2 ?
+    vm->gr1_ = vm->common()->getMesgText(registers->argn() == 2 ?
 				       KevesBuiltinValues::mesg_Req2Got1 :
 				       KevesBuiltinValues::mesg_Req2Got0);
 
@@ -3190,14 +3190,14 @@ void LibRnrsBase::procApply(KevesVM* vm, const_KevesIterator pc) {
 
   if (!last.isPair() && last != EMB_NULL) {
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqListAsLast);
+    vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqListAsLast);
     vm->gr2_ = EMB_NULL;
     return vm->raiseAssertCondition(vm, pc);
   }
 
   if (!registers->argument(1).isProcedure()) {
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqProcAs1st);
+    vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqProcAs1st);
     vm->gr2_ = EMB_NULL;
     return vm->raiseAssertCondition(vm, pc);
   }
@@ -3228,7 +3228,7 @@ void LibRnrsBase::procApply_helper(KevesVM* vm, const_KevesIterator pc) {
 
   if (temp != EMB_NULL) {
     vm->acc_ = vm->gr2_;
-    vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_ReqProperList);
+    vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqProperList);
     vm->gr2_ = EMB_NULL;
     return vm->raiseAssertCondition(vm, pc);
   }
@@ -3243,9 +3243,9 @@ void LibRnrsBase::procApply_helper(KevesVM* vm, const_KevesIterator pc) {
 ////////////////////////////////////////////////////////////////
 
 extern "C" {
-  KevesLibrary* make(KevesBase* base) {
+  KevesLibrary* make(KevesCommon* common) {
     LibRnrsBase* library(new LibRnrsBase());
-    library->init(base);
+    library->init(common);
     return library;
   }
 }

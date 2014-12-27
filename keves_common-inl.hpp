@@ -1,4 +1,4 @@
-// keves/keves_base-inl.hpp - base of Keves
+// keves/keves_common-inl.hpp - common resources of Keves
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -23,26 +23,26 @@
   
 
 template<class KEV>
-void KevesBase::pushValue(QStack<const Kev*>* pending, KEV* kev) {
+void KevesCommon::pushValue(QStack<const Kev*>* pending, KEV* kev) {
   if (kev) pending->push(kev);
 }
   
 template<class KEV>
-void KevesBase::pushArray(QStack<const Kev*>* pending, KEV* kev) {
+void KevesCommon::pushArray(QStack<const Kev*>* pending, KEV* kev) {
   const KevesValue* iter(kev->array());
   const KevesValue* end(iter + kev->size());
   for (; iter != end; ++iter) pushValue(pending, *iter);
 }
 
 template<class KEV>
-void KevesBase::revertValue(const QList<const Kev*>& object_list, KEV** kev) {
+void KevesCommon::revertValue(const QList<const Kev*>& object_list, KEV** kev) {
   MutableKevesValue value(*kev);
   if (isIndex(value))
     *kev = static_cast<KEV*>(const_cast<Kev*>(object_list.at(value.toUIntPtr() >> 2)));
 }
 
 template<class KEV>
-void KevesBase::readArray(QDataStream& in, KEV* kev) {
+void KevesCommon::readArray(QDataStream& in, KEV* kev) {
   KevesValue* iter(kev->array());
   const KevesValue* end(iter + kev->size());
   uioword value;
@@ -54,7 +54,7 @@ void KevesBase::readArray(QDataStream& in, KEV* kev) {
 }
 
 template<class KEV>
-void KevesBase::revertArray(const QList<const Kev*>& object_list, KEV* kev) {
+void KevesCommon::revertArray(const QList<const Kev*>& object_list, KEV* kev) {
   KevesValue* iter(kev->array());
   const KevesValue* end(iter + kev->size());
     
@@ -63,7 +63,7 @@ void KevesBase::revertArray(const QList<const Kev*>& object_list, KEV* kev) {
 }
 
 template<class KEV>
-void KevesBase::writeArray(const QList<const Kev*>& list,
+void KevesCommon::writeArray(const QList<const Kev*>& list,
 			   QDataStream& out,
 			   KEV* kev) {
   const KevesValue* iter(kev->array());
@@ -72,23 +72,23 @@ void KevesBase::writeArray(const QList<const Kev*>& list,
 }
 
 template<class KEV>
-void KevesBase::setFunctionTable() {
+void KevesCommon::setFunctionTable() {
   ft_PushChildren_[KEV::TYPE]
-    = KEV::template pushChildren<KevesBase, QStack<const Kev*> >;
+    = KEV::template pushChildren<KevesCommon, QStack<const Kev*> >;
 
   ft_ReadObject_[KEV::TYPE]
-    // = KEV::template readObject<KevesBase, QDataStream, KevesGC>;
-    = KEV::template readObject<KevesBase, QDataStream, KevesBase>;
+    // = KEV::template readObject<KevesCommon, QDataStream, KevesGC>;
+    = KEV::template readObject<KevesCommon, QDataStream, KevesCommon>;
 
   ft_RevertObject_[KEV::TYPE]
-    = KEV::template revertObject<KevesBase, QList<const Kev*> >;
+    = KEV::template revertObject<KevesCommon, QList<const Kev*> >;
 
   ft_WriteObject_[KEV::TYPE]
-    = KEV::template writeObject<KevesBase, QList<const Kev*>, QDataStream>;
+    = KEV::template writeObject<KevesCommon, QList<const Kev*>, QDataStream>;
 }
 
 template<class KEV>
-KEV* KevesBase::toMutable(const KEV* kev) {
+KEV* KevesCommon::toMutable(const KEV* kev) {
   KEV* mutable_kev(const_cast<KEV*>(kev));
     
   /*

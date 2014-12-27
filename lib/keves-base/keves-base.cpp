@@ -24,9 +24,9 @@
 #include <QTextCodec>
 #include <QTextEdit>
 #include <QTextStream>
-#include "keves_base.hpp"
-#include "keves_base-inl.hpp"
 #include "keves_builtin_values.hpp"
+#include "keves_common.hpp"
+#include "keves_common-inl.hpp"
 #include "keves_template.hpp"
 #include "keves_vm.hpp"
 #include "kev/code.hpp"
@@ -38,14 +38,14 @@
 #include "kev/symbol-inl.hpp"
 
 
-void LibKevesBase::init(KevesBase* base) {
+void LibKevesBase::init(KevesCommon* common) {
   std::cout << "LibKevesBase::init()" << std::endl;
 
   // setID("keves", "base-bin");
   // setVerNum(0, 1);
 					       
-  sym_display_ = SymbolKev::make(base, "display");
-  sym_newline_ = SymbolKev::make(base, "newline");
+  sym_display_ = SymbolKev::make(common, "display");
+  sym_newline_ = SymbolKev::make(common, "newline");
 
   proc_display_.set(procDisplay, sym_display_);
   proc_newline_.set(&Function::thunk<Newline>, sym_newline_);
@@ -53,15 +53,15 @@ void LibKevesBase::init(KevesBase* base) {
   addBind("display", &proc_display_);
   addBind("newline", &proc_newline_);
 
-  addBind("&syntax", base->builtin()->amp_syntax());
-  addBind("&lexical", base->builtin()->amp_lexical());
-  addBind("&assert", base->builtin()->amp_assert());
-  addBind("&irritants", base->builtin()->amp_irritants());
-  addBind("&who", base->builtin()->amp_who());
-  addBind("&message", base->builtin()->amp_message());
+  addBind("&syntax", common->builtin()->amp_syntax());
+  addBind("&lexical", common->builtin()->amp_lexical());
+  addBind("&assert", common->builtin()->amp_assert());
+  addBind("&irritants", common->builtin()->amp_irritants());
+  addBind("&who", common->builtin()->amp_who());
+  addBind("&message", common->builtin()->amp_message());
 
   /*
-  CodeKev* code(CodeKev::make(base, 16));
+  CodeKev* code(CodeKev::make(common, 16));
   KevesIterator iter(code->begin());
   *iter++ = KevesInstruct(CMD_FRAME_R);
   *iter++ = KevesFixnum(5);
@@ -89,14 +89,14 @@ void LibKevesBase::procDisplay(KevesVM* vm, const_KevesIterator pc) {
     vm->acc_ = vm->gr2_;
 
     vm->gr1_ = registers->argn() > 2 ?
-      vm->base()->getMesgText(KevesBuiltinValues::mesg_Req1GotMore) :
-      vm->base()->getMesgText(KevesBuiltinValues::mesg_Req1Got0);
+      vm->common()->getMesgText(KevesBuiltinValues::mesg_Req1GotMore) :
+      vm->common()->getMesgText(KevesBuiltinValues::mesg_Req1Got0);
 
     vm->gr2_ = EMB_NULL;
     return KevesVM::raiseAssertCondition(vm, pc);
   }
   
-  vm->result_field()->append(vm->base()->toString(registers->lastArgument()));
+  vm->result_field()->append(vm->common()->toString(registers->lastArgument()));
   vm->acc_ = EMB_UNDEF;
   return KevesVM::returnValueSafe(vm, pc);
 }
@@ -113,9 +113,9 @@ void LibKevesBase::Newline::func(KevesVM* vm, const_KevesIterator pc) {
 ////////////////////////////////////////////////////////////////
 
 extern "C" {
-  KevesLibrary* make(KevesBase* base) {
+  KevesLibrary* make(KevesCommon* common) {
     LibKevesBase* library(new LibKevesBase());
-    library->init(base);
+    library->init(common);
     return library;
   }
 }

@@ -11,8 +11,8 @@ QMAKE_CXXFLAGS += -std=c++11
 
 # Input
 HEADERS += rnrs-base.hpp \
-           keves_base.hpp \
            keves_builtin_values.hpp \
+           keves_common.hpp \
            keves_gc.hpp \
            keves_gc-inl.hpp \
            keves_library.hpp \
@@ -41,8 +41,8 @@ HEADERS += rnrs-base.hpp \
            value/fixnum.hpp
 
 SOURCES += rnrs-base.cpp \
-           keves_base.cpp \
            keves_builtin_values.cpp \
+           keves_common.cpp \
            keves_gc.cpp \
            keves_library.cpp \
            keves_template.cpp \

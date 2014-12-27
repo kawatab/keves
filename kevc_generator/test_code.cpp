@@ -49,7 +49,7 @@ void TestCode::Code02::write(KevcGenerator* generator) {
   PairKev* pair3(generator->makePair(pair1, KevesFixnum(100)));
   PairKev* pair4(generator->makePair(pair2, pair3));
   PairKev* pair5(generator->makePair(sym, pair4));
-  ReferenceKev* ref(ReferenceKev::make(generator->base(), pair5));
+  ReferenceKev* ref(generator->makeReference(pair5));
   pair1->set_car(pair5);
   
   Bignum* bignum(generator-> makeBignum("12334242342342431233424234234243"));

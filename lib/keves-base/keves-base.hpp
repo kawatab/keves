@@ -23,7 +23,7 @@
 #include "kev/procedure.hpp"
 
 
-class KevesBase;
+class KevesCommon;
 class SymbolKev;
 
 class LibKevesBase : public KevesLibrary {
@@ -35,7 +35,7 @@ public:
   LibKevesBase& operator=(LibKevesBase&&) = delete;
   ~LibKevesBase() = default;
 
-  void init(KevesBase* base);
+  void init(KevesCommon* common);
 
   SymbolKev* sym_display_;
   CPSKev proc_display_;

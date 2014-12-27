@@ -24,9 +24,9 @@
 // #include <QTextCodec>
 // #include <QTextEdit>
 // #include <QTextStream>
-// #include "keves_base.hpp"
-// #include "keves_base-inl.hpp"
 #include "keves_builtin_values.hpp"
+// #include "keves_common.hpp"
+// #include "keves_common-inl.hpp"
 #include "keves_template.hpp"
 // #include "keves_vm.hpp"
 // #include "kev/code.hpp"
@@ -40,14 +40,14 @@
 #include "value/char.hpp"
 
 
-void LibRnrsMutableStrings::init(KevesBase* base) {
+void LibRnrsMutableStrings::init(KevesCommon* common) {
   std::cout << "LibRnrsMutableStrings::init()" << std::endl;
 
   // setID("rnrs", "mutable-strings-bin");
   // setVerNum(6);
 					       
-  sym_string_fill_e_ = SymbolKev::make(base, "string-fill!");
-  sym_string_set_e_ = SymbolKev::make(base, "string-set!");
+  sym_string_fill_e_ = SymbolKev::make(common, "string-fill!");
+  sym_string_set_e_ = SymbolKev::make(common, "string-set!");
 
   proc_string_set_e_.set(&Function::make<Function::IsString, Function::IsFixnum, Function::IsChar, StringSetE>, sym_string_set_e_);
   proc_string_fill_e_.set(&Function::make<Function::IsString, Function::IsChar, StringFillE>, sym_string_fill_e_);
@@ -69,7 +69,7 @@ void LibRnrsMutableStrings::StringSetE::func(KevesVM* vm, const_KevesIterator pc
   }
   
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_OutOfRange);
+  vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_OutOfRange);
   vm->gr2_ = EMB_NULL;
   return KevesVM::raiseAssertCondition(vm, pc);
 }
@@ -88,9 +88,9 @@ void LibRnrsMutableStrings::StringFillE::func(KevesVM* vm, const_KevesIterator p
 ////////////////////////////////////////////////////////////////
 
 extern "C" {
-  KevesLibrary* make(KevesBase* base) {
+  KevesLibrary* make(KevesCommon* common) {
     LibRnrsMutableStrings* library(new LibRnrsMutableStrings());
-    library->init(base);
+    library->init(common);
     return library;
   }
 }

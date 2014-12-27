@@ -24,9 +24,9 @@
 #include <QTextCodec>
 #include <QTextEdit>
 #include <QTextStream>
-#include "keves_base.hpp"
-#include "keves_base-inl.hpp"
 #include "keves_builtin_values.hpp"
+#include "keves_common.hpp"
+#include "keves_common-inl.hpp"
 #include "keves_template.hpp"
 #include "keves_vm.hpp"
 #include "kev/code.hpp"
@@ -39,13 +39,13 @@
 #include "value/char.hpp"
 
 
-void LibRnrsLists::init(KevesBase* base) {
+void LibRnrsLists::init(KevesCommon* common) {
   std::cout << "LibRnrsLists::init()" << std::endl;
 
   // setID("rnrs", "lists-bin");
   // setVerNum(6);
 					       
-  sym_cons_star_ = SymbolKev::make(base, "cons*");
+  sym_cons_star_ = SymbolKev::make(common, "cons*");
 
   proc_cons_star_.set(&procConsStar, sym_cons_star_);
 
@@ -68,7 +68,7 @@ void LibRnrsLists::procConsStar(KevesVM* vm, const_KevesIterator pc) {
   }
 
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base()->getMesgText(KevesBuiltinValues::mesg_Req1OrMoreGot0);
+  vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_Req1OrMoreGot0);
   vm->gr2_ = EMB_NULL;
   return KevesVM::raiseAssertCondition(vm, pc);
 }
@@ -94,9 +94,9 @@ void LibRnrsLists::procConsStar_helper(KevesVM* vm, const_KevesIterator pc) {
 ////////////////////////////////////////////////////////////////
 
 extern "C" {
-  KevesLibrary* make(KevesBase* base) {
+  KevesLibrary* make(KevesCommon* common) {
     LibRnrsLists* library(new LibRnrsLists());
-    library->init(base);
+    library->init(common);
     return library;
   }
 }

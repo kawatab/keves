@@ -23,7 +23,7 @@
 #include "kev/procedure.hpp"
 
 
-class KevesBase;
+class KevesCommon;
 class SymbolKev;
 
 class LibRnrsUnicode : public KevesLibrary {
@@ -35,7 +35,7 @@ public:
   LibRnrsUnicode& operator=(LibRnrsUnicode&&) = delete;
   ~LibRnrsUnicode() = default;
 
-  void init(KevesBase* base);
+  void init(KevesCommon* common);
 
   SymbolKev* sym_char_upcase_;
   CPSKev proc_char_upcase_;

@@ -23,7 +23,7 @@
 #include "kev/procedure.hpp"
 
 
-class KevesBase;
+class KevesCommon;
 class SymbolKev;
 
 class LibRnrsExceptions : public KevesLibrary {
@@ -35,7 +35,7 @@ public:
   LibRnrsExceptions& operator=(LibRnrsExceptions&&) = delete;
   ~LibRnrsExceptions() = default;
 
-  void init(KevesBase* base);
+  void init(KevesCommon* common);
 
   SymbolKev* sym_raise_;
   CPSKev proc_raise_;

@@ -24,9 +24,9 @@
 #include <QTextCodec>
 #include <QTextEdit>
 #include <QTextStream>
-#include "keves_base.hpp"
-#include "keves_base-inl.hpp"
 #include "keves_builtin_values.hpp"
+#include "keves_common.hpp"
+#include "keves_common-inl.hpp"
 #include "keves_template.hpp"
 #include "keves_vm.hpp"
 #include "kev/code.hpp"
@@ -39,13 +39,13 @@
 #include "value/char.hpp"
 
 
-void LibRnrsExceptions::init(KevesBase* base) {
+void LibRnrsExceptions::init(KevesCommon* common) {
   std::cout << "LibRnrsExceptions::init()" << std::endl;
 
   // setID("rnrs", "exceptions-bin");
   // setVerNum(6);
 					       
-  sym_raise_ = SymbolKev::make(base, "raise");
+  sym_raise_ = SymbolKev::make(common, "raise");
 
   proc_raise_.set(&Function::make<Function::Anything, Raise>, sym_raise_);
 
@@ -59,7 +59,7 @@ void LibRnrsExceptions::Raise::func(KevesVM* vm, const_KevesIterator pc) {
   *registers = *registers->sfp();
 
   if (StackFrameKev::isBottom(registers)) {
-    pc = vm->base()->builtin()->code_HALT();
+    pc = vm->common()->builtin()->code_HALT();
     std::cout << "raise!!!!!!!!!!!!!" << std::endl; 
     vm->gr1_ = last;
     return KevesVM::pushGr1ToArgument(vm, pc);
@@ -77,9 +77,9 @@ void LibRnrsExceptions::Raise::func(KevesVM* vm, const_KevesIterator pc) {
 ////////////////////////////////////////////////////////////////
 
 extern "C" {
-  KevesLibrary* make(KevesBase* base) {
+  KevesLibrary* make(KevesCommon* common) {
     LibRnrsExceptions* library(new LibRnrsExceptions());
-    library->init(base);
+    library->init(common);
     return library;
   }
 }

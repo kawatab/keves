@@ -21,8 +21,8 @@
 
 #include <iostream>
 #include <unistd.h>
-#include "keves_base.hpp"
 #include "keves_builtin_values.hpp"
+#include "keves_common.hpp"
 #include "keves_library.hpp"
 #include "keves_stack.hpp"
 #include "keves_textual_port.hpp"
@@ -54,15 +54,15 @@
 #include "value/instruct.hpp"
 
 
-KevesVM* KevesVM::make(KevesBase* base) {
-  return make(base, base->default_result_field());
+KevesVM* KevesVM::make(KevesCommon* common) {
+  return make(common, common->default_result_field());
 }
 
-KevesVM* KevesVM::make(KevesBase* base, KevesTextualOutputPort* result_field) {
+KevesVM* KevesVM::make(KevesCommon* common, KevesTextualOutputPort* result_field) {
   KevesVM* vm(new KevesVM());
-  vm->base_ = base;
-  vm->cmd_table_ = base->cmd_table();
-  vm->gc_.init(vm, base->shared_list());
+  vm->common_ = common;
+  vm->cmd_table_ = common->cmd_table();
+  vm->gc_.init(vm, common->shared_list());
   vm->result_field_ = result_field;
   return vm;
 }
@@ -191,7 +191,7 @@ void KevesVM::makeRectangular(KevesVM* vm, const_KevesIterator pc) {
   }
 
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base_->getMesgText(KevesBuiltinValues::mesg_ReqRealNum);
+  vm->gr1_ = vm->common_->getMesgText(KevesBuiltinValues::mesg_ReqRealNum);
   vm->gr2_ = EMB_NULL;
   return raiseAssertCondition(vm, pc);
 }
@@ -413,14 +413,14 @@ int KevesVM::execute_helper(const QString& arg) {
   // QStringList library_name;
   QList<ver_num_t> ver_num;
   // library_name << "keves" << "base-bin";
-  // KevesLibrary* lib_keves_base(base_->getLibrary(library_name, ver_num));
+  // KevesLibrary* lib_keves_base(common_->getLibrary(library_name, ver_num));
 
   // if (!lib_keves_base) {
   // KevesLibrary::errorOfMissingLibrary(library_name, ver_num);
   // return 1;
   // }
   
-  KevesLibrary* lib_keves_base0(base_->getLibrary(library_name0, ver_num));
+  KevesLibrary* lib_keves_base0(common_->getLibrary(library_name0, ver_num));
 
   if (!lib_keves_base0) {
     KevesLibrary::errorOfMissingLibrary(library_name0, ver_num);
@@ -633,9 +633,9 @@ void KevesVM::applyProcedure(KevesVM* vm, const_KevesIterator pc) {
 }
 
 void KevesVM::raiseAssertFirstObjNotProc(KevesVM* vm, const_KevesIterator pc) {
-  vm->acc_ = vm->base_->builtin()->sym_eval();
+  vm->acc_ = vm->common_->builtin()->sym_eval();
   vm->gr2_ = vm->gr1_;
-  vm->gr1_ = vm->base_->getMesgText(KevesBuiltinValues::mesg_1stObjNotProcOrSyn);
+  vm->gr1_ = vm->common_->getMesgText(KevesBuiltinValues::mesg_1stObjNotProcOrSyn);
   return raiseAssertCondition(vm, pc);
 }
 
@@ -711,14 +711,14 @@ void KevesVM::cmd_CALL_LAMBDA_VLA_helper(KevesVM* vm, const_KevesIterator pc) {
 
 void KevesVM::raiseAssertLambdaReqLess(KevesVM* vm, const_KevesIterator pc) {
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base_->getMesgText(KevesBuiltinValues::mesg_ReqLessGotMore);
+  vm->gr1_ = vm->common_->getMesgText(KevesBuiltinValues::mesg_ReqLessGotMore);
   vm->gr2_ = EMB_NULL;
   return raiseAssertCondition(vm, pc);
 }
 
 void KevesVM::raiseAssertLambdaReqMore(KevesVM* vm, const_KevesIterator pc) {
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base_->getMesgText(KevesBuiltinValues::mesg_ReqMoreGotLess);
+  vm->gr1_ = vm->common_->getMesgText(KevesBuiltinValues::mesg_ReqMoreGotLess);
   vm->gr2_ = EMB_NULL;
   return raiseAssertCondition(vm, pc);
 }
@@ -896,7 +896,7 @@ void KevesVM::cmd_RAISE(KevesVM* vm, const_KevesIterator pc) {
   *registers = *registers->sfp();
 
   if (StackFrameKev::isBottom(registers)) {
-    pc = vm->base_->builtin()->code_HALT();
+    pc = vm->common_->builtin()->code_HALT();
     std::cout << "cmd_RAISE: raise!!!!!!!!!!!!!" << std::endl; 
     vm->gr1_ = vm->acc_;
     return pushGr1ToArgumentSafe(vm, pc);
@@ -913,7 +913,7 @@ void KevesVM::cmd_RAISE_CONSTANT(KevesVM* vm, const_KevesIterator pc) {
   *registers = *registers->sfp();
 
   if (StackFrameKev::isBottom(registers)) {
-    pc = vm->base_->builtin()->code_HALT();
+    pc = vm->common_->builtin()->code_HALT();
     std::cout << "cmd_RAISE_CONSTANT: raise!!!!!!!!!!!!!" << std::endl; 
     vm->gr1_ = condition;
     return pushGr1ToArgumentSafe(vm, pc);
@@ -935,14 +935,14 @@ void KevesVM::cmd_DEBUG_CODE(KevesVM* vm, const_KevesIterator pc) {
     QString temp1;
     QString temp2;
     // try {
-    temp1 = vm->base_->toString(vm->acc_);
+    temp1 = vm->common_->toString(vm->acc_);
       /*
     } catch (int i) {
       std::cerr << "KevesVM::cmd_DEBUG_CODE(): Allocation is failed!\n";
     }
     try {
       */
-    if (registers->argn() > 0) temp2 = vm->base_->toString(registers->lastArgument());
+    if (registers->argn() > 0) temp2 = vm->common_->toString(registers->lastArgument());
       /*
     } catch (int i) {
       std::cerr << "KevesVM::cmd_DEBUG_CODE(): Allocation is failed!\n";
@@ -950,7 +950,7 @@ void KevesVM::cmd_DEBUG_CODE(KevesVM* vm, const_KevesIterator pc) {
       */
     if (pc->isInstruct()) {
       std::cout << "debug: "
-		<< qPrintable(vm->base_->instruct_table()->getLabel(KevesInstruct(*pc)))
+		<< qPrintable(vm->common_->instruct_table()->getLabel(KevesInstruct(*pc)))
 		<< std::endl;
       std::cout << "acc: " << qPrintable(temp1) << std::endl;
       std::cout << "last argument: " << qPrintable(temp2) << std::endl;
@@ -1243,7 +1243,7 @@ void KevesVM::cmd_TEST_PAIR0_R(KevesVM* vm, const_KevesIterator pc) {
       
 void KevesVM::raiseAssertReqRealNum(KevesVM* vm, const_KevesIterator pc) {
   vm->acc_ = vm->gr2_;
-  vm->gr1_ = vm->base_->getMesgText(KevesBuiltinValues::mesg_ReqRealNum);
+  vm->gr1_ = vm->common_->getMesgText(KevesBuiltinValues::mesg_ReqRealNum);
   vm->gr2_ = EMB_NULL;
   return raiseAssertCondition(vm, pc);
 }
@@ -1396,10 +1396,10 @@ void KevesVM::makeLexicalException(KevesVM* vm, const_KevesIterator pc) {
 
   vm->checkStack(&values, &makeLexicalException, pc);
 
-  SimpleConditionKev violation(vm->base_->builtin()->amp_lexical(), EMB_NULL);
-  SimpleConditionKev who(vm->base_->builtin()->amp_who(), vm->acc_);
-  SimpleConditionKev message(vm->base_->builtin()->amp_message(), vm->gr1_);
-  SimpleConditionKev irritants(vm->base_->builtin()->amp_irritants(), vm->gr2_);
+  SimpleConditionKev violation(vm->common_->builtin()->amp_lexical(), EMB_NULL);
+  SimpleConditionKev who(vm->common_->builtin()->amp_who(), vm->acc_);
+  SimpleConditionKev message(vm->common_->builtin()->amp_message(), vm->gr1_);
+  SimpleConditionKev irritants(vm->common_->builtin()->amp_irritants(), vm->gr2_);
   CompoundConditionKev condition(&values);
   KevesIterator iter(values.begin());
   *iter++ = &violation;
@@ -1416,10 +1416,10 @@ void KevesVM::raiseAssertCondition(KevesVM* vm, const_KevesIterator pc) {
 
   vm->checkStack(&values, &raiseAssertCondition, pc);
 
-  SimpleConditionKev violation(vm->base_->builtin()->amp_lexical(), EMB_NULL);
-  SimpleConditionKev who(vm->base_->builtin()->amp_who(), vm->acc_);
-  SimpleConditionKev message(vm->base_->builtin()->amp_message(), vm->gr1_);
-  SimpleConditionKev irritants(vm->base_->builtin()->amp_irritants(), vm->gr2_);
+  SimpleConditionKev violation(vm->common_->builtin()->amp_lexical(), EMB_NULL);
+  SimpleConditionKev who(vm->common_->builtin()->amp_who(), vm->acc_);
+  SimpleConditionKev message(vm->common_->builtin()->amp_message(), vm->gr1_);
+  SimpleConditionKev irritants(vm->common_->builtin()->amp_irritants(), vm->gr2_);
   CompoundConditionKev condition(&values);
   KevesIterator iter(values.begin());
   *iter++ = &violation;
@@ -1489,7 +1489,7 @@ void KevesVM::cmd_UNWIND_CONTINUATION(KevesVM* vm, const_KevesIterator pc) {
       pc = registers->unwind();
       vm->gc_.toMutable(conti_obj->btmp())->set_pc(pc);
       *registers = conti_obj->registers();
-      pc = vm->base_->builtin()->code_REVERT_DYNAMIC_WIND_and_APPLY();
+      pc = vm->common_->builtin()->code_REVERT_DYNAMIC_WIND_and_APPLY();
       vm->acc_ = conti_obj;
       vm->gr1_ = vm->keves_vals_->at(1);
 
@@ -1509,7 +1509,7 @@ void KevesVM::cmd_UNWIND_CONTINUATION(KevesVM* vm, const_KevesIterator pc) {
       pc = registers->unwind();
       StackFrameKev stack_frame1;
       registers->windWithValues(pc, &stack_frame1, vm->keves_vals_);
-      pc = vm->base_->builtin()->code_POP_APPLY();
+      pc = vm->common_->builtin()->code_POP_APPLY();
       registers->replaceFirstArgument(conti_obj);
 
       StackFrameKev stack_frame2;
@@ -1550,9 +1550,9 @@ void KevesVM::revertDynamicWind(KevesVM* vm, const_KevesIterator pc) {
   
   if (first_obj.is<WindKev>()) {
     const WindKev* wind(first_obj);
-    pc = vm->base_->builtin()->code_POP_APPLY();
+    pc = vm->common_->builtin()->code_POP_APPLY();
     registers->wind(pc, &stack_frame, &arg_frame);
-    pc = vm->base_->builtin()->code_APPLY();
+    pc = vm->common_->builtin()->code_APPLY();
     registers->pushArgument(wind->before());
   }
   
@@ -1574,7 +1574,7 @@ void KevesVM::cmd_SET_DYNAMIC_WIND(KevesVM* vm, const_KevesIterator pc) {
   // wind
   StackFrameKev stack_frame1;
   registers->wind(pc, &stack_frame1, &arg_frame1);
-  pc = vm->base_->builtin()->code_REMOVE_DYNAMIC_WIND();
+  pc = vm->common_->builtin()->code_REMOVE_DYNAMIC_WIND();
 
   WindKev wind(before, thunk, after);
   registers->pushArgument(&wind);
@@ -1596,7 +1596,7 @@ void KevesVM::cmd_REMOVE_DYNAMIC_WIND(KevesVM* vm, const_KevesIterator pc) {
   pc = registers->unwind();
 
   registers->replaceLastArgument(result_of_thunk);
-  pc = vm->base_->builtin()->code_POP_RETURN();
+  pc = vm->common_->builtin()->code_POP_RETURN();
 
   // wind and push *after*
   ArgumentFrameKevWithArray<04> arg_frame;

@@ -23,7 +23,7 @@
 #include "kev/procedure.hpp"
 
 
-class KevesBase;
+class KevesCommon;
 class SymbolKev;
 
 class LibRnrsMutableStrings : public KevesLibrary {
@@ -35,7 +35,7 @@ public:
   LibRnrsMutableStrings& operator=(LibRnrsMutableStrings&&) = delete;
   ~LibRnrsMutableStrings() = default;
 
-  void init(KevesBase* base);
+  void init(KevesCommon* common);
 
   SymbolKev* sym_string_fill_e_;
   CPSKev proc_string_fill_e_;

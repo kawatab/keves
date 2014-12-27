@@ -20,7 +20,7 @@
 #include "kevc_generator.hpp"
 
 #include <iostream>
-#include "keves_base.hpp"
+#include "keves_common.hpp"
 #include "kev/bignum.hpp"
 #include "kev/bignum-inl.hpp"
 #include "kev/code.hpp"
@@ -35,27 +35,27 @@
 #include "kev/vector.hpp"
 
 
-KevcGenerator::KevcGenerator(KevesBase* base, const char* file_name,
+KevcGenerator::KevcGenerator(KevesCommon* common, const char* file_name,
 			     const char* id)
-  : base_(base),
+  : common_(common),
     file_name_(file_name),
     this_lib_(id),
-    import_libs_(base) {}
+    import_libs_(common) {}
 
-KevcGenerator::KevcGenerator(KevesBase* base, const char* file_name,
+KevcGenerator::KevcGenerator(KevesCommon* common, const char* file_name,
 			     const char* id1, const char* id2, ver_num_t ver_num)
-  : base_(base),
+  : common_(common),
     file_name_(file_name),
     this_lib_(id1, id2, ver_num),
-    import_libs_(base) {}
+    import_libs_(common) {}
 
-KevcGenerator::KevcGenerator(KevesBase* base, const char* file_name,
+KevcGenerator::KevcGenerator(KevesCommon* common, const char* file_name,
 			     const char* id1, const char* id2,
 			     ver_num_t ver_num1, ver_num_t ver_num2)
-  : base_(base),
+  : common_(common),
     file_name_(file_name),
     this_lib_(id1, id2, ver_num1, ver_num2),
-    import_libs_(base) {}
+    import_libs_(common) {}
 
 bool KevcGenerator::setImportLibrary(const char* id1,
 				     const char* id2,
@@ -101,52 +101,52 @@ KevesValue KevcGenerator::importBind(const char* id) {
 }
 
 void KevcGenerator::writeToFile() {
-  this_lib_.writeToFile(base_, file_name_, import_libs_);
+  this_lib_.writeToFile(common_, file_name_, import_libs_);
 }
 
-KevesLibrary* KevcGenerator::readFromFile(KevesBase* base,
+KevesLibrary* KevcGenerator::readFromFile(KevesCommon* common,
 					  const char* file_name) {
   std::cout << file_name << ":" << std::endl;
-  return KevesLibrary::readFromFile(file_name, base);
+  return KevesLibrary::readFromFile(file_name, common);
 }
 
-void KevcGenerator::testRead(KevesBase* base, const char* file_name) {
-  KevesLibrary* lib(readFromFile(base, file_name));
-  lib->displayProperty(base);
+void KevcGenerator::testRead(KevesCommon* common, const char* file_name) {
+  KevesLibrary* lib(readFromFile(common, file_name));
+  lib->displayProperty(common);
   delete lib;
 }
 
 ArgumentFrameKev* KevcGenerator::makeArgumentFrame(int size) {
-  return ArgumentFrameKev::make(base_, size);
+  return ArgumentFrameKev::make(common_, size);
 }
 
 KevesValue KevcGenerator::makeAssertCondition(const SymbolKev* who,
 					      const char* message,
 					      KevesValue irritants) {
-  return base_->makeAssertCondition(who,
-				    base_->getMesgText(message),
-				    irritants);
+  return common_->makeAssertCondition(who,
+				      common_->getMesgText(message),
+				      irritants);
 }
       
 Bignum* KevcGenerator::makeBignum(const char* str) {
-  return Bignum::makeFromString(base_, str);
+  return Bignum::makeFromString(common_, str);
 }
 
 CodeKev* KevcGenerator::makeCode(int size) {
-  return CodeKev::make(base_, size);
+  return CodeKev::make(common_, size);
 }
 
 ExactComplexNumberKev* KevcGenerator::makeExactComplexNumber() {
-  return ExactComplexNumberKev::make(base_);
+  return ExactComplexNumberKev::make(common_);
 }
 
 FlonumKev* KevcGenerator::makeFlonum(double value) {
-  return FlonumKev::make(base_, value);
+  return FlonumKev::make(common_, value);
 }
 
 InexactComplexNumberKev* KevcGenerator::makeInexactComplexNumber(double real,
 								 double imag) {
-  return InexactComplexNumberKev::makeFromFlonums(base_,
+  return InexactComplexNumberKev::makeFromFlonums(common_,
 						  FlonumKev(real),
 						  FlonumKev(imag));
 }
@@ -154,38 +154,38 @@ InexactComplexNumberKev* KevcGenerator::makeInexactComplexNumber(double real,
 LambdaKev* KevcGenerator::makeLambda(LocalVarFrameKev* free_vars,
 				     CodeKev* code,
 				     int index) {
-  return LambdaKev::make(base_, free_vars, code, index);
+  return LambdaKev::make(common_, free_vars, code, index);
 }
 
 LocalVarFrameKev* KevcGenerator::makeLocalVarFrame(int size,
 						   LocalVarFrameKev* next) {
-  return LocalVarFrameKev::make(base_, size, next);
+  return LocalVarFrameKev::make(common_, size, next);
 }
 
 PairKev* KevcGenerator::makePair(KevesValue car, KevesValue cdr) {
-  return PairKev::make(base_, car, cdr);
+  return PairKev::make(common_, car, cdr);
 }
 
 RationalNumberKev* KevcGenerator::makeRationalNumber(const StringKev* str_num) {
-  return RationalNumberKev::makeFromString(base_, *str_num);
+  return RationalNumberKev::makeFromString(common_, *str_num);
 }
 
 ReferenceKev* KevcGenerator::makeReference(KevesValue value) {
-  return ReferenceKev::make(base_, value);
+  return ReferenceKev::make(common_, value);
 }
 
 StackFrameKev* KevcGenerator::makeStackFrameKev() {
-  return StackFrameKev::make(base_);
+  return StackFrameKev::make(common_);
 }
 
 StringKev* KevcGenerator::makeString(const char* str) {
-  return StringKev::make(base_, str);
+  return StringKev::make(common_, str);
 }
 
 SymbolKev* KevcGenerator::makeSymbol(const char* sym) {
-  return SymbolKev::make(base_, sym);
+  return SymbolKev::make(common_, sym);
 }
 
 VectorKev* KevcGenerator::makeVector(int size) {
-  return VectorKev::make(base_, size);
+  return VectorKev::make(common_, size);
 }

@@ -1,4 +1,4 @@
-// keves/lib/rnrs-unicode/rnrs-unicode.cpp - library of Keves base
+// keves/lib/rnrs-unicode/rnrs-unicode.cpp - library of (rnrs unicode)
 // Keves will be an R6RS Scheme implementation.
 //
 //  Copyright (C) 2014  Yasuhiro Yamakawa <kawatab@yahoo.co.jp>
@@ -24,9 +24,9 @@
 #include <QTextCodec>
 #include <QTextEdit>
 #include <QTextStream>
-#include "keves_base.hpp"
-#include "keves_base-inl.hpp"
 #include "keves_builtin_values.hpp"
+#include "keves_common.hpp"
+#include "keves_common-inl.hpp"
 #include "keves_template.hpp"
 #include "keves_vm.hpp"
 #include "kev/code.hpp"
@@ -39,32 +39,32 @@
 #include "value/char.hpp"
 
 
-void LibRnrsUnicode::init(KevesBase* base) {
+void LibRnrsUnicode::init(KevesCommon* common) {
   std::cout << "LibRnrsUnicode::init()" << std::endl;
 
   // setID("rnrs", "unicode-bin");
   // setVerNum(6);
 					       
-  sym_char_alphabetic_q_ = SymbolKev::make(base, "char-alphabetic?");
-  sym_char_downcase_ = SymbolKev::make(base, "char-downcase");
-  sym_char_general_category_ = SymbolKev::make(base, "char-general-category");
-  sym_char_lower_case_q_ = SymbolKev::make(base, "char-lower-case?");
-  sym_char_numeric_q_ = SymbolKev::make(base, "char-numeric?");
-  sym_char_title_case_q_ = SymbolKev::make(base, "char-title-case?");
-  sym_char_titlecase_ = SymbolKev::make(base, "char-titlecase");
-  sym_char_foldcase_ = SymbolKev::make(base, "char-foldcase");
-  sym_char_ci_eq_q_ = SymbolKev::make(base, "char-ci=?");
-  sym_char_ci_lt_q_ = SymbolKev::make(base, "char-ci<?");
-  sym_char_ci_gt_q_ = SymbolKev::make(base, "char-ci>?");
-  sym_char_ci_lte_q_ = SymbolKev::make(base, "char-ci<=?");
-  sym_char_ci_gte_q_ = SymbolKev::make(base, "char-ci>=?");
-  sym_char_upcase_ = SymbolKev::make(base, "char-upcase");
-  sym_char_upper_case_q_ = SymbolKev::make(base, "char-upper-case?");
-  sym_char_whitespace_q_ = SymbolKev::make(base, "char-whitespace?");
-  sym_string_downcase_ = SymbolKev::make(base, "string-downcase");
-  sym_string_foldcase_ = SymbolKev::make(base, "string-foldcase");
-  sym_string_titlecase_ = SymbolKev::make(base, "string-titlecase");
-  sym_string_upcase_ = SymbolKev::make(base, "string-upcase");
+  sym_char_alphabetic_q_ = SymbolKev::make(common, "char-alphabetic?");
+  sym_char_downcase_ = SymbolKev::make(common, "char-downcase");
+  sym_char_general_category_ = SymbolKev::make(common, "char-general-category");
+  sym_char_lower_case_q_ = SymbolKev::make(common, "char-lower-case?");
+  sym_char_numeric_q_ = SymbolKev::make(common, "char-numeric?");
+  sym_char_title_case_q_ = SymbolKev::make(common, "char-title-case?");
+  sym_char_titlecase_ = SymbolKev::make(common, "char-titlecase");
+  sym_char_foldcase_ = SymbolKev::make(common, "char-foldcase");
+  sym_char_ci_eq_q_ = SymbolKev::make(common, "char-ci=?");
+  sym_char_ci_lt_q_ = SymbolKev::make(common, "char-ci<?");
+  sym_char_ci_gt_q_ = SymbolKev::make(common, "char-ci>?");
+  sym_char_ci_lte_q_ = SymbolKev::make(common, "char-ci<=?");
+  sym_char_ci_gte_q_ = SymbolKev::make(common, "char-ci>=?");
+  sym_char_upcase_ = SymbolKev::make(common, "char-upcase");
+  sym_char_upper_case_q_ = SymbolKev::make(common, "char-upper-case?");
+  sym_char_whitespace_q_ = SymbolKev::make(common, "char-whitespace?");
+  sym_string_downcase_ = SymbolKev::make(common, "string-downcase");
+  sym_string_foldcase_ = SymbolKev::make(common, "string-foldcase");
+  sym_string_titlecase_ = SymbolKev::make(common, "string-titlecase");
+  sym_string_upcase_ = SymbolKev::make(common, "string-upcase");
 
   proc_char_upcase_.set(&Function::make<Function::IsChar, CharUpcase>, sym_char_upcase_);
   proc_char_downcase_.set(&Function::make<Function::IsChar, CharDowncase>, sym_char_downcase_);
@@ -233,9 +233,9 @@ void LibRnrsUnicode::StringFoldcase::func(KevesVM* vm, const_KevesIterator pc) {
 ////////////////////////////////////////////////////////////////
 
 extern "C" {
-  KevesLibrary* make(KevesBase* base) {
+  KevesLibrary* make(KevesCommon* common) {
     LibRnrsUnicode* library(new LibRnrsUnicode());
-    library->init(base);
+    library->init(common);
     return library;
   }
 }
