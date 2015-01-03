@@ -71,45 +71,6 @@ void LocalVarFrameKev::copyArray(const LocalVarFrameKev* org) {
   std::copy(org_begin, org_end, this_begin);
 }
 
-/*
-void LocalVarFrameKev::copyTo(LocalVarFrameKev* other, int num) const {
-  Q_ASSERT(type() == TYPE);
-
-  const KevesValue* iter(this->array());
-  std::copy(iter, iter + num, other->array());
-}
-*/
-
-
-/*
-// class FreeVarFrameKev ----------------------------------------
-void FreeVarFrameKev::copyArray(const FreeVarFrameKev* org) {
-  next_ = org->next_;
-
-  const quintptr* org_begin(reinterpret_cast<const quintptr*>(org + 1));
-  const quintptr* org_end(org_begin + size_);
-  quintptr* this_begin(reinterpret_cast<quintptr*>(this + 1));
-  std::copy(org_begin, org_end, this_begin);
-}
-
-void FreeVarFrameKev::clear() {
-  KevesValue* iter(array());
-  KevesValue* const iter_end(iter + size_);
-  while (iter != iter_end) *iter++ = nullptr;
-}
-
-FreeVarFrameKev* FreeVarFrameKev::prepend(KevesGC* gc, int addition) {
-  auto ctor = [addition, this](void* ptr) {
-    FreeVarFrameKev* closure(new(ptr) FreeVarFrameKev(addition, this));
-    KevesValue* top_array(closure->array());
-    std::fill_n(top_array, addition, EMB_UNDEF);
-    return closure;
-  };
-  
-  return gc->make(ctor, alloc_size(this->size() + addition));
-}
-*/
-
 
 // class StackFrameKev ----------------------------------------
 void StackFrameKev::setArgumentsToLocalVars() {
@@ -127,7 +88,10 @@ void StackFrameKev::extendEnvFrame(LocalVarFrameKev* frame) {
 }
 */
 void StackFrameKev::extendEnvFrame(KevesGC* gc, int frame_size) {
-  envp_ = LocalVarFrameKev::make(gc, frame_size, envp_);
+  // envp_ = LocalVarFrameKev::make(gc, frame_size, envp_);
+  LocalVarFrameKev* frame(envp_);
+  while (frame->next()) frame = frame->next();
+  frame->set_next(LocalVarFrameKev::make(gc, frame_size, nullptr));
   envn_ += frame_size;
 }
 
@@ -137,10 +101,6 @@ void StackFrameKev::makeEnvFrame(KevesGC* gc, int frame_size) {
 }
 
 void StackFrameKev::assignLastLocalVar(KevesValue kev, int offset) {
-  /*
-  Q_ASSERT(offset >= 0 && offset < envp_->size());
-  envp_->array()[envn_ - offset - 1] = kev;
-  */
   assignLocalVar(envn_ - offset - 1, kev);
 }
 
@@ -171,12 +131,6 @@ void StackFrameKev::assignFreeVar(int index, KevesValue kev) {
 }
 
 KevesValue StackFrameKev::lastLocalVar(int offset) const {
-  /*
-  Q_ASSERT(index >= 0 && index < envn_);
-  return envp_->at(envn_ - index -1);
-  */
-  Q_ASSERT(offset >= 0 && offset < envn_);
-
   int index(envn_ - offset - 1);
   LocalVarFrameKev* frame(envp_);
 
@@ -185,7 +139,7 @@ KevesValue StackFrameKev::lastLocalVar(int offset) const {
     frame = frame->next();
   }
     
-  return frame->array()[index];
+  return frame->at(index);
 }
 
 KevesValue StackFrameKev::freeVar(int index) const {
@@ -200,19 +154,10 @@ KevesValue StackFrameKev::freeVar(int index) const {
 }
 
 LocalVarFrameKev* StackFrameKev::close() {
-  int count(envn_);
   LocalVarFrameKev* frame(envp_);
-
-  while (count > 0) {
-    Q_ASSERT(frame);
-
-    count -= frame->size();
-    frame->next();
-  }
-
-  Q_ASSERT(count == 0);
-
-  frame->set_next(clsr_);
+  int count(envn_);
+  while ((count -= frame->size()) > 0) frame = frame->next();
+  if (!frame->next()) frame->set_next(clsr_);
   return envp_;
 }
   
@@ -238,10 +183,3 @@ void StackFrameKev::windWithValues(const_KevesIterator pc, StackFrameKev* stack_
   wind(pc, stack_frame, vals);
   argn_ = KevesFixnum(vals->at(0));
 }
-
-/*
-void StackFrameKev::copyEnvFrameTo(FreeVarFrameKev* closure) const {
-  KevesValue* env_array(envp_->array());
-  std::copy(env_array, env_array + envn_, closure->array());
-}
-*/

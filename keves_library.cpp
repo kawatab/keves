@@ -98,14 +98,6 @@ const QList<KevesImportLibrary>& KevesImportLibraryList::getList() const {
 
 bool KevesImportLibraryList::setLibrary(const QStringList& id,
 					const QList<ver_num_t>& ver_num) {
-  /*
-  count_ = 0;
-
-  for (auto lib : import_libs_) {
-    if (KevesCommon::match(lib.getID(), id)) return true;
-    ++count_;
-  }
-  */
   for (count_ = 0; count_ < import_libs_.size(); ++count_) {
     if (KevesCommon::match(import_libs_.at(count_).getID(), id))
       return true;
@@ -169,7 +161,7 @@ KevesValue KevesLibrary::findBind(const QString& id) const {
       return KevesValue::fromUioword<Kev>(bind.second);
   }
 
-  std::cerr << "Not found bound: " << qPrintable(id) << '\n';
+  std::cerr << "Not found bind: " << qPrintable(id) << '\n';
   return EMB_UNDEF;
 }
 

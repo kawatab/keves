@@ -36,6 +36,7 @@
 #include "kev/string-inl.hpp"
 #include "kev/symbol.hpp"
 #include "kev/symbol-inl.hpp"
+#include "kev/vector.hpp"
 
 
 void LibKevesBase::init(KevesCommon* common) {
@@ -46,12 +47,15 @@ void LibKevesBase::init(KevesCommon* common) {
 					       
   sym_display_ = SymbolKev::make(common, "display");
   sym_newline_ = SymbolKev::make(common, "newline");
+  sym_u8_list_to_vector_ = SymbolKev::make(common, "u8-list->vector");
 
   proc_display_.set(procDisplay, sym_display_);
   proc_newline_.set(&Function::thunk<Newline>, sym_newline_);
+  proc_u8_list_to_vector_.set(&procU8ListToVector, sym_u8_list_to_vector_);
 
   addBind("display", &proc_display_);
   addBind("newline", &proc_newline_);
+  addBind("u8-list->vector", &proc_u8_list_to_vector_);
 
   addBind("&syntax", common->builtin()->amp_syntax());
   addBind("&lexical", common->builtin()->amp_lexical());
@@ -104,6 +108,47 @@ void LibKevesBase::procDisplay(KevesVM* vm, const_KevesIterator pc) {
 void LibKevesBase::Newline::func(KevesVM* vm, const_KevesIterator pc) {
   vm->result_field()->append(QString("\n"));
   vm->acc_ = EMB_UNDEF;
+  return KevesVM::returnValue(vm, pc);
+}
+
+// u8-list->vector
+void LibKevesBase::procU8ListToVector(KevesVM* vm, const_KevesIterator pc) {
+  StackFrameKev* registers(&vm->registers_);
+  
+  if (registers->argn() != 2) {
+    vm->acc_ = vm->gr2_;
+    vm->gr1_ = vm->common()->getMesgText(registers->argn() > 2 ?
+					 KevesBuiltinValues::mesg_Req1GotMore :
+					 KevesBuiltinValues::mesg_Req1Got0);
+    vm->gr2_ = EMB_NULL;
+    return KevesVM::raiseAssertCondition(vm, pc);
+  }
+  
+  return procU8ListToVector_helper(vm, pc);
+}
+
+void LibKevesBase::procU8ListToVector_helper(KevesVM* vm, const_KevesIterator pc) {
+  StackFrameKev* registers(&vm->registers_);
+  KevesValue temp(registers->lastArgument());
+  int length(KevesVM::getListLength(temp));
+
+  if (length < 0) {
+    vm->acc_ = vm->gr2_;
+    vm->gr1_ = vm->common()->getMesgText(KevesBuiltinValues::mesg_ReqProperList);
+    vm->gr2_ = EMB_NULL;
+    return KevesVM::raiseAssertCondition(vm, pc);
+  }
+  
+  VectorKev* vector(vm->makeVector(length));
+  KevesIterator iter(vector->begin());
+  
+  while (temp != EMB_NULL) {
+    const PairKev* pair(temp);
+    *iter++ = pair->car();
+    temp = pair->cdr();
+  }
+  
+  vm->acc_ = vector;
   return KevesVM::returnValue(vm, pc);
 }
 

@@ -321,7 +321,7 @@ bool KevesCommon::match(const QStringList& list1, const QStringList& list2) {
 }
 
 KevesLibrary* KevesCommon::getLibrary(const QStringList& id,
-				    const QList<ver_num_t>& ver_num) {
+				      const QList<ver_num_t>& ver_num) {
   Q_ASSERT(id.size() > 0);
 
   QMutexLocker locker(&mutex_);
@@ -333,7 +333,7 @@ KevesLibrary* KevesCommon::getLibrary(const QStringList& id,
 }
 
 KevesLibrary* KevesCommon::loadLibrary(const QStringList& id,
-				     const QList<ver_num_t>& ver_num) {
+				       const QList<ver_num_t>& ver_num) {
   for (auto pair : library_name_list_) {
     if (match(id, pair.first)) {
       QString file_name("lib/");
@@ -361,7 +361,7 @@ KevesLibrary* KevesCommon::loadLibrary(const QStringList& id,
 }
 
 KevesLibrary* KevesCommon::loadCompiledLibrary(const QStringList& id,
-					     const QList<ver_num_t>& ver_num) {
+					       const QList<ver_num_t>& ver_num) {
   QString file_name("lib");
   for (auto str : id) file_name += QString('/') + str;
   file_name += ".kevc";
@@ -388,7 +388,7 @@ void KevesCommon::pushToSharedList(MutableKev* kev) {
 }
 
 uioword KevesCommon::indexAddress(const QList<const Kev*>& table,
-				KevesValue value) {
+				  KevesValue value) {
   if (!value.isPtr()) return value.toUIntPtr();
   
   int index(table.indexOf(value.toPtr()));
@@ -409,7 +409,7 @@ void KevesCommon::revertObjects(const QList<const Kev*>& object_list, int start_
 }
 
 void KevesCommon::revertValue(const QList<const Kev*>& object_list,
-			    KevesValue* value) {
+			      KevesValue* value) {
   if (isIndex(*value)) *value = object_list.at(value->toUIntPtr() >> 2);
 }
 
@@ -703,8 +703,8 @@ void KevesCommon::toString_element(QString* str, KevesValue value) const {
 }
 
 KevesValue KevesCommon::makeAssertCondition(KevesValue a,
-					  KevesValue b,
-					  KevesValue c) {
+					    KevesValue b,
+					    KevesValue c) {
   VectorKev* values(VectorKev::make(this, 4));
   KevesIterator iter(values->begin());
   *iter++ = SimpleConditionKev::make(this, builtin()->amp_assert(), EMB_NULL);

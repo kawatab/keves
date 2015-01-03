@@ -3113,7 +3113,7 @@ void LibRnrsBase::procValues(KevesVM* vm, const_KevesIterator pc) {
   if (registers->argn() > 1) {
     vm->acc_ = registers->argument(1);
     vm->keves_vals_ = registers->argp();
-    vm->keves_vals_->replace(0, KevesFixnum(registers->argn()));
+    vm->keves_vals_->assign(0, KevesFixnum(registers->argn()));
   } else {
     vm->keves_vals_ = nullptr;
     vm->acc_ = EMB_UNDEF;

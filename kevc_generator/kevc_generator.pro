@@ -12,6 +12,7 @@ QMAKE_CXXFLAGS += -std=c++11
 # Input
 HEADERS += kevc_generator.hpp \
            code_keves-base.hpp \
+           code_keves-parse.hpp \
            code_rnrs-base.hpp \
            code_rnrs-exceptions.hpp \
            code_rnrs-lists.hpp \
@@ -50,6 +51,7 @@ HEADERS += kevc_generator.hpp \
 SOURCES += main.cpp \
            kevc_generator.cpp \
            code_keves-base.cpp \
+           code_keves-parse.cpp \
            code_rnrs-base.cpp \
            code_rnrs-exceptions.cpp \
            code_rnrs-lists.cpp \

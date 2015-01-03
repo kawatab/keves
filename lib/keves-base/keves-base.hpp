@@ -41,11 +41,8 @@ public:
   CPSKev proc_display_;
   SymbolKev* sym_newline_;
   CPSKev proc_newline_;
-
-  /*
-  static KevesValue makeLexicalCondition(KevesIterator*,
-					 KevesValue, KevesValue, KevesValue);
-  */
+  SymbolKev* sym_u8_list_to_vector_;
+  CPSKev proc_u8_list_to_vector_;
 
 private:
   static void procDisplay(KevesVM*, const_KevesIterator);
@@ -53,4 +50,7 @@ private:
   struct Newline {
     static void func(KevesVM*, const_KevesIterator);
   };
+
+  static void procU8ListToVector(KevesVM* vm, const_KevesIterator pc);
+  static void procU8ListToVector_helper(KevesVM* vm, const_KevesIterator pc);
 };

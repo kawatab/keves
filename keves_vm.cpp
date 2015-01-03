@@ -326,9 +326,9 @@ void KevesVM::returnTwoValues(KevesVM* vm, const_KevesIterator pc) {
 
   vm->checkStack(&arg_frame, &returnTwoValues, pc);
   
-  arg_frame.replace(0, KevesFixnum(3));
-  arg_frame.replace(1, vm->acc_);
-  arg_frame.replace(2, vm->gr1_);
+  arg_frame.assign(0, KevesFixnum(3));
+  arg_frame.assign(1, vm->acc_);
+  arg_frame.assign(2, vm->gr1_);
   vm->keves_vals_ = &arg_frame;
   vm->gr1_ = vm->acc_;
   return pushGr1ToArgument(vm, vm->registers_.unwind());
@@ -384,6 +384,7 @@ void KevesVM::returnExactComplexNumberKev(KevesVM* vm, const_KevesIterator pc) {
 }
 
 void KevesVM::executeGC(vm_func current_func, const_KevesIterator pc) {
+  std::cout << "start GC" << std::endl;
   current_function_ = current_func;
   return gc_.execute(pc);
 }
@@ -832,15 +833,8 @@ void KevesVM::cmd_ASSIGN_MULT(KevesVM* vm, const_KevesIterator pc) {
 void KevesVM::cmd_CLOSE_R(KevesVM* vm, const_KevesIterator pc) {
   StackFrameKev* registers(&vm->registers_);
   KevesFixnum num_local_var(*(pc + 1));
-  // LocalVarFrameKev* closure(registers->clsr()->prepend(&vm->gc_, num_local_var));
   LocalVarFrameKev* closure(registers->close());
   const_KevesIterator body(pc + 2);
-  /*
-  Q_ASSERT(KevesValue(*body).isInstruct());
-  
-  Q_ASSERT(num_local_var == registers->envn());
-  registers->copyEnvFrameTo(closure);
-  */
   LambdaKev lambda(closure, vm->gc_.toMutable(vm->current_code_), body);
   
   vm->keves_vals_ = nullptr;
@@ -1476,7 +1470,7 @@ void KevesVM::cmd_UNWIND_CONTINUATION(KevesVM* vm, const_KevesIterator pc) {
 
   // keep arguments as multiple values
   vm->keves_vals_ = registers->argp();
-  vm->keves_vals_->replace(0, KevesFixnum(registers->argn()));
+  vm->keves_vals_->assign(0, KevesFixnum(registers->argn()));
 
   // trace back to current-continuation
   // if WindKev object is found, set <after> of it and *this*

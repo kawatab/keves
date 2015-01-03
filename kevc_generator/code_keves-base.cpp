@@ -55,6 +55,9 @@ void Code_KevesBase::write(KevcGenerator* generator) {
   KevesValue proc_assq(generator->importBind("assq"));
   KevesValue proc_fold_left(generator->importBind("fold-left"));
 
+  if (!generator->setImportLibrary("keves", "parse", 0, 1)) return;
+  KevesValue proc_keves_parser(generator->importBind("keves-parser"));
+
   // values
   KevesValue list1(generator->makePair(KevesChar('B'), EMB_NULL));
   KevesValue list2(generator->makePair(KevesChar('a'), list1));
@@ -67,8 +70,13 @@ void Code_KevesBase::write(KevcGenerator* generator) {
   KevesValue list6(generator->makePair(list5, EMB_NULL));
   KevesValue list7(generator->makePair(list4, list6));
   KevesValue list8(generator->makePair(list3, list7));
+  KevesValue str4(generator->makeString("(define (fib n) \
+  (if (< n 2) \
+      1 \
+    (+ (fib (- n 2)) (fib (- n 1))))) \
+(list `(abc) (quote (123 \"abc\")))"));
 
-  CodeKev* code(generator->makeCode(185));
+  CodeKev* code(generator->makeCode(202));
   {
     KevesIterator iter(code->begin());
     {
@@ -318,6 +326,31 @@ void Code_KevesBase::write(KevcGenerator* generator) {
 	*iter++ = KevesFixnum(5);
 	*iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
 	*iter++ = KevesChar('X');
+	*iter++ = KevesInstruct(CMD_APPLY);
+      }
+      *iter++ = KevesInstruct(CMD_APPLY);
+    }
+
+    {
+      *iter++ = KevesInstruct(CMD_FRAME_R);
+      *iter++ = KevesFixnum(3);
+      *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+      *iter++ = proc_newline;
+      *iter++ = KevesInstruct(CMD_APPLY);
+    }
+
+    {
+      *iter++ = KevesInstruct(CMD_FRAME_R);
+      *iter++ = KevesFixnum(10);
+      *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+      *iter++ = proc_display;
+      {
+	*iter++ = KevesInstruct(CMD_FRAME_R);
+	*iter++ = KevesFixnum(5);
+	*iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+	*iter++ = proc_keves_parser;
+	*iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+	*iter++ = str4;
 	*iter++ = KevesInstruct(CMD_APPLY);
       }
       *iter++ = KevesInstruct(CMD_APPLY);

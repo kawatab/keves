@@ -19,6 +19,8 @@ HEADERS += rnrs-base.hpp \
            keves_template.hpp \
            keves_textual_port.hpp \
            keves_vm.hpp \
+           kev/bignum.hpp \
+           kev/bignum-inl.hpp \
            kev/code.hpp \
            kev/code-inl.hpp \
            kev/condition.hpp \
@@ -48,6 +50,7 @@ SOURCES += rnrs-base.cpp \
            keves_template.cpp \
            keves_textual_port.cpp \
            keves_vm.cpp \
+           kev/bignum.cpp \
            kev/code.cpp \
            kev/condition.cpp \
            kev/frame.cpp \

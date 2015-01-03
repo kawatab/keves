@@ -34,21 +34,13 @@ public:
   ArgumentFrameKev(ArgumentFrameKev&&) = delete;
   ArgumentFrameKev& operator=(const ArgumentFrameKev&) = delete;
   ArgumentFrameKev& operator=(ArgumentFrameKev&&) = delete;
-
-protected:
   ~ArgumentFrameKev() = default;
 
   explicit ArgumentFrameKev(int size)
     : MutableKev(TYPE), size_(size) {}
 
-public:
-  void append(int*, const ArgumentFrameKev*, int);
+  void append(int* num_this, const ArgumentFrameKev* other, int num_other);
 
-  KevesValue at(int index) const {
-    Q_ASSERT(index >= 0 && index < size_);
-    return array()[index];
-  }
-  
   KevesValue* array() {
     Q_ASSERT(type() == TYPE);
     return reinterpret_cast<KevesValue*>(this + 1);
@@ -64,13 +56,13 @@ public:
     array()[index] = kev;
   }
   
-  ArgumentFrameKev* extend(KevesGC* gc) const;
-
-  void replace(int index, KevesValue kev) {
+  KevesValue at(int index) const {
     Q_ASSERT(index >= 0 && index < size_);
-    array()[index] = kev;
+    return array()[index];
   }
   
+  ArgumentFrameKev* extend(KevesGC* gc) const;
+
   int size() const {
     return size_;
   }
@@ -194,17 +186,6 @@ public:
     Q_ASSERT(size_ >= 0);
   }
   
-public:
-  void assign(int index, KevesValue kev) {
-    Q_ASSERT(index >= 0 && index < size_);
-    array()[index] = kev;
-  }
-  
-  KevesValue at(int index) const {
-    Q_ASSERT(index >= 0 && index < size_);
-    return array()[index];
-  }
-  
   KevesValue* array() {
     Q_ASSERT(type() == TYPE);
     return reinterpret_cast<KevesValue*>(this + 1);
@@ -215,18 +196,20 @@ public:
     return reinterpret_cast<const KevesValue*>(this + 1);
   }
   
-  void clear();
-
+  void assign(int index, KevesValue value) {
+    Q_ASSERT(index >= 0 && index < size_);
+    array()[index] = value;
+  }
+  
+  KevesValue at(int index) const {
+    Q_ASSERT(index >= 0 && index < size_);
+    return array()[index];
+  }
+  
   LocalVarFrameKev* next() const {
     return next_;
   }
 
-  LocalVarFrameKev* prepend(KevesGC* gc, int size);
-
-  void replace(int index, KevesValue value) {
-    Q_ASSERT(index >= 0 && index < size_);
-    array()[index] = value;
-  }
   
   void set_next(LocalVarFrameKev* next) {
     next_ = next;
@@ -348,162 +331,6 @@ private:
 };
 
 
-/*
-class FreeVarFrameKev : public MutableKev {
-public:
-  static constexpr kev_type TYPE = FREE_FRAME;
-
-  FreeVarFrameKev()
-    : FreeVarFrameKev(0) {}
- 
-  FreeVarFrameKev(const FreeVarFrameKev&) = delete;
-  FreeVarFrameKev(FreeVarFrameKev&&) = delete;
-  FreeVarFrameKev& operator=(const FreeVarFrameKev&) = delete;
-  FreeVarFrameKev& operator=(FreeVarFrameKev&&) = delete;
-  ~FreeVarFrameKev() = default;
-
-  explicit FreeVarFrameKev(int size)
-    : MutableKev(TYPE), size_(size), next_() {
-    Q_ASSERT(size_ >= 0);
-  }
-
-  FreeVarFrameKev(int size, FreeVarFrameKev* next)
-    : MutableKev(TYPE), size_(size), next_(next) {}
-
-  void assign(int index, KevesValue kev) {
-    Q_ASSERT(index >= 0 && index < size_);
-    array()[index] = kev;
-  }
-  
-  KevesValue at(int index) const {
-    Q_ASSERT(index >= 0 && index < size_);
-    return array()[index];
-  }
-  
-  KevesValue* array() {
-    Q_ASSERT(type() == TYPE);
-    return reinterpret_cast<KevesValue*>(this + 1);
-  }
-  
-  const KevesValue* array() const {
-    Q_ASSERT(type() == TYPE);
-    return reinterpret_cast<const KevesValue*>(this + 1);
-  }
-  
-  void clear();
-
-  FreeVarFrameKev* next() const {
-    return next_;
-  }
-
-  FreeVarFrameKev* prepend(KevesGC* gc, int);
-
-  void replace(int index, KevesValue value) {
-    Q_ASSERT(index >= 0 && index < size_);
-    array()[index] = value;
-  }
-  
-  int size() const {
-    return size_;
-  }
-
-  template<class ZONE>
-  static FreeVarFrameKev* make(ZONE* zone, int, FreeVarFrameKev*);
-
-private:
-  static size_t alloc_size(int size) {
-    return sizeof(FreeVarFrameKev) + sizeof(KevesValue) * size;
-  }
-
-  const int size_;
-  FreeVarFrameKev* next_;
-
-
-  ////////////////////////////////////////////////////////////
-  // Section For GC !!!                                     //
-  ////////////////////////////////////////////////////////////
-
-public:
-  static size_t alloc_size(const MutableKev* kev) {
-    return alloc_size(static_cast<const FreeVarFrameKev*>(kev)->size_);
-  }
-
-  template<class ZONE>
-  static MutableKev* copyTo(ZONE* zone, MutableKev* kev) {
-    return VariableLengthKev<FreeVarFrameKev>::from(kev)->copyTo(zone);
-  }
-
-  template<class ZONE>
-  static quintptr* copyContents(ZONE* zone, MutableKev* kev) {
-    VariableLengthKev<FreeVarFrameKev>*
-      clsr(VariableLengthKev<FreeVarFrameKev>::from(kev));
-
-    clsr->next_
-      = zone->copy(VariableLengthKev<FreeVarFrameKev>::from(clsr->next_));
-
-    int size(clsr->size());
-    KevesValue* value_ptr(clsr->array());
-
-    for (int i(0); i < size; ++i, ++value_ptr)
-      *value_ptr = zone->copy(*value_ptr);
-
-    return clsr->border();
-  }
-
-  quintptr* border() {
-    return reinterpret_cast<quintptr*>(this + 1) + size_;
-  }
-
-  void copyArray(const FreeVarFrameKev* org);
-
-  ////////////////////////////////////////////////////////////
-  // Section For serialize !!!                              //
-  ////////////////////////////////////////////////////////////
-
-public:
-  template<class BASE, class STACK>
-  static void pushChildren(STACK* pending, KevesValue value) {
-    const FreeVarFrameKev* frame(value);
-    BASE::pushValue(pending, frame->next());
-    BASE::pushArray(pending, frame);
-  }
-
-  template<class BASE, class LIST, class STREAM>
-  static void writeObject(const LIST& list, STREAM& out, KevesValue value) {
-    const FreeVarFrameKev* frame(value);
-
-    out << static_cast<uioword>(frame->type())
-	<< static_cast<ioword>(frame->size())
-	<< BASE::indexAddress(list, frame->next());
-
-    BASE::writeArray(list, out, frame);
-  }
-  
-  template<class BASE, class STREAM, class GC>
-  static Kev* readObject(STREAM& in, GC* gc) {
-    ioword size;
-    uioword next;
-    in >> size >> next;
-
-    FreeVarFrameKev* frame
-      (make(gc,
-	    size,
-	    KevesValue::template:fromUioword<FreeVarFrameKev>(next)));
-
-    BASE::readArray(in, frame);
-    return frame;
-  }
-  
-  template<class BASE, class LIST>
-  static void revertObject(const LIST& object_list, MutableKevesValue value) {
-    FreeVarFrameKev* frame(value);
-    BASE::revertValue(object_list, &frame->next_);
-    BASE::revertArray(object_list, frame);
-  }
-};
-*/
-
-
 class StackFrameKev : public MutableKev {
 public:
   static constexpr kev_type TYPE = STACK_FRAME;
@@ -536,7 +363,7 @@ public:
     return argp_->at(index);
   }
 
-  void assignFreeVar(int, KevesValue);
+  void assignFreeVar(int index, KevesValue kev);
   void assignLastLocalVar(KevesValue kev, int offset = 0);
   void assignLocalVar(int index, KevesValue kev);
 
@@ -547,12 +374,6 @@ public:
   void clearArgFrame() {
     argn_ = 0;
   }
-
-  /*
-  void clearEnvFrame() {
-    envn_ = 0;
-  }
-  */
 
   LocalVarFrameKev* close();
   
@@ -619,7 +440,7 @@ public:
 
   void pushArgument(KevesValue kev) {
     Q_ASSERT(argn_ < argp_->size());
-    argp_->replace(argn_++, kev);
+    argp_->assign(argn_++, kev);
   }
 
   /*
@@ -631,12 +452,12 @@ public:
 
   void replaceFirstArgument(KevesValue kev) {
     Q_ASSERT(argn_ > 0);
-    argp_->replace(0, kev);
+    argp_->assign(0, kev);
   }
 
   void replaceLastArgument(KevesValue kev, int offset = 0) {
     Q_ASSERT(offset >= 0 && offset < argn_);
-    argp_->replace(argn_ - offset - 1, kev);
+    argp_->assign(argn_ - offset - 1, kev);
   }
 
   void set_arg(ArgumentFrameKev* argp, int argn) {

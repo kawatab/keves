@@ -25,7 +25,9 @@ HEADERS += keves-base.hpp \
            kev/string.hpp \
            kev/string-inl.hpp \
            kev/symbol.hpp \
-           kev/symbol-inl.hpp
+           kev/symbol-inl.hpp \
+           kev/vector.hpp \
+           kev/vector-inl.hpp
 
 SOURCES += keves-base.cpp \
            keves_builtin_values.cpp \
@@ -39,7 +41,8 @@ SOURCES += keves-base.cpp \
            kev/frame.cpp \
            kev/procedure.cpp \
            kev/string.cpp \
-           kev/symbol.cpp
+           kev/symbol.cpp \
+           kev/vector.cpp
 
 CONFIG += debug
 # CONFIG += qt release

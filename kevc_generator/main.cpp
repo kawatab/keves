@@ -18,6 +18,7 @@
 
 
 #include "code_keves-base.hpp"
+#include "code_keves-parse.hpp"
 #include "code_rnrs-base.hpp"
 #include "code_rnrs-exceptions.hpp"
 #include "code_rnrs-lists.hpp"
@@ -39,13 +40,6 @@ int main() {
   {
     KevcGenerator generator(&common, "test03.kevc", "main");
     TestCode::Code03::write(&generator);
-  }
-
-  {
-    KevcGenerator generator(&common, "lib/keves/base.kevc",
-			    "keves", "base", 0, 1);
-
-    Code_KevesBase::write(&generator);
   }
 
   {
@@ -84,14 +78,29 @@ int main() {
     Code_RnrsBase::write(&generator);
   }
 
+  {
+    KevcGenerator generator(&common, "lib/keves/parse.kevc",
+			    "keves", "parse", 0, 1);
+
+    Code_KevesParse::write(&generator);
+  }
+
+  {
+    KevcGenerator generator(&common, "lib/keves/base.kevc",
+			    "keves", "base", 0, 1);
+
+    Code_KevesBase::write(&generator);
+  }
+
   KevcGenerator::testRead(&common, "test02.kevc");
   KevcGenerator::testRead(&common, "test03.kevc");
-  KevcGenerator::testRead(&common, "lib/keves/base.kevc");
   KevcGenerator::testRead(&common, "lib/rnrs/exceptions.kevc");
   KevcGenerator::testRead(&common, "lib/rnrs/lists.kevc");
   KevcGenerator::testRead(&common, "lib/rnrs/mutable-strings.kevc");
   KevcGenerator::testRead(&common, "lib/rnrs/unicode.kevc");
   KevcGenerator::testRead(&common, "lib/rnrs/base.kevc");
+  KevcGenerator::testRead(&common, "lib/keves/parse.kevc");
+  KevcGenerator::testRead(&common, "lib/keves/base.kevc");
 
   return 0;
 }

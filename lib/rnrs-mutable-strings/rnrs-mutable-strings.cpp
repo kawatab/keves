@@ -19,24 +19,11 @@
 
 #include "rnrs-mutable-strings.hpp"
 
-// #include <QDir>
-// #include <QFile>
-// #include <QTextCodec>
-// #include <QTextEdit>
-// #include <QTextStream>
 #include "keves_builtin_values.hpp"
-// #include "keves_common.hpp"
-// #include "keves_common-inl.hpp"
 #include "keves_template.hpp"
-// #include "keves_vm.hpp"
-// #include "kev/code.hpp"
-// #include "kev/code-inl.hpp"
 #include "kev/procedure.hpp"
-// #include "kev/procedure-inl.hpp"
 #include "kev/string.hpp"
-// #include "kev/string-inl.hpp"
 #include "kev/symbol.hpp"
-// #include "kev/symbol-inl.hpp"
 #include "value/char.hpp"
 
 
