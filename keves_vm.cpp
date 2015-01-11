@@ -20,7 +20,6 @@
 #include "keves_vm.hpp"
 
 #include <iostream>
-#include <unistd.h>
 #include "keves_builtin_values.hpp"
 #include "keves_common.hpp"
 #include "keves_library.hpp"
@@ -400,7 +399,6 @@ int KevesVM::execute(const QString& arg) {
   stack_higher_limit_ = reinterpret_cast<char*>(&attr);
   std::cout << "higher limit: " << stack_higher_limit_ << std::endl;
 
-  sleep(2);
   return execute_helper(arg);
 }
 
@@ -411,16 +409,7 @@ int KevesVM::execute_helper(const QString& arg) {
   registers_.changeToBottomFrame();
   QStringList library_name0;
   library_name0 << "keves" << "base";
-  // QStringList library_name;
   QList<ver_num_t> ver_num;
-  // library_name << "keves" << "base-bin";
-  // KevesLibrary* lib_keves_base(common_->getLibrary(library_name, ver_num));
-
-  // if (!lib_keves_base) {
-  // KevesLibrary::errorOfMissingLibrary(library_name, ver_num);
-  // return 1;
-  // }
-  
   KevesLibrary* lib_keves_base0(common_->getLibrary(library_name0, ver_num));
 
   if (!lib_keves_base0) {
@@ -1354,7 +1343,8 @@ void KevesVM::cmd_TERMINATE_EXPAND(KevesVM* vm, const_KevesIterator pc) {
   LambdaKev proc(code, 0);
   vm->acc_ = &proc;
   vm->gr1_ = code;
-  vm->executeGC(&cmd_NOP, pc);
+  // vm->executeGC(&cmd_NOP, pc);
+  return cmd_NOP(vm, pc);
 }
 
 void KevesVM::cmd_ADD_GLOBAL_VARIABLE(KevesVM* vm, const_KevesIterator pc) {

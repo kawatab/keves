@@ -35,13 +35,14 @@ void Code_KevesBase::write(KevcGenerator* generator) {
   KevesValue proc_newline(generator->importBind("newline"));
  
   if (!generator->setImportLibrary("rnrs", "base", 6)) return;
+  KevesValue proc_append(generator->importBind("append"));
   KevesValue proc_car(generator->importBind("car"));
   KevesValue proc_cadr(generator->importBind("cadr"));
-  KevesValue proc_append(generator->importBind("append"));
   KevesValue proc_cons(generator->importBind("cons"));
   KevesValue proc_eqv_q(generator->importBind("eqv?"));
   KevesValue proc_eq_q(generator->importBind("eq?"));
   KevesValue proc_list(generator->importBind("list"));
+  KevesValue proc_list_to_vector(generator->importBind("list->vector"));
   KevesValue proc_map(generator->importBind("map"));
   KevesValue proc_make_string(generator->importBind("make-string"));
   KevesValue proc_string_append(generator->importBind("string-append"));
@@ -59,24 +60,32 @@ void Code_KevesBase::write(KevcGenerator* generator) {
   KevesValue proc_keves_parser(generator->importBind("keves-parser"));
 
   // values
-  KevesValue list1(generator->makePair(KevesChar('B'), EMB_NULL));
-  KevesValue list2(generator->makePair(KevesChar('a'), list1));
+  KevesValue list01(generator->makePair(KevesChar('B'), EMB_NULL));
+  KevesValue list02(generator->makePair(KevesChar('a'), list01));
   KevesValue str1(generator->makeString("ABC"));
   KevesValue str2(generator->makeString("def"));
   KevesValue str3(generator->makeString("xyz"));
-  KevesValue list3(generator->makePair(str1, KevesChar('A')));
-  KevesValue list4(generator->makePair(str2, KevesChar('d')));
-  KevesValue list5(generator->makePair(str3, KevesChar('x')));
-  KevesValue list6(generator->makePair(list5, EMB_NULL));
-  KevesValue list7(generator->makePair(list4, list6));
-  KevesValue list8(generator->makePair(list3, list7));
+  KevesValue list03(generator->makePair(str1, KevesChar('A')));
+  KevesValue list04(generator->makePair(str2, KevesChar('d')));
+  KevesValue list05(generator->makePair(str3, KevesChar('x')));
+  KevesValue list06(generator->makePair(list05, EMB_NULL));
+  KevesValue list07(generator->makePair(list04, list06));
+  KevesValue list08(generator->makePair(list03, list07));
+  KevesValue list09(generator->makePair(KevesInstruct(CMD_HALT), EMB_NULL));
+  KevesValue list10(generator->makePair(KevesInstruct(CMD_APPLY), list09));
+  KevesValue list11(generator->makePair(KevesInstruct(CMD_PUSH_CONSTANT), EMB_NULL));
+  KevesValue list12(generator->makePair(proc_display, list11));
+  KevesValue list13(generator->makePair(KevesInstruct(CMD_PUSH_CONSTANT), list12));
+  KevesValue list14(generator->makePair(KevesFixnum(5), list13));
+  KevesValue list15(generator->makePair(KevesInstruct(CMD_FRAME_R), list14));
+  KevesValue list16(generator->makePair(KevesFixnum(0), list15));
   KevesValue str4(generator->makeString("(define (fib n) \
   (if (< n 2) \
       1 \
     (+ (fib (- n 2)) (fib (- n 1))))) \
 (list `(abc) (quote (123 \"abc\")))"));
 
-  CodeKev* code(generator->makeCode(202));
+  CodeKev* code(generator->makeCode(226));
   {
     KevesIterator iter(code->begin());
     {
@@ -95,7 +104,7 @@ void Code_KevesBase::write(KevcGenerator* generator) {
 	  *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
 	  *iter++ = proc_cadr;
 	  *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
-	  *iter++ = list2;
+	  *iter++ = list02;
 	  *iter++ = KevesInstruct(CMD_APPLY);
 	}
 	*iter++ = KevesInstruct(CMD_APPLY); // jump04
@@ -127,9 +136,9 @@ void Code_KevesBase::write(KevcGenerator* generator) {
 	  *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
 	  *iter++ = proc_append;
 	  *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
-	  *iter++ = list2;
+	  *iter++ = list02;
 	  *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
-	  *iter++ = list2;
+	  *iter++ = list02;
 	  *iter++ = KevesInstruct(CMD_APPLY);
 	}
 	*iter++ = KevesInstruct(CMD_APPLY); // jump07
@@ -242,7 +251,7 @@ void Code_KevesBase::write(KevcGenerator* generator) {
 	*iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
 	*iter++ = proc_char_upper_case_q;
 	*iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
-	*iter++ = list2;
+	*iter++ = list02;
 	*iter++ = KevesInstruct(CMD_APPLY);
       }
       *iter++ = KevesInstruct(CMD_APPLY);
@@ -269,7 +278,7 @@ void Code_KevesBase::write(KevcGenerator* generator) {
 	*iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
 	*iter++ = str3;
 	*iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
-	*iter++ = list8;
+	*iter++ = list08;
 	*iter++ = KevesInstruct(CMD_APPLY);
       }
       *iter++ = KevesInstruct(CMD_APPLY);
@@ -298,7 +307,7 @@ void Code_KevesBase::write(KevcGenerator* generator) {
 	*iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
 	*iter++ = EMB_NULL;
 	*iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
-	*iter++ = list8;
+	*iter++ = list08;
 	*iter++ = KevesInstruct(CMD_APPLY);
       }
       *iter++ = KevesInstruct(CMD_APPLY);
@@ -341,18 +350,48 @@ void Code_KevesBase::write(KevcGenerator* generator) {
 
     {
       *iter++ = KevesInstruct(CMD_FRAME_R);
-      *iter++ = KevesFixnum(10);
+      *iter++ = KevesFixnum(34);
       *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
       *iter++ = proc_display;
       {
 	*iter++ = KevesInstruct(CMD_FRAME_R);
-	*iter++ = KevesFixnum(5);
+	*iter++ = KevesFixnum(24);
 	*iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
-	*iter++ = proc_keves_parser;
-	*iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
-	*iter++ = str4;
+	*iter++ = proc_list_to_vector;
+	{
+	  *iter++ = KevesInstruct(CMD_FRAME_R);
+	  *iter++ = KevesFixnum(19);
+	  *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+	  *iter++ = proc_append;
+	  *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+	  *iter++ = list16;
+	  {
+	    *iter++ = KevesInstruct(CMD_FRAME_R);
+	    *iter++ = KevesFixnum(12);
+	    *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+	    *iter++ = proc_cons;
+	    {
+	      *iter++ = KevesInstruct(CMD_FRAME_R);
+	      *iter++ = KevesFixnum(5);
+	      *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+	      *iter++ = proc_keves_parser;
+	      *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+	      *iter++ = str4;
+	      *iter++ = KevesInstruct(CMD_APPLY);
+	    }
+	    *iter++ = KevesInstruct(CMD_PUSH_CONSTANT);
+	    *iter++ = list10;
+	    *iter++ = KevesInstruct(CMD_APPLY);
+	  }
+	  *iter++ = KevesInstruct(CMD_APPLY);
+	}
 	*iter++ = KevesInstruct(CMD_APPLY);
       }
+      *iter++ = KevesInstruct(CMD_LAST);
+      *iter++ = KevesInstruct(CMD_POP);
+      *iter++ = KevesInstruct(CMD_TERMINATE_EXPAND);
+      *iter++ = KevesInstruct(CMD_BEGIN);
+      *iter++ = KevesInstruct(CMD_RETURN0);
       *iter++ = KevesInstruct(CMD_APPLY);
     }
 
