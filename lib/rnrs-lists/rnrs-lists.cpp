@@ -31,6 +31,7 @@
 #include "keves_vm.hpp"
 #include "kev/code.hpp"
 #include "kev/code-inl.hpp"
+#include "kev/pair.hpp"
 #include "kev/procedure-inl.hpp"
 #include "kev/string.hpp"
 #include "kev/string-inl.hpp"

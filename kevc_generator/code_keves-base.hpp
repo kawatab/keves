@@ -22,9 +22,17 @@
 #include "keves_value.hpp"
 
 
+class CodeKev;
+class EnvironmentKev;
 class KevcGenerator;
+class LambdaKev;
 
 
 namespace Code_KevesBase {
+  const EnvironmentKev* makeEnvironment(KevcGenerator* generator);
+  const CodeKev* makeEvaluate(KevcGenerator* generator, const LambdaKev* expand);
+  const LambdaKev* makeExpand(KevcGenerator* generator);
+
   void write(KevcGenerator* generator);
+
 };

@@ -25,10 +25,14 @@ HEADERS += rnrs-base.hpp \
            kev/code-inl.hpp \
            kev/condition.hpp \
            kev/condition-inl.hpp \
+           kev/environment.hpp \
+           kev/environment-inl.hpp \
            kev/frame.hpp \
            kev/frame-inl.hpp \
            kev/number.hpp \
            kev/number-inl.hpp \
+           kev/pair.hpp \
+           kev/pair-inl.hpp \
            kev/procedure.hpp \
            kev/procedure-inl.hpp \
            kev/record.hpp \
@@ -53,8 +57,10 @@ SOURCES += rnrs-base.cpp \
            kev/bignum.cpp \
            kev/code.cpp \
            kev/condition.cpp \
+           kev/environment.cpp \
            kev/frame.cpp \
            kev/number.cpp \
+           kev/pair.cpp \
            kev/procedure.cpp \
            kev/record.cpp \
            kev/string.cpp \

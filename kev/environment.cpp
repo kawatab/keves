@@ -23,80 +23,53 @@
 #include "kev/symbol.hpp"
 
 
-EnvironmentKev::EnvironmentKev() : EnvironmentKev(nullptr) {
-}
+EnvironmentKev::EnvironmentKev()
+  : EnvironmentKev(EMB_NULL) {}
 
-EnvironmentKev::EnvironmentKev(const KevesValue* table)
-  : EnvironmentKev(EMB_NULL, table) {
-}
-
-EnvironmentKev::EnvironmentKev(KevesValue values, const KevesValue* table)
-  : MutableKev(TYPE), values_(values), table_(table) {
-}
+EnvironmentKev::EnvironmentKev(KevesValue values)
+  : MutableKev(TYPE), values_(values) {}
 
 void EnvironmentKev::copyFrom(const EnvironmentKev& other) {
   this->values_ = other.values_;
-  this->table_ = other.table_;
 }
 
-void EnvironmentKev::copyFrom(EnvironmentKev&& other) {
-  this->values_ = other.values_;
-  this->table_ = other.table_;
-}
-
-/*
-void EnvironmentKev::append(KevesIterator* iter, const char* id, KevesValue val) {
-  SymbolKev* symbol(SymbolKev::make(iter, id));
-  PairKev* bind(PairKev::make(iter, symbol, val));
-  values_ = PairKev::make(iter, bind, values_);
-}
-
-void EnvironmentKev::append(KevesIterator* iter, const SymbolKev* symbol, KevesValue val) {
-  PairKev* bind(PairKev::make(iter, symbol, val));
-  values_ = PairKev::make(iter, bind, values_);
-}
-*/
-
-void EnvironmentKev::append(const SymbolKev* id, KevesValue val, PairKev* pair1, PairKev* pair2) {
+void EnvironmentKev::append(const SymbolKev* id,
+			    KevesValue val,
+			    PairKev* pair1,
+			    PairKev* pair2) {
   pair1->set(pair2, values_);
   pair2->set(id, val);
   values_ = pair1;
-}
-
-void EnvironmentKev::set_values(const PairKev* list) {
-  values_ = list;
 }
 
 void EnvironmentKev::clear() {
   values_ = EMB_NULL;
 }
 
-KevesValue EnvironmentKev::at(int idx) const {
-  return table_[idx];
-}
-
-KevesValue EnvironmentKev::find(const SymbolKev* symbol) const {
+KevesValue EnvironmentKev::find(const SymbolKev* id) const {
   KevesValue list(values_);
+
   while (list != EMB_NULL) {
     const PairKev* temp(list.toPtr<PairKev>()->car());
     const SymbolKev* name(temp->car());
 
-    if (name->equals(*symbol))
+    if (name->equals(*id))
       return temp->cdr();
     
     list = list.toPtr<PairKev>()->cdr();
   }
+
   return EMB_FALSE;
 }
 
-KevesValue EnvironmentKev::find(const char* symbol) const {
+KevesValue EnvironmentKev::find(const char* id) const {
   KevesValue list(values_);
 
   while (list != EMB_NULL) {
     const PairKev* temp(list.toPtr<PairKev>()->car());
     const SymbolKev* name(temp->car());
 
-    if (name->equals(symbol))
+    if (name->equals(id))
       return temp->cdr();
 
     list = list.toPtr<PairKev>()->cdr();
@@ -119,12 +92,4 @@ int EnvironmentKev::size() const {
   }
 
   return count;
-}
-
-const KevesValue* EnvironmentKev::table() const {
-  return table_;
-}
-
-KevesValue EnvironmentKev::values() const {
-  return values_;
 }

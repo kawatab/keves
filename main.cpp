@@ -17,12 +17,25 @@
 
 
 #include "keves_common.hpp"
+#include "kev/string.hpp"
 
 
 int main() {
   KevesCommon common;
-  common.runThread();
-  common.runThread();
+
+  common.runThread(StringKev::make(&common,
+				   "(define (fib n) \
+  (if (< n 2) \
+      1 \
+    (+ (fib (- n 2)) (fib (- n 1))))) \
+(list `(abc) (quote (123 \"abc\")))"));
+
+  common.runThread(StringKev::make(&common,
+				   "(define (fib n) \
+  (if (< n 2) \
+      1 \
+    (+ (fib (- n 2)) (fib (- n 1))))) \
+(list `(abc) (quote (123 \"abc\")))"));
 
   return 0;
 }

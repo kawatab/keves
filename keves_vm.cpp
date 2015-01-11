@@ -67,7 +67,7 @@ KevesVM* KevesVM::make(KevesCommon* common, KevesTextualOutputPort* result_field
 }
 
 void KevesVM::run() {
-  execute("");
+  execute();
 }
   
 void KevesVM::checkStack(size_t* size, vm_func func, const_KevesIterator pc) {
@@ -388,7 +388,7 @@ void KevesVM::executeGC(vm_func current_func, const_KevesIterator pc) {
   return gc_.execute(pc);
 }
 
-int KevesVM::execute(const QString& arg) {
+int KevesVM::execute() {
   pthread_attr_t attr;
   pthread_getattr_np(pthread_self(), &attr);
   
@@ -399,39 +399,55 @@ int KevesVM::execute(const QString& arg) {
   stack_higher_limit_ = reinterpret_cast<char*>(&attr);
   std::cout << "higher limit: " << stack_higher_limit_ << std::endl;
 
-  return execute_helper(arg);
+  return execute_helper();
 }
 
-int KevesVM::execute_helper(const QString& arg) {
+int KevesVM::execute_helper() {
   // This is a bottom frame.
   registers_.set_fp(&registers_);
 
   registers_.changeToBottomFrame();
-  QStringList library_name0;
-  library_name0 << "keves" << "base";
+  QStringList library_name;
+  library_name << "keves" << "base";
   QList<ver_num_t> ver_num;
-  KevesLibrary* lib_keves_base0(common_->getLibrary(library_name0, ver_num));
+  KevesLibrary* lib_keves_base(common_->getLibrary(library_name, ver_num));
 
-  if (!lib_keves_base0) {
-    KevesLibrary::errorOfMissingLibrary(library_name0, ver_num);
+  if (!lib_keves_base) {
+    KevesLibrary::errorOfMissingLibrary(library_name, ver_num);
     return 1;
   }
   
-  KevesValue code(lib_keves_base0->findBind("my-code"));
+  KevesValue code(lib_keves_base->findBind("my-code"));
 
-  if (code == EMB_NULL) {
+  if (code == EMB_UNDEF) {
     std::cerr << "bind: my-code is not found!!!\n";
     return 1;
-  } else if (code.isCode()) {
-    std::cout << "find code" << std::endl;
+  } else if (!code.isCode()) {
+    std::cerr << "my-code is not code!!!\n";
+    return 1;
   }
   
   const_KevesIterator pc(code.toPtr<CodeKev>()->begin());
   Q_ASSERT(pc->isInstruct());
 
+  KevesValue environment(lib_keves_base->findBind("environment"));
+
+  if (environment == EMB_UNDEF) {
+    std::cerr << "bind: environment is not found!!!\n";
+    return 1;
+  } else if (!environment.is<EnvironmentKev>()) {
+    std::cerr << "environment is not environment!!!\n";
+    return 1;
+  }
+  
+  prev_global_vars_.copyFrom(*environment.toPtr<EnvironmentKev>());
+  curt_global_vars_.copyFrom(prev_global_vars_);
+
   // prepare environment frame
-  LocalVarFrameKevWithArray<04> env_frame;
-  registers_.setEnvFrame(&env_frame);
+  LocalVarFrameKevWithArray<02> env_frame;
+  registers_.setEnvFrame(&env_frame, 2);
+  registers_.assignLastLocalVar(EMB_NULL, 1);
+  registers_.assignLastLocalVar(&prev_global_vars_, 0);
 
   // prepare stack frame
   ArgumentFrameKevWithArray<04> arg_frame;
@@ -439,7 +455,7 @@ int KevesVM::execute_helper(const QString& arg) {
   LocalVarFrameKev clsr;
   registers_.setClosure(&clsr);
   keves_vals_ = nullptr;
-  acc_ = gr1_ = gr2_ = gr3_ = EMB_UNDEF;
+  gr1_ = gr2_ = gr3_ = EMB_UNDEF; // acc_ keeps value
   
   current_function_ = cmd_table_[KevesInstruct(*pc++)];
   current_pc_ = pc;
@@ -466,24 +482,22 @@ int KevesVM::execute_helper(const QString& arg) {
 
 void KevesVM::cmd_HALT(KevesVM* vm, const_KevesIterator pc) {
   StackFrameKev* registers(&vm->registers_);
-  /*
   KevesValue temp(registers->lastArgument());
 
   if (registers->sfp()) {
-    KevesValue ref(registers->fp()->envp()->at(2));
+    KevesValue ref(registers->fp()->lastLocalVar());
 
     if (ref.is<EnvironmentKev>()) {
       vm->curt_global_vars_.copyFrom(vm->prev_global_vars_);
       vm->prev_global_vars_.copyFrom(*ref.toPtr<EnvironmentKev>());
       vm->acc_ = temp;
-      gr1_ = gr2_ = gr3_ = EMB_UNDEF;
+      vm->gr1_ = vm->gr2_ = vm->gr3_ = EMB_UNDEF;
       return returnValue(vm, pc);
     }
     
     std::cerr << "KevesVM::cmd_HALT(): Not handle global values properly\n";
     longjmp(vm->jmp_exit_, -2);
   }
-  */
 
   longjmp(vm->jmp_exit_, -1);
 }

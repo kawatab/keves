@@ -173,7 +173,7 @@ public:
   static constexpr kev_type TYPE = LOCAL_FRAME;
 
   LocalVarFrameKev()
-    : MutableKev(TYPE), size_(), next_() {}
+    : LocalVarFrameKev(0, nullptr) {}
   
   LocalVarFrameKev(const LocalVarFrameKev&) = delete;
   LocalVarFrameKev(LocalVarFrameKev&&) = delete;
@@ -181,6 +181,11 @@ public:
   LocalVarFrameKev& operator=(LocalVarFrameKev&&) = delete;
   ~LocalVarFrameKev() = default;
 
+  LocalVarFrameKev(int size)
+    : LocalVarFrameKev(size, nullptr) {
+    Q_ASSERT(size_ >= 0);
+  }
+  
   LocalVarFrameKev(int size, LocalVarFrameKev* next)
     : MutableKev(TYPE), size_(size), next_(next) {
     Q_ASSERT(size_ >= 0);

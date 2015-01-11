@@ -21,9 +21,9 @@
 
 
 template<class ZONE>
-EnvironmentKev* EnvironmentKev::make(ZONE* zone, KevesValue values, const KevesValue* table) {
-  auto ctor = [values, table](void* ptr) {
-    return new(ptr) EnvironmentKev(values, table);
+EnvironmentKev* EnvironmentKev::make(ZONE* zone, KevesValue values) {
+  auto ctor = [values](void* ptr) {
+    return new(ptr) EnvironmentKev(values);
   };
 
   return zone->make(ctor, alloc_size(nullptr));

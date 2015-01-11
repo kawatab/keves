@@ -46,18 +46,11 @@ public:
   KevesVM& operator=(const KevesVM&&) = delete;
   ~KevesVM() = default;
 
-  void run(); // for QRunnable
-  
-  int execute(const QString& arg);
-  
   ////////////////////////////////////////////////////////////////
   // General                                                    //
   ////////////////////////////////////////////////////////////////
 public:
-  int execute_helper(const QString& arg);
-  
-  static KevesVM* make(KevesCommon* common);
-  static KevesVM* make(KevesCommon* common, KevesTextualOutputPort* result_field);
+  void run(); // for QRunnable
   
   KevesCommon* common() {
     return common_;
@@ -71,10 +64,19 @@ public:
     return result_field_;
   }
 
+  static KevesVM* make(KevesCommon* common);
+
+  static KevesVM* make(KevesCommon* common,
+		       KevesTextualOutputPort* result_field);
+  
+private:
+  int execute();
+  int execute_helper();
+  
   ////////////////////////////////////////////////////////////////
   // for Instruct and Procedures                                //
   ////////////////////////////////////////////////////////////////
-
+public:
   // Push and Return Values
   void pushToArgument(KevesValue);
   static void pushAccToArgument(KevesVM*, const_KevesIterator);
@@ -258,7 +260,7 @@ public:
   ////////////////////////////////////////////////////////////////
   // for GC                                                     //
   ////////////////////////////////////////////////////////////////
-
+public:
   void checkStack(size_t*, vm_func, const_KevesIterator);
   void checkStack(const void*, vm_func, const_KevesIterator);
   void executeGC(vm_func, const_KevesIterator);
@@ -272,10 +274,36 @@ public:
     return &stack_higher_limit_;
   }
 
-  jmp_buf* ptr_jmp_exit() {
+  void* stack_safety_limit() {
+    return &stack_safety_limit_;
+  }
+
+  jmp_buf* jmp_exit() {
     return &jmp_exit_;
   }
 
+  vm_func current_function() {
+    return current_function_;
+  }
+
+  const_KevesIterator current_pc() {
+    return current_pc_;
+  }
+
+  const CodeKev* current_code() {
+    return current_code_;
+  }
+
+  ////////////////////////////////////////////////////////////////
+  // vaules                                                     //
+  ////////////////////////////////////////////////////////////////
+public:
+  ArgumentFrameKev* keves_vals_;
+  StackFrameKev registers_;
+  KevesValue acc_;
+  KevesValue gr1_;
+  KevesValue gr2_;
+  KevesValue gr3_;
 
 private:
   KevesCommon* common_;
@@ -285,14 +313,6 @@ private:
 
   EnvironmentKev curt_global_vars_;
   EnvironmentKev prev_global_vars_;
-
-public:
-  ArgumentFrameKev* keves_vals_;
-  StackFrameKev registers_;
-  KevesValue acc_;
-  KevesValue gr1_;
-  KevesValue gr2_;
-  KevesValue gr3_;
 
   // for Cheney on the M.T.A.
   jmp_buf jmp_exit_;

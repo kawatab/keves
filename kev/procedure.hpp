@@ -182,6 +182,7 @@ public:
     VariableLengthKev<LocalVarFrameKev>* free_vars(VariableLengthKev<LocalVarFrameKev>::from(lambda->free_vars_));
     lambda->free_vars_ = zone->copy(free_vars);
     VariableLengthKev<CodeKev>* code(VariableLengthKev<CodeKev>::from(lambda->code_));
+    lambda->code_ = zone->copy(code);
     return lambda->border();
   }
 

@@ -24,6 +24,7 @@
 #include "kev/bignum.hpp"
 #include "kev/bignum-inl.hpp"
 #include "kev/code.hpp"
+#include "kev/environment.hpp"
 #include "kev/number.hpp"
 #include "kev/number-inl.hpp"
 #include "kev/pair.hpp"
@@ -138,6 +139,10 @@ CodeKev* KevcGenerator::makeCode(int size) {
 
 ExactComplexNumberKev* KevcGenerator::makeExactComplexNumber() {
   return ExactComplexNumberKev::make(common_);
+}
+
+EnvironmentKev* KevcGenerator::makeEnvironment(KevesValue values) {
+  return EnvironmentKev::make(common_, values);
 }
 
 FlonumKev* KevcGenerator::makeFlonum(double value) {

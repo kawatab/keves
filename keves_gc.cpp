@@ -21,17 +21,25 @@
 
 #include <iostream>
 #include "keves_vm.hpp"
+#include "kev/bignum.hpp"
 #include "kev/code.hpp"
+#include "kev/condition.hpp"
+#include "kev/frame.hpp"
+#include "kev/number.hpp"
 #include "kev/pair.hpp"
+#include "kev/procedure.hpp"
+#include "kev/reference.hpp"
+#include "kev/record.hpp"
 #include "kev/string.hpp"
 #include "kev/symbol.hpp"
 #include "kev/vector.hpp"
+#include "kev/wind.hpp"
 
 
 void KevesGC::init(KevesVM* vm, KevesList<KevesNode<0> >* shared_list) {
   stack_lower_limit_ = vm->stack_lower_limit();
   stack_higher_limit_ = vm->stack_higher_limit();
-  jmp_exit_ = vm->ptr_jmp_exit();
+  jmp_exit_ = vm->jmp_exit();
   acc_ = &vm->acc_;
   gr1_ = &vm->gr1_;
   gr2_ = &vm->gr2_;
@@ -40,11 +48,27 @@ void KevesGC::init(KevesVM* vm, KevesList<KevesNode<0> >* shared_list) {
   shared_list_ = shared_list;
 
   setFunctionTable<CodeKev>();
+  setFunctionTable<Bignum>();
+  setFunctionTable<RationalNumberKev>();
+  setFunctionTable<FlonumKev>();
+  setFunctionTable<ExactComplexNumberKev>();
+  setFunctionTable<InexactComplexNumberKev>();
   setFunctionTable<StringCoreKev>();
   setFunctionTable<StringKev>();
   setFunctionTable<SymbolKev>();
   setFunctionTable<VectorKev>();
+  setFunctionTable<WindKev>();
+  setFunctionTable<ReferenceKev>();
+  setFunctionTable<RecordKev>();
+  setFunctionTable<SimpleConditionKev>();
+  setFunctionTable<CompoundConditionKev>();
+  setFunctionTable<LambdaKev>();
+  setFunctionTable<ArgumentFrameKev>();
+  setFunctionTable<LocalVarFrameKev>();
+  // setFunctionTable<FreeVarFrameKev>();
+  setFunctionTable<StackFrameKev>();
   setFunctionTable<PairKev>();
+  setFunctionTable<EnvironmentKev>();
 
   tenured_.set(this);
 }
@@ -54,11 +78,27 @@ KevesGC::Tenured::Tenured()
     ft_CopyTo_(),
     ft_CopyContents_() {
   setFunctionTable<CodeKev>();
+  setFunctionTable<Bignum>();
+  setFunctionTable<RationalNumberKev>();
+  setFunctionTable<FlonumKev>();
+  setFunctionTable<ExactComplexNumberKev>();
+  setFunctionTable<InexactComplexNumberKev>();
   setFunctionTable<StringCoreKev>();
   setFunctionTable<StringKev>();
   setFunctionTable<SymbolKev>();
   setFunctionTable<VectorKev>();
+  setFunctionTable<WindKev>();
+  setFunctionTable<ReferenceKev>();
+  setFunctionTable<RecordKev>();
+  setFunctionTable<SimpleConditionKev>();
+  setFunctionTable<CompoundConditionKev>();
+  setFunctionTable<LambdaKev>();
+  setFunctionTable<ArgumentFrameKev>();
+  setFunctionTable<LocalVarFrameKev>();
+  // setFunctionTable<FreeVarFrameKev>();
+  setFunctionTable<StackFrameKev>();
   setFunctionTable<PairKev>();
+  setFunctionTable<EnvironmentKev>();
 }
 
 /*

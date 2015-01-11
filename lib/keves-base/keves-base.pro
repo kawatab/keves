@@ -19,6 +19,8 @@ HEADERS += keves-base.hpp \
            keves_vm.hpp \
            kev/code.hpp \
            kev/code-inl.hpp \
+           kev/environment.hpp \
+           kev/environment-inl.hpp \
            kev/frame.hpp \
            kev/procedure.hpp \
            kev/procedure-inl.hpp \
@@ -38,6 +40,7 @@ SOURCES += keves-base.cpp \
            keves_textual_port.cpp \
            keves_vm.cpp \
            kev/code.cpp \
+           kev/environment.cpp \
            kev/frame.cpp \
            kev/procedure.cpp \
            kev/string.cpp \

@@ -31,6 +31,8 @@
 #include "kev/code-inl.hpp"
 #include "kev/condition.hpp"
 #include "kev/condition-inl.hpp"
+#include "kev/environment.hpp"
+#include "kev/environment-inl.hpp"
 #include "kev/frame.hpp"
 #include "kev/frame-inl.hpp"
 #include "kev/number.hpp"
@@ -93,6 +95,7 @@ KevesCommon::KevesCommon()
   // setFunctionTable<FreeVarFrameKev>();
   setFunctionTable<StackFrameKev>();
   setFunctionTable<PairKev>();
+  setFunctionTable<EnvironmentKev>();
 }
 
 KevesCommon::~KevesCommon() {
@@ -100,8 +103,9 @@ KevesCommon::~KevesCommon() {
   for (auto library : library_list_) delete library;
 }
 
-void KevesCommon::runThread() {
+void KevesCommon::runThread(KevesValue arg) {
   KevesVM* vm(KevesVM::make(this, default_result_field()));
+  vm->acc_ = arg;
   thread_pool_.start(vm);
 }
 
@@ -654,6 +658,10 @@ void KevesCommon::toString_element(QString* str, KevesValue value) const {
       
     case CONTINUATION:
       str->append("<procedure: continuation>");
+      break;
+      
+    case ENVIRONMENT:
+      str->append("<environment>");
       break;
       
     case STACK_FRAME: {

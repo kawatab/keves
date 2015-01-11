@@ -24,6 +24,7 @@
 class ArgumentFrameKev;
 class Bignum;
 class CodeKev;
+class EnvironmentKev;
 class ExactComplexNumberKev;
 class FlonumKev;
 class InexactComplexNumberKev;
@@ -57,12 +58,6 @@ public:
 		const char* id1, const char* id2,
 		ver_num_t ver_num1, ver_num_t ver_num2);
 
-  /*
-  KevesCommon* common() {
-    return common_;
-  }
-  */
-  
   void exportBind(const char* id, KevesValue value);
   KevesValue findBind(const char* id) const;
   KevesValue importBind(const char* id);
@@ -74,6 +69,7 @@ public:
 
   Bignum* makeBignum(const char* str);
   CodeKev* makeCode(int size);
+  EnvironmentKev* makeEnvironment(KevesValue values);
   ExactComplexNumberKev* makeExactComplexNumber();
   FlonumKev* makeFlonum(double value);
   InexactComplexNumberKev* makeInexactComplexNumber(double real, double imag);

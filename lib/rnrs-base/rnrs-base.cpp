@@ -35,6 +35,7 @@
 #include "kev/frame-inl.hpp"
 #include "kev/number.hpp"
 #include "kev/number-inl.hpp"
+#include "kev/pair.hpp"
 #include "kev/procedure-inl.hpp"
 #include "kev/string.hpp"
 #include "kev/string-inl.hpp"

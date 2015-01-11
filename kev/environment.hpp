@@ -20,9 +20,9 @@
 #pragma once
 
 #include "keves_value.hpp"
-#include "kev/pair.hpp"
 
 
+class PairKev;
 class SymbolKev;
 class KevesGC;
 
@@ -37,13 +37,40 @@ public:
   EnvironmentKev& operator=(EnvironmentKev&&) = delete;
   ~EnvironmentKev() = default;
 
-  explicit EnvironmentKev(const KevesValue*);
-  EnvironmentKev(KevesValue, const KevesValue*);
+  explicit EnvironmentKev(KevesValue value);
+
+  KevesValue values() const {
+    return values_;
+  }
+
+  void set_values(KevesValue list) {
+    values_ = list;
+  }
+
+  void append(const SymbolKev* id,
+	      KevesValue val,
+	      PairKev* pair1,
+	      PairKev* pair2);
+
+  void clear();
+  void copyFrom(const EnvironmentKev& values);
+  KevesValue find(const SymbolKev* id) const;
+  KevesValue find(const char* id) const;
+  bool isEmpty() const;
+  int size() const;
+
+  template<class ZONE>
+  static EnvironmentKev* make(ZONE* zone, KevesValue values);
+
+private:
+  KevesValue values_;
+
 
   ////////////////////////////////////////////////////////////
+  // Secrion For GC !!!                                     //
   ////////////////////////////////////////////////////////////
-  //////// Section For GC begin !!! //////////////////////////
 
+public:
   static constexpr size_t alloc_size(const MutableKev*) {
     return sizeof(EnvironmentKev);
   }
@@ -60,27 +87,35 @@ public:
     return env->border();
   }
 
-  //////// Section For GC end !!! ////////////////////////////
   ////////////////////////////////////////////////////////////
+  // Section For serialize !!!                              //
   ////////////////////////////////////////////////////////////
 
-  void append(const SymbolKev*, KevesValue, PairKev*, PairKev*);
-  KevesValue at(int) const;
-  void clear();
-  void copyFrom(const EnvironmentKev&);
-  void copyFrom(EnvironmentKev&&);
-  KevesValue find(const SymbolKev*) const;
-  KevesValue find(const char*) const;
-  bool isEmpty() const;
-  void set_values(const PairKev*);
-  int size() const;
-  const KevesValue* table() const;
-  KevesValue values() const;
+public:
+  template<class IO, class STACK>
+  static void pushChildren(STACK* pending, KevesValue value) {
+    const EnvironmentKev* environment(value);
+    IO::pushValue(pending, environment->values_);
+  }
 
-  template<class ZONE>
-  static EnvironmentKev* make(ZONE* zone, KevesValue, const KevesValue*);
+  template<class IO, class LIST, class STREAM>
+  static void writeObject(const LIST& list, STREAM& out, KevesValue value) {
+    const EnvironmentKev* environment(value);
 
-private:
-  KevesValue values_;
-  const KevesValue* table_;
+    out << static_cast<uioword>(environment->type())
+	<< IO::indexAddress(list, environment->values_);
+  }
+
+  template<class IO, class STREAM, class GC>
+  static Kev* readObject(STREAM& in, GC* gc) {
+    uioword value;
+    in >> value;
+    return make(gc, KevesValue::template fromUioword<Kev>(value));
+  }
+  
+  template<class IO, class LIST>
+  static void revertObject(const LIST& object_list, MutableKevesValue value) {
+    EnvironmentKev* environment(value);
+    IO::revertValue(object_list, &environment->values_);
+  }
 };

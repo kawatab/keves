@@ -55,7 +55,7 @@ public:
   const StringKev* getMesgText(const QString& key) const;
   KevesValue makeAssertCondition(KevesValue a, KevesValue b, KevesValue c);
 
-  void runThread();
+  void runThread(KevesValue arg);
 
   template<class KEV>
   KEV* toMutable(const KEV* kev);
